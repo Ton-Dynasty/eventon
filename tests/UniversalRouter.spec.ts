@@ -39,7 +39,6 @@ describe('UniversalRouter', () => {
     });
 
     it('should send EvnetTrigger', async () => {
-        const player = await blockchain.treasury('player');
         const eventSignal: EventSignal = {
             $$type: 'EventSignal',
             eventId: 1n,
@@ -52,19 +51,21 @@ describe('UniversalRouter', () => {
             address: event.address,
             info: eventSignal,
         }
-        const result0 = await universalRouter.send(
+        const eventTrigggerResult = await event.send(
             deployer.getSender(), 
             {
                 value: toNano('10')
             },
-            eventSignal
+            event1
         );
+        console.log(eventTrigggerResult.transactions);
         // exit code 3 because of the protocol doesn't register before
-        expect(result0.transactions).toHaveTransaction({
-            from: deployer.address,
+        expect(eventTrigggerResult.transactions).toHaveTransaction({
+            from: event.address,
             to: universalRouter.address,
             exitCode: 3
         });
-
+        
+        
     });
 });
