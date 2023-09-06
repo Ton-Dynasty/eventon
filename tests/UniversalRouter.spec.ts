@@ -1,6 +1,6 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton-community/sandbox';
-import { beginCell, contractAddress, StateInit, toNano } from 'ton-core';
-import { UniversalRouter, EventTrigger, EventSignal } from '../wrappers/UniversalRouter';
+import { Address, beginCell, contractAddress, StateInit, toNano } from 'ton-core';
+import { UniversalRouter, EventTrigger, EventSignal, ProtcolRegister } from '../wrappers/UniversalRouter';
 import { Event } from '../wrappers/Event';
 import '@ton-community/test-utils';
 describe('UniversalRouter', () => {
@@ -17,7 +17,7 @@ describe('UniversalRouter', () => {
         const deployResult = await universalRouter.send(
             deployer.getSender(),
             {
-                value: toNano('0.05'),
+                value: toNano('1'),
             },
             {
                 $$type: 'Deploy',
@@ -58,7 +58,6 @@ describe('UniversalRouter', () => {
             },
             event1
         );
-        console.log(eventTrigggerResult.transactions);
         // exit code 3 because of the protocol doesn't register before
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
@@ -66,6 +65,34 @@ describe('UniversalRouter', () => {
             exitCode: 3
         });
         
+        const protocolRegister: ProtcolRegister = {
+            $$type: 'ProtcolRegister',
+            sourceAddress: event.address,
+            template: beginCell().endCell(),
+        }
+        const eventIdBefore = await universalRouter.getGetEventId();
+        const protocolRegisterResult = await universalRouter.send(
+            deployer.getSender(),
+            {
+                value: toNano('0.2'),
+            },
+            protocolRegister
+        );
+        const eventIdAfter = await universalRouter.getGetEventId();
+        // Test whether the protocol register successfully
+        expect(protocolRegisterResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: universalRouter.address,
+            success: true
+        });
+        expect(eventIdBefore).toEqual(eventIdAfter - 1n);
+        
+        const childRouterAddress = await universalRouter.getGetChildRouterAddress(event.address);
+        expect(protocolRegisterResult.transactions).toHaveTransaction({
+            from: universalRouter.address,
+            to: childRouterAddress,
+            success: true
+        });
         
     });
 });
