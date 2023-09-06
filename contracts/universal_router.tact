@@ -21,23 +21,26 @@ contract UniversalRouter with Deployable, Ownable {
             throw(001);
         }
         self.eventIdToProtocol.set(self.eventCount, msg.sourceAddress);
-        self.eventCount = self.eventCount + 1;
 
         //Build child router
         let childRouterAddress: Address = self.getChildRouterAddress(msg.sourceAddress);
         self.protocolToRouter.set(msg.sourceAddress, childRouterAddress);
-        let value: Int = ton("0.01");
+        let value: Int = ton("0.1");
+        let init: StateInit = self.getChildRouterInit(msg.sourceAddress);
         send(SendParameters{
             to: childRouterAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
-            bounce: true, 
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: false, 
             body: BuildChildRouter {
                 sourceAddress: msg.sourceAddress,
                 template: msg.template
-            }.toCell()
+            }.toCell(),
+            code: init.code, // attaching the state init will cause the message to deploy
+            data: init.data
         });
         
+        self.eventCount = self.eventCount + 1;
     }
 
     // User Register Event
@@ -138,5 +141,9 @@ contract UniversalRouter with Deployable, Ownable {
 
     get fun getEventId(): Int {
         return self.eventCount;
+    }
+
+    get fun getMapChildRouterAddress(sourceAddress: Address): Address? {
+        return self.protocolToRouter.get(sourceAddress)!!;
     }
 }
