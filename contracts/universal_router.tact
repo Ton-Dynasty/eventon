@@ -8,7 +8,6 @@ contract UniversalRouter with Deployable, Ownable {
     eventCount: Int; // Event ID count, ex: Orcle->0, Chainlink->1, etc
     protocolToRouter: map<Address, Address>; // Protocol address -> Child Router address
     eventIdToProtocol: map<Int, Address>; // Event ID -> Protocol address
-    count: Int;
     init(owner: Address) {
         self.owner = owner;
         self.eventCount=0;
@@ -89,7 +88,6 @@ contract UniversalRouter with Deployable, Ownable {
     receive(msg: EventSignal) {
         let cxt: Context = context();
         let protocolAddress: Address = cxt.sender;
-        self.count = self.count + 1;
         if(self.protocolToRouter.get(protocolAddress) == null)
         {
             throw(003); // Protocol's Router does not exist
@@ -136,5 +134,9 @@ contract UniversalRouter with Deployable, Ownable {
     // get the child router init
     get fun getChildRouterInit(sourceAddress: Address): StateInit {
         return initOf ChildRouter(myAddress(),sourceAddress);
+    }
+
+    get fun getEventId(): Int {
+        return self.eventCount;
     }
 }
