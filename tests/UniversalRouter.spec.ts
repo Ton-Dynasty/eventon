@@ -59,6 +59,7 @@ describe('UniversalRouter', () => {
             },
             eventSignal
         );
+        // exit code 3 because of the protocol doesn't register before
         expect(result0.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,

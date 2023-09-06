@@ -111,7 +111,7 @@ contract UniversalRouter with Deployable, Ownable {
         let protocolAddress: Address = msg.protocolAddress;
         if(self.protocolToRouter.get(protocolAddress) != null)
         {
-            throw(003); // Protocol's Router does not exist
+            throw(004); // Protocol's Router does not exist
         }
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{
