@@ -12,7 +12,6 @@ contract UniversalRouter with Deployable, Ownable {
     init(owner: Address) {
         self.owner = owner;
         self.eventCount=0;
-        self.count = 0;
 
     }
 
@@ -137,9 +136,5 @@ contract UniversalRouter with Deployable, Ownable {
     // get the child router init
     get fun getChildRouterInit(sourceAddress: Address): StateInit {
         return initOf ChildRouter(myAddress(),sourceAddress);
-    }
-
-    get fun getCount(): Int {
-        return self.count;
     }
 }

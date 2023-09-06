@@ -14,8 +14,6 @@ describe('UniversalRouter', () => {
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(deployer.address));
         event = blockchain.openContract(await Event.fromInit(deployer.address, universalRouter.address));
 
-        
-
         const deployResult = await universalRouter.send(
             deployer.getSender(),
             {
@@ -41,36 +39,31 @@ describe('UniversalRouter', () => {
     });
 
     it('should send EvnetTrigger', async () => {
+        const player = await blockchain.treasury('player');
         const eventSignal: EventSignal = {
             $$type: 'EventSignal',
-            eventId: 0n,
-            payload: beginCell().endCell()
+            eventId: 1n,
+            payload: beginCell().endCell(),
         }
+
         const event1: EventTrigger = {
             $$type: 'EventTrigger',
-            value: 1000000000n,
+            value: toNano('0'),
             address: event.address,
-            info: eventSignal
+            info: eventSignal,
         }
         const result0 = await universalRouter.send(
             deployer.getSender(), 
-            {value: toNano('10')},
+            {
+                value: toNano('10')
+            },
             eventSignal
         );
-        console.log(result0.transactions);
-        const result = await event.send(
-            deployer.getSender(), 
-            {value: toNano('10')}, 
-            event1
-        );
-        console.log(await universalRouter.getGetCount());
-        // console.log(await event.getGetPromiseEyeAddress());
-        // //console.log(result.transactions);
-        // console.log(await universalRouter.getGetCount());
-        // expect(result.transactions).toHaveTransaction({
-        //     from: deployer.address,
-        //     to: event.address,
-        //     success: true,
-        // });
+        expect(result0.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: universalRouter.address,
+            exitCode: 3
+        });
+
     });
 });
