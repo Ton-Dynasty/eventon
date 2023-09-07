@@ -40,7 +40,6 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
-        self.messengerId = self.messengerId + 1;
     }
 
     receive(msg: DefaultRegister) {
@@ -48,12 +47,15 @@ contract ChildRouter with Deployable, Ownable {
         //Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
         let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
-        let value: Int = ton("0.01");
+        let value: Int = ton("0.1");
         send(SendParameters{
             to: udcAddress,
             value: value, 
             mode: SendPayGasSeparately, 
             bounce: true,
+            body: BuildUDC {
+                owner: msg.walletAddress // Protocol's address
+            }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
@@ -61,7 +63,7 @@ contract ChildRouter with Deployable, Ownable {
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
             to: messengerAddress,
-            value: 0, 
+            value: value, 
             mode: SendPayGasSeparately, 
             bounce: true,
             body: CallbackAddress {
@@ -79,8 +81,8 @@ contract ChildRouter with Deployable, Ownable {
         send(SendParameters{
             to: messengerAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
-            bounce: true,
+            mode: SendRemainingValue, 
+            bounce: false,
             body: CallbackAddress {
                 callbackAddress: msg.callbackAddress
             }.toCell()
@@ -91,11 +93,12 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: EventSignal) {
         self.requireOwner();
         let i: Int = 0;
-        while(i < self.messengerId) {
+        while(i <= self.messengerId) {
             let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
+            let value: Int = ton("0.1");
             send(SendParameters{
                 to: messengerAddress,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
                 body: msg.toCell()
@@ -109,7 +112,7 @@ contract ChildRouter with Deployable, Ownable {
         //Build Messenger
         let messengerAddress: Address = self.messengerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
-        let value: Int = ton("0.01");
+        let value: Int = ton("0.1");
         send(SendParameters{
             to: messengerAddress,
             value: value, 
@@ -166,6 +169,9 @@ contract ChildRouter with Deployable, Ownable {
         emit(Withdrawn{amount: msg.amount, receiver: sender()}.toCell());
     }
 
+    receive(msg: CollectFee){
+        self.totalStakeAmount = self.totalStakeAmount + msg.fee;
+    }
 
     // Calculage the reward for the user
     get fun calculateReward(addr: Address): Int {

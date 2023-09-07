@@ -21,19 +21,34 @@ contract Messenger with Deployable, Ownable {
             throw(007);
         }
     }
+
     receive (msg: EventSignal) {
         let i: Int = 0;
+        let collected_fee: Int = 0;
         while(i < self.subscriberId) {
             let subscriber: Address = self.idToSubscriber.get(i)!!;
+            // TODO: check if subscriber is still subscribed (there is enough fee for this subscriber)
+            let value: Int = ton("0.1");
             send(SendParameters{
                 to: subscriber,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
                 body: msg.toCell()
             });
+            // TODO: collect fee from subscriber
             i = i + 1;
         }
+        // TODO: Send collected fee to child router
+        send(SendParameters{
+            to: self.owner,
+            value: collected_fee,
+            mode: SendPayGasSeparately,
+            body: CollectFee{
+                messengerId: self.messengerId,
+                fee: collected_fee
+            }.toCell()
+        });
     }
 
     receive(msg: CallbackAddress) {

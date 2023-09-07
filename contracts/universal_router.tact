@@ -48,7 +48,7 @@ contract UniversalRouter with Deployable, Ownable {
     // User Register Event
     receive(msg: DefaultRegister) {
         // Check if this event id is registered
-        if(self.eventIdToProtocol.get(msg.eventId) != null)
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
             throw(002); // Event ID does not exist
         }
@@ -57,7 +57,7 @@ contract UniversalRouter with Deployable, Ownable {
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
+            mode: SendRemainingValue, 
             bounce: true, 
             body: DefaultRegister {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
@@ -76,18 +76,18 @@ contract UniversalRouter with Deployable, Ownable {
         }
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
-        // send(SendParameters{
-        //     to: childRouterAddress,
-        //     value: 0, 
-        //     mode: SendPayGasSeparately, 
-        //     bounce: true, 
-        //     body: AdvancedRegister {
-        //         walletAddress: msg.walletAddress, // Owner address of callback contract
-        //         deadline: msg.deadline, // The deadline of the msg can delay
-        //         eventId: msg.eventId, // The even id which user want to subscribe
-        //         callbackAddress: msg.callbackAddress // The callback contract address writed by user
-        //     }.toCell()
-        // });
+        send(SendParameters{
+            to: childRouterAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: true, 
+            body: AdvancedRegister {
+                walletAddress: msg.walletAddress, // Owner address of callback contract
+                deadline: msg.deadline, // The deadline of the msg can delay
+                eventId: msg.eventId, // The even id which user want to subscribe
+                callbackAddress: msg.callbackAddress // The callback contract address writed by user
+            }.toCell()
+        });
     }
 
     receive(msg: EventSignal) {
@@ -101,7 +101,7 @@ contract UniversalRouter with Deployable, Ownable {
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
+            mode: SendRemainingValue, 
             bounce: false, 
             body: EventSignal {
                 eventId: msg.eventId, // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
