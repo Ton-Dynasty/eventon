@@ -287,6 +287,6 @@ describe('UniversalRouter', () => {
         // Check if messenger has set the subscriber's callback address correctly.
         const messenger = blockchain.openContract(await Messenger.fromAddress(messengerAddress));
         const subscriberAddress = await messenger.getIdToSubscriber(0n); // Assuming subscriberId starts from 1 and increments.
-        expect(subscriberAddress).toEqual(udcAddress);
+        expect(subscriberAddress?.toString()).toEqual(udcAddress.toString());
     });
 });
