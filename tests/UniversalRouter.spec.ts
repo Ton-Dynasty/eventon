@@ -147,7 +147,7 @@ describe('UniversalRouter', () => {
         });
 
         // 3. messenger will receive and set the relevant information.
-        const messengerAddress = await childRouter.getMessangerAddress(event.address, 1n); // Adjust messengerId as required.
+        const messengerAddress = await childRouter.getMessengerAddress(event.address, 1n); // Adjust messengerId as required.
 
         // Check if the child router has successfully sent a message to the messenger.
         expect(registerMsgResult.transactions).toHaveTransaction({

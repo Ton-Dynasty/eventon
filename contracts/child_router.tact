@@ -18,12 +18,12 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.messangerAddress(msg.sourceAddress, self.messengerId);
-        let init: StateInit = self.messangerInit(msg.sourceAddress, self.messengerId);
+        let messengerAddress: Address = self.messengerAddress(msg.sourceAddress, self.messengerId);
+        let init: StateInit = self.messengerInit(msg.sourceAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: value, 
             mode: SendPayGasSeparately, 
             bounce: true,
@@ -46,10 +46,10 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
-        // Save the udc address to the messanger contract
-        let messangerAddress: Address = self.messangerAddress(self.sourceAddress, self.messengerId);
+        // Save the udc address to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: 0, 
             mode: SendPayGasSeparately, 
             bounce: true,
@@ -63,10 +63,10 @@ contract ChildRouter with Deployable, Ownable {
     
     receive(msg: AdvancedRegister) {
         self.requireOwner();
-        // Save the callback contract address(writen by user) to the messanger contract
-        let messangerAddress: Address = self.messangerAddress(self.sourceAddress, self.messengerId);
+        // Save the callback contract address(writen by user) to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: 0, 
             mode: SendPayGasSeparately, 
             bounce: true,
@@ -81,9 +81,9 @@ contract ChildRouter with Deployable, Ownable {
         self.requireOwner();
         let i: Int = 0;
         while(i < self.messengerId) {
-            let messangerAddress: Address = self.messangerAddress(self.sourceAddress, i);
+            let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
             send(SendParameters{
-                to: messangerAddress,
+                to: messengerAddress,
                 value: 0, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
@@ -96,11 +96,11 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: AddMessenger) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.messangerAddress(msg.protocolAddress, self.messengerId);
+        let messengerAddress: Address = self.messengerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: value, 
             mode: SendPayGasSeparately, 
             bounce: true
@@ -108,15 +108,15 @@ contract ChildRouter with Deployable, Ownable {
     }
     // Get Methods
 
-    //get the Messanger Contract Address
-    get fun messangerAddress(sourceAddress: Address, messagenerId: Int): Address
+    //get the Messenger Contract Address
+    get fun messengerAddress(sourceAddress: Address, messagenerId: Int): Address
     {
-        let childInit: StateInit = self.messangerInit(sourceAddress, messagenerId);
+        let childInit: StateInit = self.messengerInit(sourceAddress, messagenerId);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun messangerInit(sourceAddress: Address, messagenerId: Int): StateInit {
+    get fun messengerInit(sourceAddress: Address, messagenerId: Int): StateInit {
         return initOf Messenger(myAddress(), sourceAddress, messagenerId);
     }
 
