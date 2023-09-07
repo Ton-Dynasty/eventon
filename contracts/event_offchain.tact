@@ -20,9 +20,9 @@ trait Alertable {
 }
 
 contract OffchainEvent with Deployable, Alertable {
-    publicKey: Int;
+    publicKey: Int as uint256;
     promiseEyeAddress: Address;
-    seqno: Int = 0;
+    seqno: Int as uint32;
 
     init(publicKey: Int, promiseEyeAddress: Address) {
         self.publicKey = publicKey;
@@ -37,12 +37,10 @@ contract OffchainEvent with Deployable, Alertable {
     // Push event to the contract by externalcall
     // The message should be verified by 
     external(msg: OffchainEventSignal) {
-        let builder: Builder = beginCell();
-        let payloadBuilder: Builder = beginCell();
         // BUG: There may be some bug of `checkDataSignature`
         // The type is incompatible with the funC version
-        let hash: Int = beginCell().storeUint(msg.seqno, 32).storeUint(msg.valid_until, 32).storeUint(msg.eventId, 32).storeRef(msg.payload).endCell().hash();
-        require(checkSignature(sha256(builder.asSlice()), msg.signature, self.publicKey), "Invalid Signature");
+        let hash: Int = beginCell().storeUint(msg.seqno, 32).storeUint(msg.valid_until, 32).storeUint(msg.eventId, 8).storeRef(msg.payload).endCell().hash();
+        require(checkSignature(hash, msg.signature, self.publicKey), "Invalid Signature");
         require(msg.seqno == self.seqno, "Invalid Seqno");
         require(now() <= msg.valid_until, "Invalid Time");
         acceptMessage();

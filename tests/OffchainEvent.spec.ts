@@ -1,33 +1,29 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { mnemonicNew, mnemonicToWalletKey, KeyPair, sign } from 'ton-crypto';
-import { Address, beginCell, contractAddress, StateInit, toNano } from 'ton-core';
-import { EventSignal, OffchainEvent, OffchainEventSignal } from '../wrappers/EventOffchain';
-import { WalletContractV4 } from 'ton';
+import { beginCell, toNano } from 'ton-core';
+import { OffchainEvent, OffchainEventSignal } from '../wrappers/EventOffchain';
 import '@ton-community/test-utils';
-import { log } from 'console';
 
 describe('OffchainEvent', () => {
     let blockchain: Blockchain;
     let keyPair: KeyPair;
-    let wallet: WalletContractV4;
     let offchainEventContract: SandboxContract<OffchainEvent>;
     let deployer: SandboxContract<TreasuryContract>;
     let promiseEye: SandboxContract<TreasuryContract>;
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        deployer = await blockchain.treasury('deployer');
+        deployer = await blockchain.treasury('deployer', { balance: toNano('100') });
         promiseEye = await blockchain.treasury('promiseEye');
-        keyPair = await mnemonicToWalletKey(await mnemonicNew(24));
+        keyPair = await mnemonicToWalletKey(await mnemonicNew(24), '123');
         offchainEventContract = blockchain.openContract(
             await OffchainEvent.fromInit(keyPair.publicKey.readBigInt64LE(0), promiseEye.address)
         );
-        wallet = WalletContractV4.create({ publicKey: keyPair.publicKey, workchain: 0 });
 
         const deployResult = await offchainEventContract.send(
             deployer.getSender(),
             {
-                value: toNano('10'),
+                value: toNano('0.8'),
             },
             {
                 $$type: 'Deploy',
@@ -41,6 +37,15 @@ describe('OffchainEvent', () => {
             deploy: true,
             success: true,
         });
+
+        const contract = await blockchain.getContract(offchainEventContract.address);
+        contract.balance = toNano('10');
+    });
+
+    it('Should contains 10 TON balance', async () => {
+        const val = (await blockchain.getContract(offchainEventContract.address)).balance;
+        const expectedVal = toNano('10');
+        expect(val.toString()).toEqual(expectedVal.toString());
     });
 
     it('Should verify signature', async () => {
@@ -48,14 +53,14 @@ describe('OffchainEvent', () => {
         const tenMinutesAfter: number = currentTimestamp + 600; // 10 minutes * 60 seconds/minute
 
         let eventId = 1n;
-        let payload = beginCell().endCell();
+        let payload = beginCell().storeBit(0).endCell();
         let seqno = 0n;
         let valid_until = tenMinutesAfter;
 
         let hash = beginCell()
             .storeUint(seqno, 32)
             .storeUint(valid_until, 32)
-            .storeUint(eventId, 32)
+            .storeUint(eventId, 8)
             .storeRef(payload)
             .endCell()
             .hash();
@@ -64,15 +69,12 @@ describe('OffchainEvent', () => {
         let msg: OffchainEventSignal = {
             $$type: 'OffchainEventSignal',
             seqno: seqno,
+            valid_until: BigInt(valid_until),
             eventId: eventId,
             payload: payload,
             signature: signature,
-            valid_until: BigInt(valid_until),
         };
-
-        console.log('msg: ', msg);
-        console.log('deployer address: ', deployer.address);
-        console.log('offchainEventContract address: ', offchainEventContract.address);
+        console.log('offchain hash: ', hash.readBigInt64LE());
         expect(await offchainEventContract.getGetPublicKey()).toEqual(keyPair.publicKey.readBigInt64LE(0));
         expect(await offchainEventContract.sendExternal(msg)).not.toThrowError();
     });
