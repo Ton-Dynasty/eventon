@@ -27,7 +27,6 @@ contract Event with Deployable, Ownable, Alertable {
     }
     
     receive(msg: EventTrigger) {
-        self.requireOwner();
         self.sendAlert(msg.info);
     }
 

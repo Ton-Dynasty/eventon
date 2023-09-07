@@ -25,15 +25,19 @@ contract Messenger with Deployable, Ownable {
     receive (msg: EventSignal) {
         let i: Int = 0;
         let collected_fee: Int = 0;
+        let value: Int = ton("0.1");
         while(i < self.subscriberId) {
             let subscriber: Address = self.idToSubscriber.get(i)!!;
             // TODO: check if subscriber is still subscribed (there is enough fee for this subscriber)
             send(SendParameters{
                 to: subscriber,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
-                body: msg.toCell()
+                body: EventSignal {
+                    eventId: msg.eventId,
+                    payload: msg.payload
+                }.toCell()
             });
             // TODO: collect fee from subscriber
             i = i + 1;

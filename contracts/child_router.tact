@@ -93,14 +93,18 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: EventSignal) {
         self.requireOwner();
         let i: Int = 0;
-        while(i < self.messengerId) {
+        let value: Int = ton("0.1");
+        while(i <= self.messengerId) {
             let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
             send(SendParameters{
                 to: messengerAddress,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
-                body: msg.toCell()
+                body: EventSignal {
+                    eventId: msg.eventId,
+                    payload: msg.payload
+                }.toCell()
             });
             i = i + 1;
         }
