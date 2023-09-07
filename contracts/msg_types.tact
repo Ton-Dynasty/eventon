@@ -44,3 +44,13 @@ message CallbackAddress {
 message AddMessenger {
     protocolAddress: Address; // Protocol's address
 }
+
+
+message AddStakeFor {
+    beneficiary: Address; // Beneficiary address
+}
+
+message RemoveStake {
+    receiver: Address; // Receiver address
+    amount: Int as coins; // Amount of stake to be removed
+}
