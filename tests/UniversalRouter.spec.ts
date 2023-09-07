@@ -170,7 +170,6 @@ describe('UniversalRouter', () => {
         const messagerAddress = await childRouter.getMessengerAddress(event.address, 0n);
         let messager = blockchain.openContract(Messenger.fromAddress(messagerAddress));
         const subIdBefore = await messager.getGetsubId();
-        console.log('messagerAddress', messagerAddress);
         let advancedUser = await blockchain.treasury('advancedUser');
         advancedContract = blockchain.openContract(
             await UserDefaultCallback.fromInit(childRouterAddress, advancedUser.address, beginCell().endCell())
@@ -213,8 +212,6 @@ describe('UniversalRouter', () => {
             to: childRouterAddress,
             success: true,
         });
-        console.log('childRouterAddress', childRouterAddress);
-        console.log('universalRouter', universalRouter.address);
 
         // Test whether the child router sent the advanced register msg to the messanger contract
         expect(advancedRegisterResult.transactions).toHaveTransaction({
