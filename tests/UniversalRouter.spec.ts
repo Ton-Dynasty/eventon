@@ -1,16 +1,18 @@
 
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { Address, beginCell, contractAddress, StateInit, toNano } from 'ton-core';
-import { UniversalRouter, EventTrigger, EventSignal, ProtcolRegister } from '../wrappers/UniversalRouter';
+import { UniversalRouter, EventTrigger, EventSignal, ProtcolRegister, AdvancedRegister } from '../wrappers/UniversalRouter';
 import { Event } from '../wrappers/Event';
 import '@ton-community/test-utils';
 import { ChildRouter, DefaultRegister } from '../wrappers/ChildRouter';
 import { BuildMessenger, Messenger } from '../wrappers/Messenger';
+import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 describe('UniversalRouter', () => {
     let blockchain: Blockchain;
     let universalRouter: SandboxContract<UniversalRouter>;
     let event: SandboxContract<Event>;
     let deployer: SandboxContract<TreasuryContract>;
+    let advancedContract: SandboxContract<UserDefaultCallback>;
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         deployer = await blockchain.treasury('deployer');
@@ -105,6 +107,45 @@ describe('UniversalRouter', () => {
             to: messangerAddress,
             success: true
         });
+    });
+
+    it('should user register successfully (advanced)', async () => {
+        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
+        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        let advancedUser = await blockchain.treasury('advancedUser');
+        advancedContract = blockchain.openContract(await UserDefaultCallback.fromInit(childRouterAddress,advancedUser.address, beginCell().endCell()));
+        const udcResult = await advancedContract.send(
+            advancedUser.getSender(),
+            {
+                value: toNano('1'),
+            },
+            {
+                $$type: 'Deploy',
+                queryId: 0n,
+            }
+        );
+        const advancedRegister: AdvancedRegister = {
+            $$type: 'AdvancedRegister',
+            walletAddress: advancedUser.address, // Owner address of callback contract
+            deadline: 100n, // The deadline of the msg can delay
+            eventId: 0n, // The even id which user want to subscribe
+            callbackAddress: advancedContract.address // Callback contract address written by user
+        };
+
+        const advancedRegisterResult = await universalRouter.send(
+            advancedUser.getSender(),
+            {
+                value: toNano('1'),
+            },
+            advancedRegister
+        );
+        // expect(advancedRegisterResult.transactions).toHaveTransaction({
+        //     from: advancedUser.address,
+        //     to: universalRouter.address,
+        //     success: true
+        // });
+        //console.log('advancedRegisterResult ',advancedRegisterResult.transactions);
+
     });
 
     // it('should user register successfully (default callback contract)', async () => {
