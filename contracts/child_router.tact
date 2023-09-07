@@ -63,7 +63,7 @@ contract ChildRouter with Deployable, Ownable {
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
             to: messengerAddress,
-            value: 0, 
+            value: value, 
             mode: SendPayGasSeparately, 
             bounce: true,
             body: CallbackAddress {
