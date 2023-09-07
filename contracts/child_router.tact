@@ -42,7 +42,7 @@ contract ChildRouter with Deployable, Ownable {
         });
     }
 
-    receive(msg: DefaultRegister) {
+    receive(msg: CreateBody) {
         self.requireOwner();
         //Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
@@ -74,7 +74,7 @@ contract ChildRouter with Deployable, Ownable {
 
     }
     
-    receive(msg: AdvancedRegister) {
+    receive(msg: SubscribeBody) {
         self.requireOwner();
         // Save the callback contract address(writen by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);

@@ -5,11 +5,11 @@ import {
     EventTrigger,
     EventSignal,
     ProtcolRegister,
-    AdvancedRegister,
+    SubscribeBody,
 } from '../wrappers/UniversalRouter';
 import { Event } from '../wrappers/Event';
 import '@ton-community/test-utils';
-import { ChildRouter, DefaultRegister } from '../wrappers/ChildRouter';
+import { ChildRouter, CreateBody } from '../wrappers/ChildRouter';
 import { BuildMessenger, Messenger } from '../wrappers/Messenger';
 import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 
@@ -184,37 +184,37 @@ describe('UniversalRouter', () => {
                 queryId: 0n,
             }
         );
-        const advancedRegister: AdvancedRegister = {
-            $$type: 'AdvancedRegister',
+        const subscribeBody: SubscribeBody = {
+            $$type: 'SubscribeBody',
             walletAddress: advancedUser.address, // Owner address of callback contract
             deadline: 100n, // The deadline of the msg can delay
             eventId: 0n, // The even id which user want to subscribe
             callbackAddress: advancedContract.address, // Callback contract address written by user
         };
 
-        const advancedRegisterResult = await universalRouter.send(
+        const subscribeResult = await universalRouter.send(
             advancedUser.getSender(),
             {
                 value: toNano('5'),
             },
-            advancedRegister
+            subscribeBody
         );
         // Test whether the advanced register msg has been sent to the universal router
-        expect(advancedRegisterResult.transactions).toHaveTransaction({
+        expect(subscribeResult.transactions).toHaveTransaction({
             from: advancedUser.address,
             to: universalRouter.address,
             success: true,
         });
 
         // Test whether universalRouter sent the advanced register msg to the child router
-        expect(advancedRegisterResult.transactions).toHaveTransaction({
+        expect(subscribeResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
 
         // Test whether the child router sent the advanced register msg to the messanger contract
-        expect(advancedRegisterResult.transactions).toHaveTransaction({
+        expect(subscribeResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: messagerAddress,
             success: true,
@@ -226,8 +226,8 @@ describe('UniversalRouter', () => {
 
     it('should user register successfully (default callback contract)', async () => {
         await protocolRegsiter(); // Simply call the function to handle the registration
-        const defaultRegisterMsg: DefaultRegister = {
-            $$type: 'DefaultRegister',
+        const createBody: CreateBody = {
+            $$type: 'CreateBody',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
             deadline: 100n, // 60 seconds from now, adjust as required.
             eventId: 0n,
@@ -238,7 +238,7 @@ describe('UniversalRouter', () => {
             {
                 value: toNano('100'), // Adjust as required.
             },
-            defaultRegisterMsg
+            createBody
         );
 
         // Check if user register message has been successfully sent to the universal router.
@@ -261,7 +261,7 @@ describe('UniversalRouter', () => {
 
         // Assuming the child router will also deploy the UDC contract after receiving the message.
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
-        const udcAddress = await childRouter.getUdcAddress(deployer.address, defaultRegisterMsg.parameter);
+        const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
 
         // Check if the UDC contract has been deployed.
         expect(registerMsgResult.transactions).toHaveTransaction({
@@ -296,8 +296,8 @@ describe('UniversalRouter', () => {
         const messenger = blockchain.openContract(await Messenger.fromAddress(messengerAddress));
 
         // 2. User register
-        const defaultRegisterMsg: DefaultRegister = {
-            $$type: 'DefaultRegister',
+        const createBody: CreateBody = {
+            $$type: 'CreateBody',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
             deadline: 100n, // 60 seconds from now, adjust as required.
             eventId: 0n,
@@ -309,7 +309,7 @@ describe('UniversalRouter', () => {
             {
                 value: toNano('100'), // Adjust as required.
             },
-            defaultRegisterMsg
+            createBody
         );
         expect(registerMsgResult.transactions).toHaveTransaction({
             from: deployer.address,
@@ -317,7 +317,7 @@ describe('UniversalRouter', () => {
             success: true,
         });
         // const subscriberAddress = await messenger.getIdToSubscriber(0n);
-        const udcAddress = await childRouter.getUdcAddress(deployer.address, defaultRegisterMsg.parameter);
+        const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
         const subscriber = blockchain.openContract(await UserDefaultCallback.fromAddress(udcAddress));
 
         // 3. Trigger event

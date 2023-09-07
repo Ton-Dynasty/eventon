@@ -18,14 +18,14 @@ message BuildChildRouter {
     template: Cell; // Callback contract for subscribers
 } 
 
-message DefaultRegister {
+message CreateBody {
     walletAddress: Address; // Owner address of callback contract
     deadline: Int; // The deadline of the msg can delay
     eventId: Int; // The even id which user want to subscribe
     parameter: Cell; // Callback contract parameter
 }
 
-message AdvancedRegister {
+message SubscribeBody {
     walletAddress: Address; // Owner address of callback contract
     deadline: Int; // The deadline of the msg can delay
     eventId: Int; // The even id which user want to subscribe

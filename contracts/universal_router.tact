@@ -46,7 +46,7 @@ contract UniversalRouter with Deployable, Ownable {
     }
 
     // User Register Event
-    receive(msg: DefaultRegister) {
+    receive(msg: CreateBody) {
         // Check if this event id is registered
         if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
@@ -59,7 +59,7 @@ contract UniversalRouter with Deployable, Ownable {
             value: 0, 
             mode: SendRemainingValue, 
             bounce: true, 
-            body: DefaultRegister {
+            body: CreateBody {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
                 deadline: msg.deadline, // The deadline of the msg can delay
                 eventId: msg.eventId, // The even id which user want to subscribe
@@ -68,7 +68,7 @@ contract UniversalRouter with Deployable, Ownable {
         });
     }
     
-    receive(msg: AdvancedRegister) {
+    receive(msg: SubscribeBody) {
         // Check if this event id is registered
         if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
@@ -81,7 +81,7 @@ contract UniversalRouter with Deployable, Ownable {
             value: 0, 
             mode: SendRemainingValue, 
             bounce: true, 
-            body: AdvancedRegister {
+            body: SubscribeBody {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
                 deadline: msg.deadline, // The deadline of the msg can delay
                 eventId: msg.eventId, // The even id which user want to subscribe
