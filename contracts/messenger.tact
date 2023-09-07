@@ -5,14 +5,14 @@ import "./msg_types";
 contract Messenger with Deployable, Ownable {
     owner: Address; // Router Address
     sourceAddress: Address; // Protocal Address
-    messenerId: Int;
+    messengerId: Int;
     subscriberId: Int;
     idToSubscriber: map<Int, Address>;
 
-    init(owner: Address, sourceAddress: Address,messenerId: Int) {
+    init(owner: Address, sourceAddress: Address,messengerId: Int) {
         self.owner = owner;
         self.sourceAddress = sourceAddress;
-        self.messenerId = messenerId;
+        self.messengerId = messengerId;
         self.subscriberId = 0;
     }
 
