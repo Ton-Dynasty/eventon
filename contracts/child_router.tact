@@ -19,13 +19,16 @@ contract ChildRouter with Deployable, Ownable {
         self.requireOwner();
         //Build Messenger
         let messangerAddress: Address = self.getMessangerAddress(msg.sourceAddress, self.messengerId);
+        let init: StateInit = self.getMessangerInit(msg.sourceAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
             to: messangerAddress,
             value: value, 
             mode: SendPayGasSeparately, 
-            bounce: true
+            bounce: true,
+            code: init.code, // attaching the state init will cause the message to deploy
+            data: init.data
         });
     }
 
@@ -33,12 +36,15 @@ contract ChildRouter with Deployable, Ownable {
         self.requireOwner();
         //Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.getUdcAddress(msg.walletAddress, msg.parameter);
+        let init: StateInit = self.getUdcInit(msg.walletAddress, msg.parameter);
         let value: Int = ton("0.01");
         send(SendParameters{
             to: udcAddress,
             value: value, 
             mode: SendPayGasSeparately, 
-            bounce: true
+            bounce: true,
+            code: init.code, // attaching the state init will cause the message to deploy
+            data: init.data
         });
         // Save the udc address to the messanger contract
         let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, self.messengerId);
