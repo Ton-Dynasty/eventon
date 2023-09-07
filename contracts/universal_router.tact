@@ -54,15 +54,11 @@ contract UniversalRouter with Deployable, Ownable {
         }
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
-        // let builder: Builder = beginCell().storeAddress(protocolAddress);
-        // let stringBuilder: StringBuilder = beginStringFromBuilder(builder);
-        // stringBuilder.append("protocolAddress");
-        // dump(stringBuilder.toString());
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
             mode: SendRemainingValue, 
-            bounce: false, 
+            bounce: true, 
             body: DefaultRegister {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
                 deadline: msg.deadline, // The deadline of the msg can delay
@@ -80,18 +76,18 @@ contract UniversalRouter with Deployable, Ownable {
         }
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
-        // send(SendParameters{
-        //     to: childRouterAddress,
-        //     value: 0, 
-        //     mode: SendPayGasSeparately, 
-        //     bounce: true, 
-        //     body: AdvancedRegister {
-        //         walletAddress: msg.walletAddress, // Owner address of callback contract
-        //         deadline: msg.deadline, // The deadline of the msg can delay
-        //         eventId: msg.eventId, // The even id which user want to subscribe
-        //         callbackAddress: msg.callbackAddress // The callback contract address writed by user
-        //     }.toCell()
-        // });
+        send(SendParameters{
+            to: childRouterAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: true, 
+            body: AdvancedRegister {
+                walletAddress: msg.walletAddress, // Owner address of callback contract
+                deadline: msg.deadline, // The deadline of the msg can delay
+                eventId: msg.eventId, // The even id which user want to subscribe
+                callbackAddress: msg.callbackAddress // The callback contract address writed by user
+            }.toCell()
+        });
     }
 
     receive(msg: EventSignal) {
