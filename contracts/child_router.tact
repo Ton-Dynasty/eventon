@@ -18,8 +18,8 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.getMessangerAddress(msg.sourceAddress, self.messengerId);
-        let init: StateInit = self.getMessangerInit(msg.sourceAddress, self.messengerId);
+        let messangerAddress: Address = self.messangerAddress(msg.sourceAddress, self.messengerId);
+        let init: StateInit = self.messangerInit(msg.sourceAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
@@ -35,8 +35,8 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: DefaultRegister) {
         self.requireOwner();
         //Build Usder Default Callback contract(udc)
-        let udcAddress: Address = self.getUdcAddress(msg.walletAddress, msg.parameter);
-        let init: StateInit = self.getUdcInit(msg.walletAddress, msg.parameter);
+        let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
+        let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
         let value: Int = ton("0.01");
         send(SendParameters{
             to: udcAddress,
@@ -47,7 +47,7 @@ contract ChildRouter with Deployable, Ownable {
             data: init.data
         });
         // Save the udc address to the messanger contract
-        let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, self.messengerId);
+        let messangerAddress: Address = self.messangerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
             to: messangerAddress,
             value: 0, 
@@ -64,7 +64,7 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: AdvancedRegister) {
         self.requireOwner();
         // Save the callback contract address(writen by user) to the messanger contract
-        let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, self.messengerId);
+        let messangerAddress: Address = self.messangerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
             to: messangerAddress,
             value: 0, 
@@ -81,7 +81,7 @@ contract ChildRouter with Deployable, Ownable {
         self.requireOwner();
         let i: Int = 0;
         while(i < self.messengerId) {
-            let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, i);
+            let messangerAddress: Address = self.messangerAddress(self.sourceAddress, i);
             send(SendParameters{
                 to: messangerAddress,
                 value: 0, 
@@ -96,7 +96,7 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: AddMessenger) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.getMessangerAddress(msg.protocolAddress, self.messengerId);
+        let messangerAddress: Address = self.messangerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
@@ -109,26 +109,27 @@ contract ChildRouter with Deployable, Ownable {
     // Get Methods
 
     //get the Messanger Contract Address
-    get fun getMessangerAddress(sourceAddress: Address, messagenerId: Int): Address
+    get fun messangerAddress(sourceAddress: Address, messagenerId: Int): Address
     {
-        let childInit: StateInit = self.getMessangerInit(sourceAddress, messagenerId);
+        let childInit: StateInit = self.messangerInit(sourceAddress, messagenerId);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun getMessangerInit(sourceAddress: Address, messagenerId: Int): StateInit {
+    get fun messangerInit(sourceAddress: Address, messagenerId: Int): StateInit {
         return initOf Messenger(myAddress(), sourceAddress, messagenerId);
     }
 
     //get the User Default Callback Contract Address
-    get fun getUdcAddress(owner: Address, parameter: Cell): Address
+    get fun udcAddress(owner: Address, parameter: Cell): Address
     {
-        let childInit: StateInit = self.getUdcInit(owner, parameter);
+        let childInit: StateInit = self.udcInit(owner, parameter);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun getUdcInit(owner: Address, parameter: Cell): StateInit {
+    get fun udcInit(owner: Address, parameter: Cell): StateInit {
         return initOf UserDefaultCallback(myAddress(), owner, parameter);
     }
+    
 }

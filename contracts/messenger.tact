@@ -37,4 +37,12 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = self.subscriberId + 1;
     }
 
+
+    get fun idToSubscriber(id: Int): Address? {
+        if (id >= self.subscriberId) {
+            return null;
+        }
+        return self.idToSubscriber.get(id)!!;
+    }
+
 }
