@@ -152,7 +152,7 @@ describe('UniversalRouter', () => {
             to: childRouterAddress,
             success: true,
         });
-        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messangerAddress = await childRouter.getMessengerAddress(event.address, 0n);
         // Test whether the child router build messenger successfully
         expect(protocolRegisterResult.transactions).toHaveTransaction({
@@ -166,9 +166,9 @@ describe('UniversalRouter', () => {
         await protocolRegsiter(); // Simply call the function to handle the registration
 
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
-        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(event.address, 0n);
-        let messager = blockchain.openContract(await Messenger.fromAddress(messagerAddress));
+        let messager = blockchain.openContract(Messenger.fromAddress(messagerAddress));
         const subIdBefore = await messager.getGetsubId();
         console.log('messagerAddress', messagerAddress);
         let advancedUser = await blockchain.treasury('advancedUser');
