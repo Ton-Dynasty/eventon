@@ -47,11 +47,10 @@ contract ChildRouter with Deployable, Ownable {
         //Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
         let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
-        let value: Int = ton("0.1");
         send(SendParameters{
             to: udcAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
+            value: 0, 
+            mode: SendRemainingValue,
             bounce: true,
             body: BuildUDC {
                 owner: msg.walletAddress // Protocol's address
@@ -59,21 +58,9 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
-        // Save the udc address to the messenger contract
-        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
-        send(SendParameters{
-            to: messengerAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
-            bounce: true,
-            body: CallbackAddress {
-                callbackAddress: udcAddress
-            }.toCell()
-        });
-        
-
-    }
     
+    }
+
     receive(msg: SubscribeBody) {
         self.requireOwner();
         // Save the callback contract address(writen by user) to the messenger contract
@@ -87,7 +74,6 @@ contract ChildRouter with Deployable, Ownable {
                 callbackAddress: msg.callbackAddress
             }.toCell()
         });
-
     }
 
     receive(msg: EventSignal) {
@@ -112,11 +98,10 @@ contract ChildRouter with Deployable, Ownable {
         //Build Messenger
         let messengerAddress: Address = self.messengerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
-        let value: Int = ton("0.1");
         send(SendParameters{
             to: messengerAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
+            value: 0, 
+            mode: SendRemainingValue, 
             bounce: true
         });
     }
