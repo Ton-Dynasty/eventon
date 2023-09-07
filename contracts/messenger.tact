@@ -47,7 +47,7 @@ contract Messenger with Deployable, Ownable {
                 messengerId: self.messengerId,
                 fee: collected_fee
             }.toCell()
-        })
+        });
     }
 
     receive(msg: CallbackAddress) {

@@ -48,7 +48,7 @@ contract UniversalRouter with Deployable, Ownable {
     // User Register Event
     receive(msg: DefaultRegister) {
         // Check if this event id is registered
-        if(self.eventIdToProtocol.get(msg.eventId) != null)
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
             throw(002); // Event ID does not exist
         }
@@ -57,7 +57,7 @@ contract UniversalRouter with Deployable, Ownable {
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
+            mode: SendRemainingValue, 
             bounce: true, 
             body: DefaultRegister {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
