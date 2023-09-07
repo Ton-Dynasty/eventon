@@ -70,24 +70,24 @@ contract UniversalRouter with Deployable, Ownable {
     
     receive(msg: AdvancedRegister) {
         // Check if this event id is registered
-        if(self.eventIdToProtocol.get(msg.eventId) != null)
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
             throw(002); // Event ID does not exist
         }
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
-        send(SendParameters{
-            to: childRouterAddress,
-            value: 0, 
-            mode: SendPayGasSeparately, 
-            bounce: true, 
-            body: AdvancedRegister {
-                walletAddress: msg.walletAddress, // Owner address of callback contract
-                deadline: msg.deadline, // The deadline of the msg can delay
-                eventId: msg.eventId, // The even id which user want to subscribe
-                callbackAddress: msg.callbackAddress // The callback contract address writed by user
-            }.toCell()
-        });
+        // send(SendParameters{
+        //     to: childRouterAddress,
+        //     value: 0, 
+        //     mode: SendPayGasSeparately, 
+        //     bounce: true, 
+        //     body: AdvancedRegister {
+        //         walletAddress: msg.walletAddress, // Owner address of callback contract
+        //         deadline: msg.deadline, // The deadline of the msg can delay
+        //         eventId: msg.eventId, // The even id which user want to subscribe
+        //         callbackAddress: msg.callbackAddress // The callback contract address writed by user
+        //     }.toCell()
+        // });
     }
 
     receive(msg: EventSignal) {
@@ -147,5 +147,9 @@ contract UniversalRouter with Deployable, Ownable {
 
     get fun getMapChildRouterAddress(sourceAddress: Address): Address? {
         return self.protocolToRouter.get(sourceAddress)!!;
+    }
+
+    get fun getProtocolAddress(eventId: Int): Address {
+        return self.eventIdToProtocol.get(eventId)!!; 
     }
 }
