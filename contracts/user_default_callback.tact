@@ -12,6 +12,10 @@ contract UserDefaultCallback with Deployable, Ownable {
         self.parameter = parameter;
     }
     
+    receive(msg: BuildUDC) {
+        
+    }
+    
     receive(msg: EventSignal) {
         self.parameter.beginParse();
     }

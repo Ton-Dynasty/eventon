@@ -59,3 +59,7 @@ message CollectFee {
     messengerId: Int; // Messenger id
     fee: Int as coins; // Amount of fee from subscribers to be collected
 }
+
+message BuildUDC {
+    owner: Address; // Owner address of UDC
+}

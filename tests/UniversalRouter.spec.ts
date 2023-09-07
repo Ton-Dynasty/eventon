@@ -225,6 +225,11 @@ describe('UniversalRouter', () => {
     
     it('should user register successfully (default callback contract)', async () => {
         await protocolRegsiter(); // Simply call the function to handle the registration
+        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
+        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        const messagerAddress = await childRouter.getMessengerAddress(event.address, 0n);
+        let messager = blockchain.openContract(await Messenger.fromAddress(messagerAddress));
+        const subIdBefore = await messager.getGetsubId();
         const defaultRegisterMsg: DefaultRegister = {
             $$type: 'DefaultRegister',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
@@ -249,7 +254,6 @@ describe('UniversalRouter', () => {
 
         // 2. child router will receive, deploy user callback contract, then send a message to messenger.
         // Getting child router address
-        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
 
         // Check if the message has been successfully sent from universal router to child router.
         expect(registerMsgResult.transactions).toHaveTransaction({
@@ -257,7 +261,22 @@ describe('UniversalRouter', () => {
             to: childRouterAddress,
             success: true,
         });
+        const udcContractAddress = await childRouter.getUdcAddress(deployer.address,beginCell().endCell());
+        console.log('udcContractAddress', udcContractAddress);
+        // Check if the message has been successfully built the udc contract.
+        expect(registerMsgResult.transactions).toHaveTransaction({
+            from: childRouterAddress,
+            to: udcContractAddress,
+            success: true,
+        });
 
+        // Check if the message has been successfully sent from child router to messanger.
+        expect(registerMsgResult.transactions).toHaveTransaction({
+            from: childRouterAddress,
+            to: messagerAddress,
+            success: true,
+        });
+        
         
     });
 });

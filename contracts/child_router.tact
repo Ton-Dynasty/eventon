@@ -53,6 +53,9 @@ contract ChildRouter with Deployable, Ownable {
             value: value, 
             mode: SendPayGasSeparately, 
             bounce: true,
+            body: BuildUDC {
+                owner: msg.walletAddress // Protocol's address
+            }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
