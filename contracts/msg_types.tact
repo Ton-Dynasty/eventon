@@ -54,3 +54,8 @@ message RemoveStake {
     receiver: Address; // Receiver address
     amount: Int as coins; // Amount of stake to be removed
 }
+
+message CollectFee {
+    messengerId: Int; // Messenger id
+    fee: Int as coins; // Amount of fee from subscribers to be collected
+}

@@ -166,6 +166,9 @@ contract ChildRouter with Deployable, Ownable {
         emit(Withdrawn{amount: msg.amount, receiver: sender()}.toCell());
     }
 
+    receive(msg: CollectFee){
+        self.totalStakeAmount = self.totalStakeAmount + msg.fee;
+    }
 
     // Calculage the reward for the user
     get fun calculateReward(addr: Address): Int {
