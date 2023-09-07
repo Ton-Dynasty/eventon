@@ -132,13 +132,13 @@ contract UniversalRouter with Deployable, Ownable {
     //get the child router address
     get fun childRouterAddress(sourceAddress: Address): Address
     {
-        let childInit: StateInit = self.childRouterInit(sourceAddress);
+        let childInit: StateInit = self.getChildRouterInit(sourceAddress);
         return contractAddress(childInit);
     }
 
     // get the child router init
     get fun getChildRouterInit(sourceAddress: Address): StateInit {
-        return initOf ChildRouter(myAddress(),sourceAddress);
+        return initOf ChildRouter(myAddress(),sourceAddress,self.minimumStake);
     }
 
     get fun eventId(): Int {

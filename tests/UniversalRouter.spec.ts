@@ -107,6 +107,12 @@ describe('UniversalRouter', () => {
         });
     });
 
+    it('should deploy', async () => {
+        // the check is done inside beforeEach
+        // blockchain and universalRouter are ready to use
+    });
+
+    
     // it('should user register successfully (default callback contract)', async () => {
     //     // 1. 用户向universal router发送注册消息
     //     const defaultRegisterMsg: DefaultRegister = {
