@@ -263,7 +263,7 @@ describe('UniversalRouter', () => {
         });
 
         // Assuming the child router will also deploy the UDC contract after receiving the message.
-        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const udcAddress = await childRouter.getUdcAddress(deployer.address, defaultRegisterMsg.parameter);
 
         // Check if the UDC contract has been deployed.
@@ -285,7 +285,7 @@ describe('UniversalRouter', () => {
         });
 
         // Check if messenger has set the subscriber's callback address correctly.
-        const messenger = blockchain.openContract(await Messenger.fromAddress(messengerAddress));
+        const messenger = blockchain.openContract(Messenger.fromAddress(messengerAddress));
         const subscriberAddress = await messenger.getIdToSubscriber(0n); // Assuming subscriberId starts from 1 and increments.
         expect(subscriberAddress?.toString()).toEqual(udcAddress.toString());
     });
