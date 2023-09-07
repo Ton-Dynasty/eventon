@@ -225,7 +225,10 @@ describe('UniversalRouter', () => {
     });
 
     it('should user register successfully (default callback contract)', async () => {
-        await protocolRegsiter(); // Simply call the function to handle the registration
+        // 1. Protocol register
+        await protocolRegsiter();
+
+        // 2. User create UDC contract
         const createBody: CreateBody = {
             $$type: 'CreateBody',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
@@ -233,55 +236,77 @@ describe('UniversalRouter', () => {
             eventId: 0n,
             parameter: beginCell().endCell(), // Assuming a simple cell, adjust as required.
         };
-        const registerMsgResult = await universalRouter.send(
+        const createUdcMsgResult = await universalRouter.send(
             deployer.getSender(),
             {
                 value: toNano('100'), // Adjust as required.
             },
             createBody
         );
+        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
+        const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
 
-        // Check if user register message has been successfully sent to the universal router.
-        expect(registerMsgResult.transactions).toHaveTransaction({
+        // [V] user -> universal router
+        expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,
             success: true,
         });
-
-        // 2. child router will receive, deploy user callback contract, then send a message to messenger.
-        // Getting child router address
-        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
-
-        // Check if the message has been successfully sent from universal router to child router.
-        expect(registerMsgResult.transactions).toHaveTransaction({
+        // [V] universal router -> child router.
+        expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
-
-        // Assuming the child router will also deploy the UDC contract after receiving the message.
-        const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
+        // [V] UDC contract has been deployed.
         const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
-
-        // Check if the UDC contract has been deployed.
-        expect(registerMsgResult.transactions).toHaveTransaction({
+        expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: udcAddress,
             deploy: true,
             success: true,
         });
 
-        // 3. messenger will receive and set the relevant information.
+        // 3. User subscribe
+        const subscribeBody: SubscribeBody = {
+            $$type: 'SubscribeBody',
+            walletAddress: deployer.address, // Owner address of callback contract
+            deadline: 100n, // The deadline of the msg can delay
+            eventId: 0n, // The even id which user want to subscribe
+            callbackAddress: udcAddress, // Callback contract address written by user
+        };
+        const subscribeMsgResult = await universalRouter.send(
+            deployer.getSender(),
+            {
+                value: toNano('100'), // Adjust as required.
+            },
+            subscribeBody
+        );
+
+        // [V] user -> universal router
+        expect(subscribeMsgResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: universalRouter.address,
+            success: true,
+        });
+
+        // [V] universal router -> child router
+        expect(subscribeMsgResult.transactions).toHaveTransaction({
+            from: universalRouter.address,
+            to: childRouterAddress,
+            success: true,
+        });
+
+        // [V] child router -> messenger
         const messengerAddress = await childRouter.getMessengerAddress(event.address, 0n); // Adjust messengerId as required.
 
-        // Check if the child router has successfully sent a message to the messenger.
-        expect(registerMsgResult.transactions).toHaveTransaction({
+        expect(subscribeMsgResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: messengerAddress,
             success: true,
         });
 
-        // Check if messenger has set the subscriber's callback address correctly.
+        // [V] Check if messenger has set the subscriber's callback address correctly.
         const messenger = blockchain.openContract(Messenger.fromAddress(messengerAddress));
         const subscriberAddress = await messenger.getIdToSubscriber(0n); // Assuming subscriberId starts from 1 and increments.
         expect(subscriberAddress?.toString()).toEqual(udcAddress.toString());
@@ -316,11 +341,31 @@ describe('UniversalRouter', () => {
             to: universalRouter.address,
             success: true,
         });
-        // const subscriberAddress = await messenger.getIdToSubscriber(0n);
+
+        // 3. User subscribe
         const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
         const subscriber = blockchain.openContract(await UserDefaultCallback.fromAddress(udcAddress));
+        const subscribeBody: SubscribeBody = {
+            $$type: 'SubscribeBody',
+            walletAddress: deployer.address, // Owner address of callback contract
+            deadline: 100n, // The deadline of the msg can delay
+            eventId: 0n, // The even id which user want to subscribe
+            callbackAddress: udcAddress,
+        };
+        const subscribeMsgResult = await universalRouter.send(
+            deployer.getSender(),
+            {
+                value: toNano('100'), // Adjust as required.
+            },
+            subscribeBody
+        );
+        expect(subscribeMsgResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: universalRouter.address,
+            success: true,
+        });
 
-        // 3. Trigger event
+        // 4. Trigger event
         let preEventCount = await subscriber.getEventCount();
         const eventSignal: EventSignal = {
             $$type: 'EventSignal',
@@ -342,29 +387,32 @@ describe('UniversalRouter', () => {
             },
             event1
         );
+        // [V] event -> universal router
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
             to: universalRouter.address,
             success: true,
         });
-
+        // [V] universal router -> child router
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
+        // [V] child router -> messenger
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: messengerAddress,
             success: true,
         });
+        // [V] messenger -> udc
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: messengerAddress,
             to: udcAddress,
             success: true,
         });
         let postEventCount = await subscriber.getEventCount();
-        // 4. Check if the subscriber get the event
+        // [V] Check if the event count has been increased
         expect(postEventCount).toEqual(preEventCount + 1n);
     });
 });
