@@ -40,7 +40,6 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
-        self.messengerId = self.messengerId + 1;
     }
 
     receive(msg: DefaultRegister) {
@@ -79,8 +78,8 @@ contract ChildRouter with Deployable, Ownable {
         send(SendParameters{
             to: messengerAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
-            bounce: true,
+            mode: SendRemainingValue, 
+            bounce: false,
             body: CallbackAddress {
                 callbackAddress: msg.callbackAddress
             }.toCell()
