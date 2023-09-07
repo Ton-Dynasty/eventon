@@ -21,11 +21,10 @@ contract ChildRouter with Deployable, Ownable {
         let messengerAddress: Address = self.messengerAddress(msg.sourceAddress, self.messengerId);
         let init: StateInit = self.messengerInit(msg.sourceAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
-        let value: Int = ton("0.01");
         send(SendParameters{
             to: messengerAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
+            value: 0, 
+            mode: SendRemainingValue, 
             bounce: true,
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
@@ -109,15 +108,15 @@ contract ChildRouter with Deployable, Ownable {
     // Get Methods
 
     //get the Messenger Contract Address
-    get fun messengerAddress(sourceAddress: Address, messagenerId: Int): Address
+    get fun messengerAddress(sourceAddress: Address, messengerId: Int): Address
     {
-        let childInit: StateInit = self.messengerInit(sourceAddress, messagenerId);
+        let childInit: StateInit = self.messengerInit(sourceAddress, messengerId);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun messengerInit(sourceAddress: Address, messagenerId: Int): StateInit {
-        return initOf Messenger(myAddress(), sourceAddress, messagenerId);
+    get fun messengerInit(sourceAddress: Address, messengerId: Int): StateInit {
+        return initOf Messenger(myAddress(), sourceAddress, messengerId);
     }
 
     //get the User Default Callback Contract Address
@@ -132,4 +131,7 @@ contract ChildRouter with Deployable, Ownable {
         return initOf UserDefaultCallback(myAddress(), owner, parameter);
     }
     
+    get fun messengerId(): Int {
+        return self.messengerId;
+    }
 }
