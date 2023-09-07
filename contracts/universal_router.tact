@@ -25,8 +25,8 @@ contract UniversalRouter with Deployable, Ownable {
         //Build child router
         let childRouterAddress: Address = self.getChildRouterAddress(msg.sourceAddress);
         self.protocolToRouter.set(msg.sourceAddress, childRouterAddress);
-        let value: Int = ton("0.1");
         let init: StateInit = self.getChildRouterInit(msg.sourceAddress);
+        // TODO : Check the minimum stake is fulfilled
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
