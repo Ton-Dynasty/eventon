@@ -16,6 +16,11 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = 0;
     }
 
+    receive (msg: BuildMessenger) {
+        if (msg.sourceAddress != self.sourceAddress) {
+            throw(007);
+        }
+    }
     receive (msg: EventSignal) {
         let i: Int = 0;
         while(i < self.subscriberId) {

@@ -18,17 +18,20 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         //Build Messenger
-        let messengerAddress: Address = self.messengerAddress(msg.sourceAddress, self.messengerId);
-        let init: StateInit = self.messengerInit(msg.sourceAddress, self.messengerId);
-        self.messengerId = self.messengerId + 1;
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
+        let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
         send(SendParameters{
             to: messengerAddress,
             value: 0, 
             mode: SendRemainingValue, 
-            bounce: true,
+            bounce: false,
+            body: BuildMessenger {
+                sourceAddress: msg.sourceAddress // Protocol's address
+            }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
+        self.messengerId = self.messengerId + 1;
     }
 
     receive(msg: DefaultRegister) {

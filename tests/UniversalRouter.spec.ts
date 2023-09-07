@@ -5,7 +5,7 @@ import { UniversalRouter, EventTrigger, EventSignal, ProtcolRegister } from '../
 import { Event } from '../wrappers/Event';
 import '@ton-community/test-utils';
 import { ChildRouter, DefaultRegister } from '../wrappers/ChildRouter';
-import { Messenger } from '../wrappers/Messenger';
+import { BuildMessenger, Messenger } from '../wrappers/Messenger';
 describe('UniversalRouter', () => {
     let blockchain: Blockchain;
     let universalRouter: SandboxContract<UniversalRouter>;
@@ -98,26 +98,13 @@ describe('UniversalRouter', () => {
             success: true,
         });
         const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
-        const msgId = await childRouter.getMessengerId();
-        console.log('msgId ', msgId);
         const messangerAddress = await childRouter.getMessengerAddress(event.address, 0n);
-        const messenger = blockchain.openContract(await Messenger.fromAddress(messangerAddress));
-        console.log('messenger ', messenger.address);
-        const subId = await messenger.getGetsubId();
-        console.log('subId ', subId);
-        //console.log('protocolRegisterResult ',protocolRegisterResult.transactions);
-        // const msgId = await childRouter.getMessengerId();
-        // console.log('msgId ',msgId);
         // Test whether the child router build messenger successfully
-        // expect(protocolRegisterResult.transactions).toHaveTransaction({
-        //     from: childRouterAddress,
-        //     to: messangerAddress,
-        //     success: true
-        // });
-        console.log('childRouter_getMsgAddress ', await childRouter.getMessengerAddress(event.address, 0n));
-        console.log('universalRouterAddress ', universalRouter.address);
-        console.log('childRouterAddress ', childRouterAddress);
-        console.log('messangerAddress ', messangerAddress);
+        expect(protocolRegisterResult.transactions).toHaveTransaction({
+            from: childRouterAddress,
+            to: messangerAddress,
+            success: true
+        });
     });
 
     // it('should user register successfully (default callback contract)', async () => {
