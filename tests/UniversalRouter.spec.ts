@@ -38,7 +38,7 @@ describe('UniversalRouter', () => {
         // blockchain and universalRouter are ready to use
     });
 
-    it('should send EvnetTrigger', async () => {
+    it('should protocol register successfully', async () => {
         const eventSignal: EventSignal = {
             $$type: 'EventSignal',
             eventId: 1n,
@@ -71,6 +71,7 @@ describe('UniversalRouter', () => {
             template: beginCell().endCell(),
         }
         const eventIdBefore = await universalRouter.getGetEventId();
+        // Ptotocol send regiter msg to universal router
         const protocolRegisterResult = await universalRouter.send(
             deployer.getSender(),
             {
@@ -79,14 +80,15 @@ describe('UniversalRouter', () => {
             protocolRegister
         );
         const eventIdAfter = await universalRouter.getGetEventId();
-        // Test whether the protocol register successfully
+        console.log(protocolRegisterResult, protocolRegisterResult);
+        // Test whether prorocol send register msg to universal router successfully
         expect(protocolRegisterResult.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,
             success: true
         });
         expect(eventIdBefore).toEqual(eventIdAfter - 1n);
-        
+        // Test wheteher the universal router build the child router successfully
         const childRouterAddress = await universalRouter.getGetChildRouterAddress(event.address);
         expect(protocolRegisterResult.transactions).toHaveTransaction({
             from: universalRouter.address,
