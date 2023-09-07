@@ -46,12 +46,19 @@ contract UniversalRouter with Deployable, Ownable {
     // User Register Event
     receive(msg: DefaultRegister) {
         // Check if this event id is registered
-        if(self.eventIdToProtocol.get(msg.eventId) != null)
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
             throw(002); // Event ID does not exist
         }
+        dump("DefaultRegister");
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
+        dump("DefaultRegister");
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
+        dump("DefaultRegister");
+        let builder: Builder = beginCell().storeAddress(protocolAddress);
+        let stringBuilder: StringBuilder = beginStringFromBuilder(builder);
+        stringBuilder.append("protocolAddress");
+        dump(stringBuilder.toString());
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
