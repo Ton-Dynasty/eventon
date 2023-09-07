@@ -239,7 +239,7 @@ describe('UniversalRouter', () => {
         const registerMsgResult = await universalRouter.send(
             deployer.getSender(),
             {
-                value: toNano('5'), // Adjust as required.
+                value: toNano('100'), // Adjust as required.
             },
             defaultRegisterMsg
         );
@@ -288,5 +288,86 @@ describe('UniversalRouter', () => {
         const messenger = blockchain.openContract(await Messenger.fromAddress(messengerAddress));
         const subscriberAddress = await messenger.getIdToSubscriber(0n); // Assuming subscriberId starts from 1 and increments.
         expect(subscriberAddress?.toString()).toEqual(udcAddress.toString());
+    });
+
+    it('should trigger event and subscriber get the event', async () => {
+        // 1. Protocol register
+        await protocolRegsiter(); // Simply call the function to handle the registration
+        const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
+        const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
+        const messengerAddress = await childRouter.getMessengerAddress(event.address, 0n);
+        const messenger = blockchain.openContract(await Messenger.fromAddress(messengerAddress));
+
+        // 2. User register
+        const defaultRegisterMsg: DefaultRegister = {
+            $$type: 'DefaultRegister',
+            walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
+            deadline: 100n, // 60 seconds from now, adjust as required.
+            eventId: 0n,
+            parameter: beginCell().endCell(), // Assuming a simple cell, adjust as required.
+        };
+
+        const registerMsgResult = await universalRouter.send(
+            deployer.getSender(),
+            {
+                value: toNano('100'), // Adjust as required.
+            },
+            defaultRegisterMsg
+        );
+        expect(registerMsgResult.transactions).toHaveTransaction({
+            from: deployer.address,
+            to: universalRouter.address,
+            success: true,
+        });
+        // const subscriberAddress = await messenger.getIdToSubscriber(0n);
+        const udcAddress = await childRouter.getUdcAddress(deployer.address, defaultRegisterMsg.parameter);
+        const subscriber = blockchain.openContract(await UserDefaultCallback.fromAddress(udcAddress));
+
+        // 3. Trigger event
+        let preEventCount = await subscriber.getEventCount();
+        const eventSignal: EventSignal = {
+            $$type: 'EventSignal',
+            eventId: 0n, // Setting the eventId to 0 as per your request
+            payload: beginCell().endCell(),
+        };
+
+        const event1: EventTrigger = {
+            $$type: 'EventTrigger',
+            value: toNano('0'),
+            address: event.address,
+            info: eventSignal,
+        };
+
+        let eventTrigggerResult = await event.send(
+            deployer.getSender(),
+            {
+                value: toNano('10'),
+            },
+            event1
+        );
+        expect(eventTrigggerResult.transactions).toHaveTransaction({
+            from: event.address,
+            to: universalRouter.address,
+            success: true,
+        });
+
+        expect(eventTrigggerResult.transactions).toHaveTransaction({
+            from: universalRouter.address,
+            to: childRouterAddress,
+            success: true,
+        });
+        expect(eventTrigggerResult.transactions).toHaveTransaction({
+            from: childRouterAddress,
+            to: messengerAddress,
+            success: true,
+        });
+        expect(eventTrigggerResult.transactions).toHaveTransaction({
+            from: messengerAddress,
+            to: udcAddress,
+            success: true,
+        });
+        let postEventCount = await subscriber.getEventCount();
+        // 4. Check if the subscriber get the event
+        expect(postEventCount).toEqual(preEventCount + 1n);
     });
 });

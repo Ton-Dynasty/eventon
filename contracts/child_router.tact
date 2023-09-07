@@ -47,7 +47,7 @@ contract ChildRouter with Deployable, Ownable {
         //Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
         let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
-        let value: Int = ton("0.01");
+        let value: Int = ton("0.1");
         send(SendParameters{
             to: udcAddress,
             value: value, 
@@ -93,11 +93,12 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: EventSignal) {
         self.requireOwner();
         let i: Int = 0;
-        while(i < self.messengerId) {
+        while(i <= self.messengerId) {
             let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
+            let value: Int = ton("0.1");
             send(SendParameters{
                 to: messengerAddress,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
                 body: msg.toCell()
@@ -111,7 +112,7 @@ contract ChildRouter with Deployable, Ownable {
         //Build Messenger
         let messengerAddress: Address = self.messengerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
-        let value: Int = ton("0.01");
+        let value: Int = ton("0.1");
         send(SendParameters{
             to: messengerAddress,
             value: value, 

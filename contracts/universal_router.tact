@@ -101,7 +101,7 @@ contract UniversalRouter with Deployable, Ownable {
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
+            mode: SendRemainingValue, 
             bounce: false, 
             body: EventSignal {
                 eventId: msg.eventId, // Protocol-defined event identifier to allow the callback contract to handle based on the ID.

@@ -28,9 +28,10 @@ contract Messenger with Deployable, Ownable {
         while(i < self.subscriberId) {
             let subscriber: Address = self.idToSubscriber.get(i)!!;
             // TODO: check if subscriber is still subscribed (there is enough fee for this subscriber)
+            let value: Int = ton("0.1");
             send(SendParameters{
                 to: subscriber,
-                value: 0, 
+                value: value, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
                 body: msg.toCell()
