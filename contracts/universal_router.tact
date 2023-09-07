@@ -25,10 +25,10 @@ contract UniversalRouter with Deployable, Ownable {
         self.eventIdToProtocol.set(self.eventCount, msg.sourceAddress);
 
         //Build child router
-        let childRouterAddress: Address = self.getChildRouterAddress(msg.sourceAddress);
+        let childRouterAddress: Address = self.childRouterAddress(msg.sourceAddress);
         self.protocolToRouter.set(msg.sourceAddress, childRouterAddress);
+        let value: Int = ton("0.1");
         let init: StateInit = self.getChildRouterInit(msg.sourceAddress);
-        // TODO : Check the minimum stake is fulfilled
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
@@ -130,18 +130,18 @@ contract UniversalRouter with Deployable, Ownable {
     // Get Methods
 
     //get the child router address
-    get fun getChildRouterAddress(sourceAddress: Address): Address
+    get fun childRouterAddress(sourceAddress: Address): Address
     {
-        let childInit: StateInit = self.getChildRouterInit(sourceAddress);
+        let childInit: StateInit = self.childRouterInit(sourceAddress);
         return contractAddress(childInit);
     }
 
     // get the child router init
     get fun getChildRouterInit(sourceAddress: Address): StateInit {
-        return initOf ChildRouter(myAddress(),sourceAddress,self.minimumStake);
+        return initOf ChildRouter(myAddress(),sourceAddress);
     }
 
-    get fun getEventId(): Int {
+    get fun eventId(): Int {
         return self.eventCount;
     }
 

@@ -27,25 +27,27 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.getMessangerAddress(msg.sourceAddress, self.messengerId);
-        let init: StateInit = self.getMessangerInit(msg.sourceAddress, self.messengerId);
-        self.messengerId = self.messengerId + 1;
-        let value: Int = ton("0.01");
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
+        let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
         send(SendParameters{
-            to: messangerAddress,
-            value: value, 
-            mode: SendPayGasSeparately, 
-            bounce: true,
+            to: messengerAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: false,
+            body: BuildMessenger {
+                sourceAddress: msg.sourceAddress // Protocol's address
+            }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
+        self.messengerId = self.messengerId + 1;
     }
 
     receive(msg: DefaultRegister) {
         self.requireOwner();
         //Build Usder Default Callback contract(udc)
-        let udcAddress: Address = self.getUdcAddress(msg.walletAddress, msg.parameter);
-        let init: StateInit = self.getUdcInit(msg.walletAddress, msg.parameter);
+        let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
+        let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
         let value: Int = ton("0.01");
         send(SendParameters{
             to: udcAddress,
@@ -55,10 +57,10 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
-        // Save the udc address to the messanger contract
-        let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, self.messengerId);
+        // Save the udc address to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: 0, 
             mode: SendPayGasSeparately, 
             bounce: true,
@@ -72,10 +74,10 @@ contract ChildRouter with Deployable, Ownable {
     
     receive(msg: AdvancedRegister) {
         self.requireOwner();
-        // Save the callback contract address(writen by user) to the messanger contract
-        let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, self.messengerId);
+        // Save the callback contract address(writen by user) to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: 0, 
             mode: SendPayGasSeparately, 
             bounce: true,
@@ -90,9 +92,9 @@ contract ChildRouter with Deployable, Ownable {
         self.requireOwner();
         let i: Int = 0;
         while(i < self.messengerId) {
-            let messangerAddress: Address = self.getMessangerAddress(self.sourceAddress, i);
+            let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
             send(SendParameters{
-                to: messangerAddress,
+                to: messengerAddress,
                 value: 0, 
                 mode: SendPayGasSeparately, 
                 bounce: true,
@@ -105,11 +107,11 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: AddMessenger) {
         self.requireOwner();
         //Build Messenger
-        let messangerAddress: Address = self.getMessangerAddress(msg.protocolAddress, self.messengerId);
+        let messengerAddress: Address = self.messengerAddress(msg.protocolAddress, self.messengerId);
         self.messengerId = self.messengerId + 1;
         let value: Int = ton("0.01");
         send(SendParameters{
-            to: messangerAddress,
+            to: messengerAddress,
             value: value, 
             mode: SendPayGasSeparately, 
             bounce: true
@@ -173,27 +175,31 @@ contract ChildRouter with Deployable, Ownable {
         return (self.stakeShares.get(addr)!! * self.totalStakeAmount) / self.totalShares;
     }
 
-    //get the Messanger Contract Address
-    get fun getMessangerAddress(sourceAddress: Address, messagenerId: Int): Address
+    //get the Messenger Contract Address
+    get fun messengerAddress(sourceAddress: Address, messengerId: Int): Address
     {
-        let childInit: StateInit = self.getMessangerInit(sourceAddress, messagenerId);
+        let childInit: StateInit = self.messengerInit(sourceAddress, messengerId);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun getMessangerInit(sourceAddress: Address, messagenerId: Int): StateInit {
-        return initOf Messenger(myAddress(), sourceAddress, messagenerId);
+    get fun messengerInit(sourceAddress: Address, messengerId: Int): StateInit {
+        return initOf Messenger(myAddress(), sourceAddress, messengerId);
     }
 
     //get the User Default Callback Contract Address
-    get fun getUdcAddress(owner: Address, parameter: Cell): Address
+    get fun udcAddress(owner: Address, parameter: Cell): Address
     {
-        let childInit: StateInit = self.getUdcInit(owner, parameter);
+        let childInit: StateInit = self.udcInit(owner, parameter);
         return contractAddress(childInit);
     }
 
     // get the User Default Callback Contract init
-    get fun getUdcInit(owner: Address, parameter: Cell): StateInit {
+    get fun udcInit(owner: Address, parameter: Cell): StateInit {
         return initOf UserDefaultCallback(myAddress(), owner, parameter);
+    }
+    
+    get fun messengerId(): Int {
+        return self.messengerId;
     }
 }

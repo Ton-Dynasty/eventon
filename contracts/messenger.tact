@@ -5,17 +5,22 @@ import "./msg_types";
 contract Messenger with Deployable, Ownable {
     owner: Address; // Router Address
     sourceAddress: Address; // Protocal Address
-    messagenerId: Int;
+    messengerId: Int;
     subscriberId: Int;
     idToSubscriber: map<Int, Address>;
 
-    init(owner: Address, sourceAddress: Address,messagenerId: Int) {
+    init(owner: Address, sourceAddress: Address,messengerId: Int) {
         self.owner = owner;
         self.sourceAddress = sourceAddress;
-        self.messagenerId = messagenerId;
+        self.messengerId = messengerId;
         self.subscriberId = 0;
     }
 
+    receive (msg: BuildMessenger) {
+        if (msg.sourceAddress != self.sourceAddress) {
+            throw(007);
+        }
+    }
     receive (msg: EventSignal) {
         let i: Int = 0;
         while(i < self.subscriberId) {
@@ -37,4 +42,15 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = self.subscriberId + 1;
     }
 
+
+    get fun idToSubscriber(id: Int): Address? {
+        if (id >= self.subscriberId) {
+            return null;
+        }
+        return self.idToSubscriber.get(id)!!;
+    }
+
+    get fun getsubId(): Int {
+        return self.subscriberId;
+    }
 }
