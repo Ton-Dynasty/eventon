@@ -140,18 +140,19 @@ describe('UniversalRouter', () => {
     });
 
     it('should user register successfully (default callback contract)', async () => {
+        await protocolRegiter();
         // 1. 用户向universal router发送注册消息
         const defaultRegisterMsg: DefaultRegister = {
             $$type: 'DefaultRegister',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
-            deadline: BigInt(Date.now() + 60000), // 60 seconds from now, adjust as required.
-            eventId: 1n,
+            deadline: 100n, // 60 seconds from now, adjust as required.
+            eventId: 0n,
             parameter: beginCell().endCell(), // Assuming a simple cell, adjust as required.
         };
         const registerMsgResult = await universalRouter.send(
             deployer.getSender(),
             {
-                value: toNano('0.01'), // Adjust as required.
+                value: toNano('1'),
             },
             defaultRegisterMsg
         );
