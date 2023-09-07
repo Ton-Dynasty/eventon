@@ -359,7 +359,7 @@ describe('UniversalRouter', () => {
             success: true,
         });
 
-        userDcontact = blockchain.openContract(await UserDefaultCallback.fromAddress(udcAddress)!);
+        userDcontact = blockchain.openContract(await UserDefaultCallback.fromAddress(udcAddress));
         const eventReceiveCountAfter = await userDcontact.getEventReceiveCount();
         expect(eventReceiveCountBefore + 1n).toEqual(eventReceiveCountAfter);
     });
