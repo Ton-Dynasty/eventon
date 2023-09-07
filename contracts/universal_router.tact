@@ -77,7 +77,7 @@ contract UniversalRouter with Deployable, Ownable {
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
-            mode: SendPayGasSeparately, 
+            mode: SendRemainingValue, 
             bounce: true, 
             body: AdvancedRegister {
                 walletAddress: msg.walletAddress, // Owner address of callback contract
@@ -100,7 +100,7 @@ contract UniversalRouter with Deployable, Ownable {
             to: childRouterAddress,
             value: 0, 
             mode: SendPayGasSeparately, 
-            bounce: true, 
+            bounce: false, 
             body: EventSignal {
                 eventId: msg.eventId, // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
                 payload: msg.payload // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
