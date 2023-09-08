@@ -63,3 +63,15 @@ message CollectFee {
 message BuildUDC {
     owner: Address; // Owner address of UDC
 }
+
+message ExtMessage {
+    seqno: Int as uint32; // Sequence number of the event
+    valid_until: Int as uint32; // deadline of the message
+    signature: Slice as bytes64; // Signature of the above all fields
+    message_parameters: SendParameters; // NOTICE: Message payload should be in message parameters.
+}
+
+message OffchainEventSignal {
+    eventId: Int as uint8; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
+    payload: Cell; // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
+}
