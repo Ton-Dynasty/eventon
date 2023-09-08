@@ -87,3 +87,8 @@ message OffchainEventSignal {
     eventId: Int as uint8; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
     payload: Cell; // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
 }
+
+message SetMessenger {
+    messenger: Address; // Messenger address
+    eventId: Int; // Event id
+}
