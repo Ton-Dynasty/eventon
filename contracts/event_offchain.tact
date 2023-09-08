@@ -56,9 +56,13 @@ contract OffchainEvent with Deployable, Alertable {
         dump("After accept message");
         // TODO: should parse message_parameters into OffchainEventSignal
         self.seqno = self.seqno + 1;
-        // self.sendAlert(EventSignal{
-        //     eventId: msg.eventId,
-        //     payload: msg.payload
-        // });
+        let body: Cell = msg.message_parameters.body!!;
+        let parser: Slice = body.beginParse();
+        let eventId: Int = parser.loadUint(8);
+        let payload: Cell = parser.loadRef();
+        self.sendAlert(EventSignal{
+            eventId: eventId,
+            payload: payload
+        });
     }
 }
