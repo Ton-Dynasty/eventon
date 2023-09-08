@@ -4,29 +4,43 @@ import "./msg_types";
 import "./event_types";
 import "./user_default_callback";
 import "./messenger";
+
 contract ChildRouter with Deployable, Ownable {
     owner: Address; // Universal Address
-    sourceAddress: Address;
+    sourceAddress: Address; // Protocol's address
     messengerId: Int;
     minimumStake: Int as uint256;
     stakes: map<Address, Int>;
     stakeShares: map<Address,Int as uint256>;
     totalStakeAmount: Int as coins;
+    maxUserStakeAmount: Int as coins; // The max total users' stake amount
     totalShares: Int as uint256;
     //idToMessenger: map<Int, Address>; // Do we need this?
 
-    init(owner: Address,sourceAddress: Address, minimumStake: Int) {
+    init(owner: Address, sourceAddress: Address, minimumStake: Int) {
         self.owner = owner;
         self.sourceAddress = sourceAddress;
         self.messengerId = 0;
         self.minimumStake = minimumStake;
         self.totalShares = 0;
         self.totalStakeAmount = 0;
+        self.maxUserStakeAmount = 0;
     }
 
     receive(msg: BuildChildRouter) {
         self.requireOwner();
-        //Build Messenger
+        let ctx: Context = context();
+
+        // Check if the sender has larger value than minimum stake
+        require(ctx.value > self.minimumStake, "Stake must be greater than minimum stake");
+
+        // Set the max user stake amount
+        self.maxUserStakeAmount = msg.maxUserStakeAmount;
+
+        // Update the total shares and the protocol's shares
+        self.stakes.set(self.sourceAddress, ctx.value);
+        
+        // Build Messenger
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
         send(SendParameters{
@@ -44,7 +58,7 @@ contract ChildRouter with Deployable, Ownable {
 
     receive(msg: CreateBody) {
         self.requireOwner();
-        //Build Usder Default Callback contract(udc)
+        // Build Usder Default Callback contract(udc)
         let udcAddress: Address = self.udcAddress(msg.walletAddress, msg.parameter);
         let init: StateInit = self.udcInit(msg.walletAddress, msg.parameter);
         send(SendParameters{
@@ -108,8 +122,18 @@ contract ChildRouter with Deployable, Ownable {
 
     receive(msg: AddStakeFor){
         let ctx: Context = context();
+        // Check if the sender has larger value than minimum stake
         require(ctx.value > self.minimumStake, "Stake must be greater than minimum stake");
 
+        // Check all users' stake amount not exceed the max user stake amount
+        let protocolStakeAmount: Int = self.stakes.get(self.sourceAddress)!!;
+        let userStakeTotalAmount: Int = self.totalStakeAmount - protocolStakeAmount;
+
+        // If the sender is not the protocol, then check the max total user stake amount
+        if (msg.beneficiary != self.sourceAddress) {
+            userStakeTotalAmount = userStakeTotalAmount + ctx.value;
+            require(userStakeTotalAmount <= self.maxUserStakeAmount, "User stake amount exceeds the max user stake amount");
+        } 
 
         // Calculate the shares to be added
         // If there are no total shares, then the shares to be minted is equal to the amount
