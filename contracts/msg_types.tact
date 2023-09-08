@@ -32,6 +32,17 @@ message SubscribeBody {
     callbackAddress: Address; // Callback contract address written by user
 }
 
+message UnSubscribeBody {
+    senderAddress: Address; // Owner address of callback contract
+    eventId: Int; // The even id which user want to subscribe
+    callbackAddress: Address; // Callback contract address written by user
+}
+
+message DeleteSubscriber {
+    universalAddress: Address; // universalAddress
+    callbackAddress: Address; // Callback contract address written by user
+    eventId: Int; // The even id which user want to Unsubscribe
+}
 message ProtcolRegister {
     sourceAddress: Address; // Protocol's address
     template: Cell; // Callback contract for subscribers
@@ -62,4 +73,25 @@ message CollectFee {
 
 message BuildUDC {
     owner: Address; // Owner address of UDC
+}
+
+message DeleteSubscriberSuccess {
+    eventId: Int; // Protocol Id
+}
+
+message DestroyMessenger {
+    senderAddress: Address; // Owner address of callback contract
+    eventId: Int; // The even id which user want to subscribe
+    callbackAddress: Address; // Callback contract address written by user
+}
+message UnSubscribeBody {
+    senderAddress: Address; // Owner address of callback contract
+    eventId: Int; // The even id which user want to subscribe
+    callbackAddress: Address; // Callback contract address written by user
+}
+
+message DeleteSubscriber {
+    universalAddress: Address; // universalAddress
+    callbackAddress: Address; // Callback contract address written by user
+    eventId: Int; // The even id which user want to Unsubscribe
 }

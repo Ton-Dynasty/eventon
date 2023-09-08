@@ -87,7 +87,23 @@ contract ChildRouter with Deployable, Ownable {
                 callbackAddress: msg.callbackAddress
             }.toCell()
         });
+    }
 
+    receive(msg: UnSubscribeBody) {
+        self.requireOwner();
+        // Save the callback contract address(writen by user) to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
+        send(SendParameters{
+            to: messengerAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: false,
+            body: DeleteSubscriber {
+                universalAddress: self.owner,
+                callbackAddress: msg.callbackAddress,
+                eventId: msg.eventId
+            }.toCell()
+        });
     }
 
     receive(msg: EventSignal) {

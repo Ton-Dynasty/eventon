@@ -9,6 +9,8 @@ contract UniversalRouter with Deployable, Ownable {
     protocolToRouter: map<Address, Address>; // Protocol address -> Child Router address
     eventIdToProtocol: map<Int, Address>; // Event ID -> Protocol address
     minimumStake: Int; // Minimum stake for each protocol
+    eventSubCount: map<Int, Int>; // Event ID (Protocol) -> number of subscribers in this protocol
+
     init(owner: Address) {
         self.owner = owner;
         self.eventCount=0;
@@ -88,6 +90,59 @@ contract UniversalRouter with Deployable, Ownable {
                 callbackAddress: msg.callbackAddress // The callback contract address writed by user
             }.toCell()
         });
+        let count: Int? = self.eventSubCount(msg.eventId); // Get the number of subscribers in this protocol
+        if (count == null) {
+            self.eventSubCount.set(msg.eventId, 1);
+        } else {
+            self.eventSubCount.set(msg.eventId, count!! + 1);
+        }
+    }
+
+    receive (msg: UnSubscribeBody) {
+        let cxt: Context = context();
+        let msgSender: Address = cxt.sender;
+         // Check if this event id is registered
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
+        {
+            throw(002); // Event ID does not exist
+        }
+        let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
+        let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
+        send(SendParameters{
+            to: childRouterAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: true, 
+            body: UnSubscribeBody {
+                senderAddress: msgSender, // Owner address of callback contract
+                eventId: msg.eventId, // The even id which user want to subscribe
+                callbackAddress: msg.callbackAddress // The callback contract address writed by user
+            }.toCell()
+        });
+    }
+
+    receive(msg: DeleteSubscriberSuccess) {
+        let count: Int? = self.eventSubCount(msg.eventId);
+        self.eventSubCount.set(msg.eventId, count!! - 1);
+        if (count!! - 1 == 0) {
+            if(self.eventIdToProtocol.get(msg.eventId) == null)
+            {
+                throw(002); // Event ID does not exist
+            }
+            let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
+            let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
+            send(SendParameters{
+                to: childRouterAddress,
+                value: 0, 
+                mode: SendRemainingValue, 
+                bounce: true, 
+                body: DestroyMessenger {
+                    senderAddress: msgSender, // Owner address of callback contract
+                    eventId: msg.eventId, // The even id which user want to subscribe
+                    callbackAddress: msg.callbackAddress // The callback contract address writed by user
+                }.toCell()
+            });
+        }
     }
 
     receive(msg: EventSignal) {
@@ -151,5 +206,9 @@ contract UniversalRouter with Deployable, Ownable {
 
     get fun getProtocolAddress(eventId: Int): Address {
         return self.eventIdToProtocol.get(eventId)!!; 
+    }
+
+    get fun eventSubCount(eventId: Int): Int? {
+        return self.eventSubCount.get(eventId); 
     }
 }
