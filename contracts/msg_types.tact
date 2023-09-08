@@ -37,8 +37,19 @@ message ProtcolRegister {
     template: Cell; // Callback contract for subscribers
 }
 
-message CallbackAddress {
+message CreateMsgSubscriber {
+    walletAddress: Address; // Owner address of callback contract
     callbackAddress: Address; // UDC address
+}
+
+message DeleteSubscriber {
+    walletAddress: Address; // Owner address of callback contract
+    callbackAddress: Address; // UDC address
+    eventId: Int; // The even id which user want to Unsubscribe
+}
+
+message DestroyMessenger {
+    messengerId: Int; 
 }
 
 message AddMessenger {

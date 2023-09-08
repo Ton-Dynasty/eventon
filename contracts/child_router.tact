@@ -13,7 +13,7 @@ contract ChildRouter with Deployable, Ownable {
     stakeShares: map<Address,Int as uint256>;
     totalStakeAmount: Int as coins;
     totalShares: Int as uint256;
-    //idToMessenger: map<Int, Address>; // Do we need this?
+    messengerState: map<Int, Int>; 
 
     init(owner: Address,sourceAddress: Address, minimumStake: Int) {
         self.owner = owner;
@@ -29,6 +29,7 @@ contract ChildRouter with Deployable, Ownable {
         //Build Messenger
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
+        self.messengerState.set(self.messengerId,1);
         send(SendParameters{
             to: messengerAddress,
             value: 0, 
@@ -70,25 +71,50 @@ contract ChildRouter with Deployable, Ownable {
             value: 0, 
             mode: SendRemainingValue, 
             bounce: false,
-            body: CallbackAddress {
+            body: CreateMsgSubscriber {
+                walletAddress: msg.walletAddress, 
                 callbackAddress: msg.callbackAddress
             }.toCell()
         });
+    }
+
+    receive(msg: DeleteSubscriber) {
+        self.requireOwner();
+        // Save the callback contract address(writen by user) to the messenger contract
+        let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
+        send(SendParameters{
+            to: messengerAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: false,
+            body: DeleteSubscriber {
+                walletAddress: msg.walletAddress, 
+                callbackAddress: msg.callbackAddress,
+                eventId: msg.eventId
+            }.toCell()
+        });
+    }
+
+    receive(msg: DestroyMessenger) {
+        self.messengerState.set(msg.messengerId,0);
     }
 
     receive(msg: EventSignal) {
         self.requireOwner();
         let i: Int = 0;
         while(i <= self.messengerId) {
-            let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
-            let value: Int = ton("0.1");
-            send(SendParameters{
-                to: messengerAddress,
-                value: value, 
-                mode: SendPayGasSeparately, 
-                bounce: true,
-                body: msg.toCell()
-            });
+            if(self.messengerState.get(i) == 1)
+            {
+                let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
+                let value: Int = ton("0.1");
+                send(SendParameters{
+                    to: messengerAddress,
+                    value: value, 
+                    mode: SendPayGasSeparately, 
+                    bounce: true,
+                    body: msg.toCell()
+                });
+            }
             i = i + 1;
         }
     }
@@ -192,5 +218,8 @@ contract ChildRouter with Deployable, Ownable {
     
     get fun messengerId(): Int {
         return self.messengerId;
+    }
+    get fun getMessengerState(messengerId: Int): Int {
+        return self.messengerState.get(messengerId)!!;
     }
 }
