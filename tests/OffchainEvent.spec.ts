@@ -23,7 +23,7 @@ describe('OffchainEvent', () => {
         const deployResult = await offchainEventContract.send(
             deployer.getSender(),
             {
-                value: toNano('0.8'),
+                value: toNano('2'),
             },
             {
                 $$type: 'Deploy',
