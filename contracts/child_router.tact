@@ -96,7 +96,7 @@ contract ChildRouter with Deployable, Ownable {
     }
 
     receive(msg: DestroyMessenger) {
-        self.messengerState.set(msg.messengerId,0);
+        self.messengerState.set(msg.messengerId, null);
     }
 
     receive(msg: EventSignal) {
@@ -219,7 +219,7 @@ contract ChildRouter with Deployable, Ownable {
     get fun messengerId(): Int {
         return self.messengerId;
     }
-    get fun getMessengerState(messengerId: Int): Int {
-        return self.messengerState.get(messengerId)!!;
+    get fun getMessengerState(messengerId: Int): Int? {
+        return self.messengerState.get(messengerId);
     }
 }

@@ -557,7 +557,7 @@ describe('UniversalRouter', () => {
 
         const messengerState = await childRouter.getGetMessengerState(0n);
         // Test the messenger state is 0, so that child router can't send event msg to the messenger
-        expect(messengerState).toEqual(0n);
+        expect(messengerState).toEqual(null);
         // const subCountAfter = await messager.getGetSubCount();
         // console.log(subCountBefore, subCountAfter);
         //expect(subCountBefore).toEqual(subCountAfter - 1n);
