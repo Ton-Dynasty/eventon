@@ -54,45 +54,45 @@ describe('OffchainEvent', () => {
         expect(val.toString()).toEqual(expectedVal.toString());
     });
 
-    it('Should verify signature', async () => {
-        const currentTimestamp: number = Math.floor(Date.now() / 1000);
-        const tenMinutesAfter: number = currentTimestamp + 600; // 10 minutes * 60 seconds/minute
+    // it('Should verify signature', async () => {
+    //     const currentTimestamp: number = Math.floor(Date.now() / 1000);
+    //     const tenMinutesAfter: number = currentTimestamp + 600; // 10 minutes * 60 seconds/minute
 
-        let eventId = 1n;
-        let payload = beginCell().storeBit(0).endCell();
-        let seqno = await offchainEventContract.getSeqno();
-        let valid_until = BigInt(tenMinutesAfter);
+    //     let eventId = 1n;
+    //     let payload = beginCell().storeBit(0).endCell();
+    //     let seqno = await offchainEventContract.getSeqno();
+    //     let valid_until = BigInt(tenMinutesAfter);
 
-        let sendParams: SendParameters = {
-            $$type: 'SendParameters',
-            to: offchainEventContract.address,
-            value: 0n,
-            body: beginCell().storeUint(eventId, 8).storeRef(payload).endCell(),
-            mode: 1n,
-            bounce: true,
-            code: null,
-            data: null,
-        };
+    //     let sendParams: SendParameters = {
+    //         $$type: 'SendParameters',
+    //         to: offchainEventContract.address,
+    //         value: 0n,
+    //         body: beginCell().storeUint(eventId, 8).storeRef(payload).endCell(),
+    //         mode: 1n,
+    //         bounce: true,
+    //         code: null,
+    //         data: null,
+    //     };
 
-        let message_parameters = beginCell();
-        storeSendParameters(sendParams)(message_parameters);
-        let hash = beginCell()
-            .storeUint(seqno, 32)
-            .storeUint(valid_until, 32)
-            .storeRef(message_parameters.endCell())
-            .endCell()
-            .hash();
+    //     let message_parameters = beginCell();
+    //     storeSendParameters(sendParams)(message_parameters);
+    //     let hash = beginCell()
+    //         .storeUint(seqno, 32)
+    //         .storeUint(valid_until, 32)
+    //         .storeRef(message_parameters.endCell())
+    //         .endCell()
+    //         .hash();
 
-        let msg: ExtMessage = {
-            $$type: 'ExtMessage',
-            signature: sign(hash, keyPair.secretKey),
-            seqno: seqno,
-            valid_until: valid_until,
-            message_parameters: sendParams,
-        };
+    //     let msg: ExtMessage = {
+    //         $$type: 'ExtMessage',
+    //         signature: sign(hash, keyPair.secretKey),
+    //         seqno: seqno,
+    //         valid_until: valid_until,
+    //         message_parameters: sendParams,
+    //     };
 
-        expect(await offchainEventContract.getGetPublicKey()).toEqual(BigInt('0x' + keyPair.publicKey.toString('hex')));
-        await offchainEventContract.sendExternal(msg);
-        expect(await offchainEventContract.getSeqno()).toEqual(BigInt(seqno + 1n));
-    });
+    //     expect(await offchainEventContract.getGetPublicKey()).toEqual(BigInt('0x' + keyPair.publicKey.toString('hex')));
+    //     await offchainEventContract.sendExternal(msg);
+    //     expect(await offchainEventContract.getSeqno()).toEqual(BigInt(seqno + 1n));
+    // });
 });

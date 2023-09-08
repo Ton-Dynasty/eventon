@@ -39,7 +39,10 @@ contract Messenger with Deployable, Ownable {
                     value: value, 
                     mode: SendPayGasSeparately, 
                     bounce: true,
-                    body: msg.toCell()
+                    body: EventSignal {
+                        eventId: msg.eventId,
+                        payload: msg.payload
+                    }.toCell()
                 });
                 // TODO: collect fee from subscriber
             }

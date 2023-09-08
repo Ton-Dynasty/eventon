@@ -48,7 +48,7 @@ contract CopyTrading with Deployable, Ownable, Alertable {
         }
         let payload: Cell = msg.payload;
         let parser: Slice = payload.beginParse();
-        let price: Int = parser.loadUint(8);
+        let price: Int = parser.loadUint(32);
         if(price < 1600) {
             let value: Int = ton("0.1");
             send(SendParameters{
@@ -61,7 +61,7 @@ contract CopyTrading with Deployable, Ownable, Alertable {
                     positionSize: self.positionSize
                 }.toCell()
             });
-            
+
             payload = beginCell()
                     .storeUint(8, self.orderAction)
                     .storeUint(8, self.positionSize)
@@ -85,5 +85,9 @@ contract CopyTrading with Deployable, Ownable, Alertable {
         self.requireOwner();
         self.orderAction = msg.orderAction;
         self.positionSize = msg.positionSize;
+    }
+
+    get fun getMessenger(): Address {
+        return self.messenger;
     }
 }
