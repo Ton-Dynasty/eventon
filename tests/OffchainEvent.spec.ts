@@ -22,10 +22,6 @@ describe('OffchainEvent', () => {
         deployer = await blockchain.treasury('deployer', { balance: toNano('100') });
         promiseEye = await blockchain.treasury('promiseEye');
         keyPair = await mnemonicToWalletKey(await mnemonicNew(24));
-        // keyPair.publicKey.readBigInt64LE(0)
-        (BigInt.prototype as any).toJSON = function () {
-            return this.toString();
-        };
         offchainEventContract = blockchain.openContract(
             await OffchainEvent.fromInit(BigInt('0x' + keyPair.publicKey.toString('hex')), promiseEye.address)
         );
@@ -64,15 +60,15 @@ describe('OffchainEvent', () => {
 
         let eventId = 1n;
         let payload = beginCell().storeBit(0).endCell();
-        let seqno = 0n;
-        let valid_until = tenMinutesAfter;
+        let seqno = await offchainEventContract.getSeqno();
+        let valid_until = BigInt(tenMinutesAfter);
 
         let sendParams: SendParameters = {
             $$type: 'SendParameters',
             to: offchainEventContract.address,
             value: 0n,
             body: beginCell().storeUint(eventId, 8).storeRef(payload).endCell(),
-            mode: BigInt(SendMode.PAY_GAS_SEPARATELY),
+            mode: 1n,
             bounce: true,
             code: null,
             data: null,
@@ -86,14 +82,17 @@ describe('OffchainEvent', () => {
             .storeRef(message_parameters.endCell())
             .endCell()
             .hash();
+
         let msg: ExtMessage = {
             $$type: 'ExtMessage',
             signature: sign(hash, keyPair.secretKey),
             seqno: seqno,
-            valid_until: BigInt(valid_until),
+            valid_until: valid_until,
             message_parameters: sendParams,
         };
-        expect(await offchainEventContract.getGetPublicKey()).toEqual(keyPair.publicKey.readBigInt64LE(0));
-        expect(await offchainEventContract.sendExternal(msg)).not.toThrowError();
+
+        expect(await offchainEventContract.getGetPublicKey()).toEqual(BigInt('0x' + keyPair.publicKey.toString('hex')));
+        await offchainEventContract.sendExternal(msg);
+        expect(await offchainEventContract.getSeqno()).toEqual(BigInt(seqno + 1n));
     });
 });
