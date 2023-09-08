@@ -40,6 +40,7 @@ message ProtcolRegister {
 message CreateMsgSubscriber {
     walletAddress: Address; // Owner address of callback contract
     callbackAddress: Address; // UDC address
+    eventId: Int; // The even id which user want to subscribe
 }
 
 message DeleteSubscriber {

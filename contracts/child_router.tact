@@ -73,7 +73,8 @@ contract ChildRouter with Deployable, Ownable {
             bounce: false,
             body: CreateMsgSubscriber {
                 walletAddress: msg.walletAddress, 
-                callbackAddress: msg.callbackAddress
+                callbackAddress: msg.callbackAddress,
+                eventId: msg.eventId
             }.toCell()
         });
     }

@@ -62,14 +62,14 @@ contract Messenger with Deployable, Ownable {
         self.requireOwner();
         self.idToSubscriber.set(self.subscriberId, msg.callbackAddress);
         self.subscriberId = self.subscriberId + 1;
-        let hashResult: Int = beginCell().storeAddress(msg.walletAddress).storeAddress(msg.callbackAddress).endCell().asSlice().hash();
+        let hashResult: Int = beginCell().storeAddress(msg.walletAddress).storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         self.hashToSubscriber.set(hashResult, 1);
         self.subscriberCount = self.subscriberCount + 1;
     }
 
     receive(msg: DeleteSubscriber) {
         self.requireOwner();
-        let hashResult: Int = beginCell().storeAddress(msg.walletAddress).storeAddress(msg.callbackAddress).endCell().asSlice().hash();
+        let hashResult: Int = beginCell().storeAddress(msg.walletAddress).storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         if (self.hashToSubscriber.get(hashResult) == null) {
             throw(008); // not subscribed yet
         }
