@@ -1,7 +1,13 @@
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { mnemonicNew, mnemonicToWalletKey, KeyPair, sign } from 'ton-crypto';
-import { beginCell, toNano } from 'ton-core';
-import { OffchainEvent, OffchainEventSignal } from '../wrappers/EventOffchain';
+import { SendMode, beginCell, toNano } from 'ton-core';
+import {
+    ExtMessage,
+    OffchainEvent,
+    OffchainEventSignal,
+    SendParameters,
+    storeSendParameters,
+} from '../wrappers/EventOffchain';
 import '@ton-community/test-utils';
 
 describe('OffchainEvent', () => {
@@ -15,9 +21,13 @@ describe('OffchainEvent', () => {
         blockchain = await Blockchain.create();
         deployer = await blockchain.treasury('deployer', { balance: toNano('100') });
         promiseEye = await blockchain.treasury('promiseEye');
-        keyPair = await mnemonicToWalletKey(await mnemonicNew(24), '123');
+        keyPair = await mnemonicToWalletKey(await mnemonicNew(24));
+        // keyPair.publicKey.readBigInt64LE(0)
+        (BigInt.prototype as any).toJSON = function () {
+            return this.toString();
+        };
         offchainEventContract = blockchain.openContract(
-            await OffchainEvent.fromInit(keyPair.publicKey.readBigInt64LE(0), promiseEye.address)
+            await OffchainEvent.fromInit(BigInt('0x' + keyPair.publicKey.toString('hex')), promiseEye.address)
         );
 
         const deployResult = await offchainEventContract.send(
@@ -57,24 +67,32 @@ describe('OffchainEvent', () => {
         let seqno = 0n;
         let valid_until = tenMinutesAfter;
 
+        let sendParams: SendParameters = {
+            $$type: 'SendParameters',
+            to: offchainEventContract.address,
+            value: 0n,
+            body: beginCell().storeUint(eventId, 8).storeRef(payload).endCell(),
+            mode: BigInt(SendMode.PAY_GAS_SEPARATELY),
+            bounce: true,
+            code: null,
+            data: null,
+        };
+
+        let message_parameters = beginCell();
+        storeSendParameters(sendParams)(message_parameters);
         let hash = beginCell()
             .storeUint(seqno, 32)
             .storeUint(valid_until, 32)
-            .storeUint(eventId, 8)
-            .storeRef(payload)
+            .storeRef(message_parameters.endCell())
             .endCell()
             .hash();
-
-        let signature = beginCell().storeBuffer(sign(hash, keyPair.secretKey)).endCell();
-        let msg: OffchainEventSignal = {
-            $$type: 'OffchainEventSignal',
+        let msg: ExtMessage = {
+            $$type: 'ExtMessage',
+            signature: sign(hash, keyPair.secretKey),
             seqno: seqno,
             valid_until: BigInt(valid_until),
-            eventId: eventId,
-            payload: payload,
-            signature: signature,
+            message_parameters: sendParams,
         };
-        console.log('offchain hash: ', hash.readBigInt64LE());
         expect(await offchainEventContract.getGetPublicKey()).toEqual(keyPair.publicKey.readBigInt64LE(0));
         expect(await offchainEventContract.sendExternal(msg)).not.toThrowError();
     });
