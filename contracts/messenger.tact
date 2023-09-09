@@ -44,23 +44,12 @@ contract Messenger with Deployable, Ownable {
                 let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
                 let value: Int = ton("0.1");
                 let fee: Int? = self.hashToSubscribeFee.get(hashResult);
+                if(fee == null) {
+                    dump("Fee is NULL");
+                }
                 //  check if subscriber is still subscribed (there is enough fee for this subscriber)
                 if (fee != null && fee!! > self.subscribeFeePerTick && self.subscribeFeePerTick >= value) {
-                    dump("WTF3");
-                    // send(SendParameters{
-                    //     to: subscriber!!,
-                    //     value: value, 
-                    //     mode: SendPayGasSeparately, 
-                    //     bounce: true,
-                    //     body: EventSignal {
-                    //         eventId: msg.eventId,
-                    //         payload: msg.payload
-                    //     }.toCell()
-                    // });
-                    dump("WTF3");
-                    // collect fee from subscriber
-                    collected_fee = collected_fee + self.subscribeFeePerTick - value;
-                }
+                    dump("WTF...");
                     send(SendParameters{
                         to: subscriber!!,
                         value: value, 
@@ -71,22 +60,26 @@ contract Messenger with Deployable, Ownable {
                             payload: msg.payload
                         }.toCell()
                     });
+                    dump("WTF...");
+                    // collect fee from subscriber
+                    collected_fee = collected_fee + self.subscribeFeePerTick - value;
+                }
 
             }
             dump("WTF4");
             i = i + 1;
         }
         dump("WTF5");
-        // Send collected fee to child router
-        // send(SendParameters{
-        //     to: self.owner,
-        //     value: collected_fee,
-        //     mode: SendPayGasSeparately,
-        //     body: CollectFee{
-        //         messengerId: self.messengerId,
-        //         fee: collected_fee
-        //     }.toCell()
-        // });
+        //Send collected fee to child router
+        send(SendParameters{
+            to: self.owner,
+            value: collected_fee,
+            mode: SendPayGasSeparately,
+            body: CollectFee{
+                messengerId: self.messengerId,
+                fee: collected_fee
+            }.toCell()
+        });
     }
 
     receive(msg: CreateMsgSubscriber) {
@@ -96,7 +89,11 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = self.subscriberId + 1;
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         self.hashToSubscriber.set(hashResult, 1);
+        if(ctx.value == null) {
+            dump("Value is NULL");
+        }
         self.hashToSubscribeFee.set(hashResult, ctx.value);
+        dump("SET");
         self.subscriberCount = self.subscriberCount + 1;
     }
 
@@ -136,4 +133,5 @@ contract Messenger with Deployable, Ownable {
     get fun getSubCount(): Int {
         return self.subscriberCount;
     }
+    
 }
