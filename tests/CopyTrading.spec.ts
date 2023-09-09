@@ -6,7 +6,6 @@ import { EventSignal, ProtcolRegister, SubscribeBody, UniversalRouter } from '..
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
 import { Event, EventTrigger } from '../wrappers/Event';
 import { Messenger } from '../wrappers/Messenger';
-import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 import { Follower } from '../wrappers/Follower';
 import { Dex } from '../wrappers/Dex';  
 describe('CopyTrading', () => {
@@ -147,8 +146,6 @@ describe('CopyTrading', () => {
             info: priceSignal,
         };
 
-        
-        
         // Register trader contract as Protocol -> send the order action to the follower contract
         // 1. Register the copyTrading contract as Protocol
         await protocolRegsiter(copyTrading.address, trader);
@@ -202,14 +199,6 @@ describe('CopyTrading', () => {
             success: true,
         });
 
-        console.log('messagerAddress',messagerAddress2)
-        console.log('childRouterAddress',childRouterAddress)
-        console.log('copy',copyTrading.address)
-        console.log('uni',universalRouter.address)
-        console.log('dex',dex.address)
-        console.log('child2messs address', await childRouter2.getMessengerAddress(copyTrading.address, 0n))
-        console.log('child2 balance:',await childRouter2.getGetBalace());
-
         // Test whether the copyTrading contract send the trading msg to the dex
         expect(priceResult.transactions).toHaveTransaction({
             from: copyTrading.address,
@@ -232,18 +221,21 @@ describe('CopyTrading', () => {
             success: true,
         });
 
+        // Test whther the childRouter send the trading event to the messager
         expect(priceResult.transactions).toHaveTransaction({
             from: childRouter2.address,
             to: messagerAddress2,
             success: true,
         });
 
+        // Test whther the messager send the trading event to the follower
         expect(priceResult.transactions).toHaveTransaction({
             from: messagerAddress2,
             to: follower.address,
             success: true,
         });
-        printTransactionFees(priceResult.transactions);  
+
+        //printTransactionFees(priceResult.transactions);  // See all the transaction fees
         
     });
 

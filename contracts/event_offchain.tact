@@ -43,19 +43,19 @@ contract OffchainEvent with Deployable, Alertable {
     // Push event to the contract by externalcall
     // The message should be verified by 
     external(msg: ExtMessage) {
-        dump("Enter the contract");
+        //dump("Enter the contract");
         // BUG: There may be some bug of `checkDataSignature`
         // The type is incompatible with the funC version
         let hash: Int = beginCell().storeUint(msg.seqno, 32).storeUint(msg.valid_until, 32).storeRef(msg.message_parameters.toCell()).endCell().hash();
-        dump("Before check signature");
+        //dump("Before check signature");
         require(checkSignature(hash, msg.signature, self.publicKey), "Invalid Signature");
-        dump("After check signature");
+        //dump("After check signature");
         require(msg.seqno == self.seqno, "Invalid Seqno");
-        dump("After check seqno");
+        //dump("After check seqno");
         require(now() <= msg.valid_until, "Invalid Time");
-        dump("After check time");
+        //dump("After check time");
         acceptMessage();
-        dump("After accept message");
+        //dump("After accept message");
         // TODO: should parse message_parameters into OffchainEventSignal
         self.seqno = self.seqno + 1;
         let body: Cell = msg.message_parameters.body!!;

@@ -121,7 +121,6 @@ contract UniversalRouter with Deployable, Ownable {
             throw(003); // Protocol's Router does not exist
         }
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
-        dump("WTH");
         send(SendParameters{
             to: childRouterAddress,
             value: 0, 
@@ -132,7 +131,6 @@ contract UniversalRouter with Deployable, Ownable {
                 payload: msg.payload // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
             }.toCell()
         });
-        dump("WTH2");
     }
 
     receive(msg: AddMessenger) {

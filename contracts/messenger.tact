@@ -31,7 +31,6 @@ contract Messenger with Deployable, Ownable {
         let i: Int = 0;
         let collected_fee: Int = 0;
         while(i < self.subscriberId) {
-            dump("xxx");
             let subscriber: Address? = self.idToSubscriber.get(i);
             if(subscriber != null)
             {

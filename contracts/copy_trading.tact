@@ -5,7 +5,7 @@ import "./msg_types";
 trait Alertable {
     promiseEyeAddress: Address;
     fun sendAlert(msg: EventSignal) {
-        dump("send to promise eye");
+        //dump("send to promise eye");
         send(SendParameters{
             to: self.promiseEyeAddress, 
             value: 0, 
@@ -70,7 +70,7 @@ contract CopyTrading with Deployable, Ownable, Alertable {
             };
             self.sendAlert(eventSignal);
         }
-        dump("recieved price");
+        //dump("recieved price");
     }
 
     receive(msg: SetMessenger) {
