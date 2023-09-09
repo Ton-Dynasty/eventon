@@ -23,7 +23,7 @@ contract ChildRouter with Deployable, Ownable {
         self.totalShares = 0;
         self.totalStakeAmount = 0;
     }
-
+    receive() {}
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         //Build Messenger
@@ -107,13 +107,16 @@ contract ChildRouter with Deployable, Ownable {
             if(self.messengerState.get(i) == 1)
             {
                 let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
-                let value: Int = ton("0.1");
+                let value: Int = ton("0.011");
                 send(SendParameters{
                     to: messengerAddress,
                     value: value, 
                     mode: SendPayGasSeparately, 
                     bounce: true,
-                    body: msg.toCell()
+                    body: EventSignal {
+                        eventId: msg.eventId,
+                        payload: msg.payload
+                    }.toCell()
                 });
             }
             i = i + 1;
@@ -222,5 +225,9 @@ contract ChildRouter with Deployable, Ownable {
     }
     get fun getMessengerState(messengerId: Int): Int? {
         return self.messengerState.get(messengerId);
+    }
+
+    get fun getBalace(): Int {
+        return myBalance();
     }
 }

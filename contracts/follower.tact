@@ -2,42 +2,25 @@ import "@stdlib/deploy";
 import "@stdlib/ownable";
 import "./msg_types";
 
-trait Alertable {
-    promiseEyeAddress: Address;
-    fun sendAlert(msg: EventSignal) {
-        dump("send to promise eye");
-        send(SendParameters{
-            to: self.promiseEyeAddress, 
-            value: 0, 
-            bounce: false,
-            mode: SendRemainingValue, // have think why use SendRemainingValue mode
-            body: EventSignal{ 
-                eventId: msg.eventId,
-                payload: msg.payload
-            }.toCell()
-        });
-    }
-}
-
-contract CopyTrading with Deployable, Ownable, Alertable {
+contract Follower with Deployable, Ownable {
     owner: Address;
-    promiseEyeAddress: Address;
     messenger: Address;
     dex: Address;
     orderAction: Int;
     positionSize: Int;
     eventId: Int;
 
-    init(owner: Address, promiseEyeAddress: Address, dex: Address) {
+    init(owner: Address, dex: Address) {
         self.owner = owner;
-        self.promiseEyeAddress = promiseEyeAddress;
         self.dex = dex;
-        self.messenger = owner;
+        self.messenger = owner; // Use setMessenger to change messenger
         self.orderAction = 1;
-        self.positionSize = 50;
-        self.eventId = 1;
+        self.positionSize = 100;
+        self.eventId = 0;
     }
+
     receive() {}
+    
     receive(msg: EventSignal) {
         let cxt: Context = context();
         if(cxt.sender != self.messenger) {
@@ -45,7 +28,7 @@ contract CopyTrading with Deployable, Ownable, Alertable {
         }
         let payload: Cell = msg.payload;
         let parser: Slice = payload.beginParse();
-        let price: Int = parser.loadInt(32);
+        let price: Int = parser.loadUint(32);
         if(price < 1600) {
             let value: Int = ton("0.1");
             send(SendParameters{
@@ -59,18 +42,16 @@ contract CopyTrading with Deployable, Ownable, Alertable {
                 }.toCell()
             });
 
-            let sendPayload: Cell = beginCell()
-                    .storeInt(self.orderAction, 32)
-                    .storeInt(self.positionSize, 32)
+            payload = beginCell()
+                    .storeUint(8, self.orderAction)
+                    .storeUint(8, self.positionSize)
                     .endCell();
 
             let eventSignal: EventSignal = EventSignal{
                 eventId: self.eventId,
-                payload: sendPayload
+                payload: payload
             };
-            self.sendAlert(eventSignal);
         }
-        dump("recieved price");
     }
 
     receive(msg: SetMessenger) {

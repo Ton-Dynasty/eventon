@@ -18,6 +18,8 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = 0;
         self.subscriberCount = 0;
     }
+    
+    receive() {}
 
     receive (msg: BuildMessenger) {
         if (msg.sourceAddress != self.sourceAddress) {
@@ -29,6 +31,7 @@ contract Messenger with Deployable, Ownable {
         let i: Int = 0;
         let collected_fee: Int = 0;
         while(i < self.subscriberId) {
+            dump("xxx");
             let subscriber: Address? = self.idToSubscriber.get(i);
             if(subscriber != null)
             {
@@ -46,19 +49,18 @@ contract Messenger with Deployable, Ownable {
                 });
                 // TODO: collect fee from subscriber
             }
-            
             i = i + 1;
         }
         // TODO: Send collected fee to child router
-        send(SendParameters{
-            to: self.owner,
-            value: collected_fee,
-            mode: SendPayGasSeparately,
-            body: CollectFee{
-                messengerId: self.messengerId,
-                fee: collected_fee
-            }.toCell()
-        });
+        // send(SendParameters{
+        //     to: self.owner,
+        //     value: collected_fee,
+        //     mode: SendPayGasSeparately,
+        //     body: CollectFee{
+        //         messengerId: self.messengerId,
+        //         fee: collected_fee
+        //     }.toCell()
+        // });
     }
 
     receive(msg: CreateMsgSubscriber) {

@@ -25,7 +25,7 @@ contract Event with Deployable, Ownable, Alertable {
         self.owner = owner;
         self.promiseEyeAddress = promiseEyeAddress;
     }
-    
+    receive() {}
     receive(msg: EventTrigger) {
         self.requireOwner();
         self.sendAlert(msg.info);

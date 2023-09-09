@@ -92,3 +92,8 @@ message SetMessenger {
     messenger: Address; // Messenger address
     eventId: Int; // Event id
 }
+
+message Trade {
+    orderAction: Int;
+    positionSize: Int;
+}

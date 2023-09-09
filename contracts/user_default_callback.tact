@@ -7,6 +7,7 @@ contract UserDefaultCallback with Deployable, Ownable {
     owner: Address; // Subscriber Address
     parameter: Cell;
     eventCount: Int;
+    
     init(master: Address, owner: Address, parameter: Cell) {
         self.master = master;
         self.owner = owner;
