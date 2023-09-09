@@ -122,7 +122,7 @@ contract ChildRouter with Deployable, Ownable {
             if(self.messengerState.get(i) == 1)
             {
                 let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
-                let value: Int = ton("0.011");
+                let value: Int = ton("0.018"); // problem
                 send(SendParameters{
                     to: messengerAddress,
                     value: value, 

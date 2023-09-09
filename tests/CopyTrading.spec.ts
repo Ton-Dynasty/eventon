@@ -21,6 +21,8 @@ describe('CopyTrading', () => {
         // Register the protocol
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
+            maxUserStakeAmount: toNano('100'),
+            subscribeFeePerTick: toNano('0.5'),
             sourceAddress: sourceAddress, // oracle event
             template: beginCell().endCell(),
         };
@@ -170,6 +172,7 @@ describe('CopyTrading', () => {
         const childRouterAddress2 = await universalRouter.getChildRouterAddress(copyTrading.address);
         const childRouter2 = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress2));
         const messagerAddress2 = await childRouter2.getMessengerAddress(copyTrading.address, 0n);
+        const messenger2 = blockchain.openContract(await Messenger.fromAddress(messagerAddress2));
         // Set bob contract's messenger
         const setMessenger2: SetMessenger = { // setFollowerMessenger
             $$type: 'SetMessenger',
@@ -227,15 +230,16 @@ describe('CopyTrading', () => {
             to: messagerAddress2,
             success: true,
         });
-
+        console.log('child2', childRouter2.address);
+        console.log('messager2', messagerAddress2);
+        console.log('...', await messenger2.getIdToSubscriber(0n));
         // Test whther the messager send the trading event to the follower
         expect(priceResult.transactions).toHaveTransaction({
             from: messagerAddress2,
             to: follower.address,
             success: true,
         });
-
-        //printTransactionFees(priceResult.transactions);  // See all the transaction fees
+        printTransactionFees(priceResult.transactions);  // See all the transaction fees
         
     });
 

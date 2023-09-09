@@ -35,39 +35,58 @@ contract Messenger with Deployable, Ownable {
         let i: Int = 0;
         let collected_fee: Int = 0;
         while(i < self.subscriberId) {
+            dump("WTF0");
             let subscriber: Address? = self.idToSubscriber.get(i);
+            dump("WTF1");
             if(subscriber != null)
             {
+                dump("WTF2");
                 let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
                 let value: Int = ton("0.1");
                 let fee: Int? = self.hashToSubscribeFee.get(hashResult);
                 //  check if subscriber is still subscribed (there is enough fee for this subscriber)
                 if (fee != null && fee!! > self.subscribeFeePerTick && self.subscribeFeePerTick >= value) {
+                    dump("WTF3");
+                    // send(SendParameters{
+                    //     to: subscriber!!,
+                    //     value: value, 
+                    //     mode: SendPayGasSeparately, 
+                    //     bounce: true,
+                    //     body: EventSignal {
+                    //         eventId: msg.eventId,
+                    //         payload: msg.payload
+                    //     }.toCell()
+                    // });
+                    dump("WTF3");
+                    // collect fee from subscriber
+                    collected_fee = collected_fee + self.subscribeFeePerTick - value;
+                }
                     send(SendParameters{
                         to: subscriber!!,
                         value: value, 
                         mode: SendPayGasSeparately, 
                         bounce: true,
-                        body: msg.toCell()
+                        body: EventSignal {
+                            eventId: msg.eventId,
+                            payload: msg.payload
+                        }.toCell()
                     });
 
-                    // collect fee from subscriber
-                    collected_fee = collected_fee + self.subscribeFeePerTick - value;
-                }
-
             }
+            dump("WTF4");
             i = i + 1;
         }
+        dump("WTF5");
         // Send collected fee to child router
-        send(SendParameters{
-            to: self.owner,
-            value: collected_fee,
-            mode: SendPayGasSeparately,
-            body: CollectFee{
-                messengerId: self.messengerId,
-                fee: collected_fee
-            }.toCell()
-        });
+        // send(SendParameters{
+        //     to: self.owner,
+        //     value: collected_fee,
+        //     mode: SendPayGasSeparately,
+        //     body: CollectFee{
+        //         messengerId: self.messengerId,
+        //         fee: collected_fee
+        //     }.toCell()
+        // });
     }
 
     receive(msg: CreateMsgSubscriber) {
