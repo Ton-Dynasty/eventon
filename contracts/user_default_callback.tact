@@ -20,7 +20,6 @@ contract UserDefaultCallback with Deployable, Ownable {
     
     receive(msg: EventSignal) {
         // self.parameter.beginParse();
-        dump("self.parameter");   
         self.eventCount = self.eventCount + 1;
     }
 
