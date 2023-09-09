@@ -75,6 +75,7 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = self.subscriberId + 1;
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         self.hashToSubscriber.set(hashResult, 1);
+        self.hashToSubscribeFee.set(hashResult, ctx.value);
         self.subscriberCount = self.subscriberCount + 1;
     }
 
@@ -86,6 +87,7 @@ contract Messenger with Deployable, Ownable {
         }
         self.idToSubscriber.set(self.subscriberId, null);
         self.hashToSubscriber.set(hashResult, 0);
+        self.hashToSubscribeFee.set(hashResult, 0);
         self.subscriberCount = self.subscriberCount - 1;
         if(self.subscriberCount == 0 ) {
             send(SendParameters{
