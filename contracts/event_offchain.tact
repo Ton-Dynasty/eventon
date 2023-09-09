@@ -38,6 +38,9 @@ contract OffchainEvent with Deployable, Alertable {
         return self.seqno;
     }
 
+    // An empty receive function to accept ton transfer
+    receive(){}
+
     // Push event to the contract by externalcall
     // The message should be verified by 
     external(msg: ExtMessage) {
