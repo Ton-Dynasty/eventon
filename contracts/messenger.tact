@@ -42,6 +42,9 @@ contract Messenger with Deployable, Ownable {
             {
                 dump("WTF2");
                 let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
+                dump("HASH 1");
+                dump(hashResult);
+                dump("HASH 2");
                 let value: Int = ton("0.1");
                 let fee: Int? = self.hashToSubscribeFee.get(hashResult);
                 if(fee == null) {
@@ -88,6 +91,8 @@ contract Messenger with Deployable, Ownable {
         self.idToSubscriber.set(self.subscriberId, msg.callbackAddress);
         self.subscriberId = self.subscriberId + 1;
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
+        dump("HASH 0");
+        dump(hashResult);
         self.hashToSubscriber.set(hashResult, 1);
         if(ctx.value == null) {
             dump("Value is NULL");
