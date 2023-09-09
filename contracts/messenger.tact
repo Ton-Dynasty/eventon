@@ -40,7 +40,7 @@ contract Messenger with Deployable, Ownable {
                 let value: Int = ton("0.1");
                 let fee: Int? = self.hashToSubscribeFee.get(hashResult);
                 //  check if subscriber is still subscribed (there is enough fee for this subscriber)
-                if (fee != null && fee!! > self.subscribeFeePerTick) {
+                if (fee != null && fee!! > self.subscribeFeePerTick && self.subscribeFeePerTick >= value) {
                     send(SendParameters{
                         to: subscriber!!,
                         value: value, 
