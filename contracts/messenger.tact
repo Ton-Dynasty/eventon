@@ -41,12 +41,9 @@ contract Messenger with Deployable, Ownable {
             if(subscriber != null)
             {
                 dump("WTF2");
-                let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
-                dump("HASH 1");
-                dump(hashResult);
-                dump("HASH 2");
+                //let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
                 let value: Int = ton("0.1");
-                let fee: Int? = self.hashToSubscribeFee.get(hashResult);
+                let fee: Int? = self.hashToSubscribeFee.get(i);
                 if(fee == null) {
                     dump("Fee is NULL");
                 }
@@ -89,16 +86,14 @@ contract Messenger with Deployable, Ownable {
         self.requireOwner();
         let ctx: Context = context();
         self.idToSubscriber.set(self.subscriberId, msg.callbackAddress);
-        self.subscriberId = self.subscriberId + 1;
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
-        dump("HASH 0");
-        dump(hashResult);
         self.hashToSubscriber.set(hashResult, 1);
         if(ctx.value == null) {
             dump("Value is NULL");
         }
-        self.hashToSubscribeFee.set(hashResult, ctx.value);
+        self.hashToSubscribeFee.set(self.subscriberId, ctx.value);
         dump("SET");
+        self.subscriberId = self.subscriberId + 1;
         self.subscriberCount = self.subscriberCount + 1;
     }
 

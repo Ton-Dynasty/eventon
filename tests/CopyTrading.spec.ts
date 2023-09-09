@@ -230,7 +230,7 @@ describe('CopyTrading', () => {
         });
         console.log('child2', childRouter2.address);
         console.log('messager2', messagerAddress2);
-        console.log('...', await messenger2.getIdToSubscriber(0n));
+        console.log('getIdToSubscriber ', await messenger2.getIdToSubscriber(0n));
         // Test whther the messager send the trading event to the follower
         expect(priceResult.transactions).toHaveTransaction({
             from: messagerAddress2,
