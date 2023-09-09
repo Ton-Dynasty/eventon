@@ -9,10 +9,12 @@ message EventSignal {
 }
 message BuildMessenger {
     sourceAddress: Address; // Protocol's address
+    subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
 }
 message BuildChildRouter {
     sourceAddress: Address; // Protocol's address
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
+    subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
     template: Cell; // Callback contract for subscribers
 }
 message CreateBody {
@@ -31,6 +33,7 @@ message ProtcolRegister {
     sourceAddress: Address; // Protocol's address
     template: Cell; // Callback contract for subscribers
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
+    subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
 }
 message CreateMsgSubscriber {
     walletAddress: Address; // Owner address of callback contract
@@ -42,12 +45,6 @@ message DeleteSubscriber {
     walletAddress: Address; // Owner address of callback contract
     callbackAddress: Address; // UDC address
     eventId: Int; // The even id which user want to subscribe
-}
-
-message DeleteSubscriber {
-    walletAddress: Address; // Owner address of callback contract
-    callbackAddress: Address; // UDC address
-    eventId: Int; // The even id which user want to Unsubscribe
 }
 
 message DestroyMessenger {

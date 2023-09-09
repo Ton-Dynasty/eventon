@@ -32,7 +32,8 @@ contract UniversalRouter with Deployable, Ownable {
                 bounce: false,
                 body: BuildChildRouter{sourceAddress: msg.sourceAddress,
                     template: msg.template,
-                    maxUserStakeAmount: msg.maxUserStakeAmount
+                    maxUserStakeAmount: msg.maxUserStakeAmount,
+                    subscribeFeePerTick: msg.subscribeFeePerTick
                 }.toCell(),
                 code: init.code, // attaching the state init will cause the message to deploy
                 data: init.data
@@ -61,7 +62,27 @@ contract UniversalRouter with Deployable, Ownable {
             }
         );
     }
-
+    receive(msg: SubscribeBody) {
+        // Check if this event id is registered
+        if(self.eventIdToProtocol.get(msg.eventId) == null)
+        {
+            throw(002); // Event ID does not exist
+        }
+        let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
+        let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
+        send(SendParameters{
+            to: childRouterAddress,
+            value: 0, 
+            mode: SendRemainingValue, 
+            bounce: true, 
+            body: SubscribeBody {
+                walletAddress: msg.walletAddress, // Owner address of callback contract
+                deadline: msg.deadline, // The deadline of the msg can delay
+                eventId: msg.eventId, // The even id which user want to subscribe
+                callbackAddress: msg.callbackAddress // The callback contract address writed by user
+            }.toCell()
+        });
+    }
     receive(msg: DeleteSubscriber) {
         // Check if this event id is registered
         if(self.eventIdToProtocol.get(msg.eventId) == null)

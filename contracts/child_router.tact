@@ -50,7 +50,8 @@ contract ChildRouter with Deployable, Ownable {
             mode: SendRemainingValue, 
             bounce: false,
             body: BuildMessenger {
-                sourceAddress: msg.sourceAddress // Protocol's address
+                sourceAddress: msg.sourceAddress, // Protocol's address
+                subscribeFeePerTick: msg.subscribeFeePerTick
             }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data

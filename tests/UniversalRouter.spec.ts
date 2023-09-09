@@ -46,6 +46,8 @@ describe('UniversalRouter', () => {
         // Register the protocol
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
+            maxUserStakeAmount: toNano('100'),
+            subscribeFeePerTick: toNano('0.5'),
             sourceAddress: event.address,
             template: beginCell().endCell(),
         };
@@ -127,6 +129,8 @@ describe('UniversalRouter', () => {
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
             sourceAddress: event.address,
+            maxUserStakeAmount: toNano('100'),
+            subscribeFeePerTick: toNano('0.5'),
             template: beginCell().endCell(),
         };
         const eventIdBefore = await universalRouter.getEventId();
@@ -525,7 +529,7 @@ describe('UniversalRouter', () => {
             $$type: 'DeleteSubscriber',
             walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
             callbackAddress: udcAddress,
-            eventId: 0n
+            eventId: 0n,
         };
         const unSubcribeResult = await universalRouter.send(
             deployer.getSender(),
@@ -538,21 +542,21 @@ describe('UniversalRouter', () => {
         expect(unSubcribeResult.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,
-            success: true
+            success: true,
         });
-        
+
         // Test whether the user send the universal router send msg to the child router
         expect(unSubcribeResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
-            success: true
+            success: true,
         });
 
         // Test whether the user send the child router send msg to the messenger contract
         expect(unSubcribeResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: messagerAddress,
-            success: true
+            success: true,
         });
 
         const messengerState = await childRouter.getGetMessengerState(0n);
