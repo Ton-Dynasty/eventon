@@ -35,7 +35,8 @@ contract UniversalRouter with Deployable, Ownable {
                 body: BuildChildRouter{sourceAddress: msg.sourceAddress,
                     template: msg.template,
                     maxUserStakeAmount: msg.maxUserStakeAmount,
-                    subscribeFeePerTick: msg.subscribeFeePerTick
+                    subscribeFeePerTick: msg.subscribeFeePerTick,
+                    eventId: self.eventCount
                 }.toCell(),
                 code: init.code, // attaching the state init will cause the message to deploy
                 data: init.data

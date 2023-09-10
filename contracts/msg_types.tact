@@ -13,6 +13,7 @@ message BuildMessenger {
 }
 message BuildChildRouter {
     sourceAddress: Address; // Protocol's address
+    eventId: Int; // The even id which user want to subscribe
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
     subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
     template: Cell; // Callback contract for subscribers

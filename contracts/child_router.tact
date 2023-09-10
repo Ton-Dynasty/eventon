@@ -16,6 +16,7 @@ contract ChildRouter with Deployable, Ownable {
     maxUserStakeAmount: Int as coins; // The max total users' stake amount
     totalShares: Int as uint256;
     messengerState: map<Int, Int>; 
+    eventId: Int;
 
     init(owner: Address, sourceAddress: Address, minimumStake: Int) {
         self.owner = owner;
@@ -25,6 +26,7 @@ contract ChildRouter with Deployable, Ownable {
         self.totalShares = 0;
         self.totalStakeAmount = 0;
         self.maxUserStakeAmount = 0;
+        self.eventId = -1;
     }
     receive() {}
     receive(msg: BuildChildRouter) {
@@ -39,7 +41,7 @@ contract ChildRouter with Deployable, Ownable {
 
         // Update the total shares and the protocol's shares
         self.stakes.set(self.sourceAddress, ctx.value);
-        
+        self.eventId = msg.eventId;
         // Build Messenger
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
@@ -89,7 +91,7 @@ contract ChildRouter with Deployable, Ownable {
             body: CreateMsgSubscriber {
                 walletAddress: msg.walletAddress, 
                 callbackAddress: msg.callbackAddress,
-                eventId: msg.eventId
+                eventId: self.eventId
             }.toCell()
         });
     }
@@ -106,7 +108,7 @@ contract ChildRouter with Deployable, Ownable {
             body: DeleteSubscriber {
                 walletAddress: msg.walletAddress, 
                 callbackAddress: msg.callbackAddress,
-                eventId: msg.eventId
+                eventId: self.eventId
             }.toCell()
         });
     }
@@ -129,7 +131,7 @@ contract ChildRouter with Deployable, Ownable {
                     mode: SendPayGasSeparately, 
                     bounce: true,
                     body: EventSignal {
-                        eventId: msg.eventId,
+                        eventId: self.eventId,
                         payload: msg.payload
                     }.toCell()
                 });
