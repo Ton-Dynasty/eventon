@@ -99,3 +99,9 @@ message BugWarning {
 message SetEventId {
     eventId: Int; // Event id
 }
+
+// Blacklist warning
+message BlacklistWarning {
+    address: Address;
+    info: Cell;
+}
