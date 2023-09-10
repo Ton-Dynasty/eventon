@@ -17,7 +17,7 @@ describe('CopyTrading', () => {
     let dex: SandboxContract<Dex>;
     let follower: SandboxContract<Follower>;
 
-    async function protocolRegsiter(sourceAddress: Address, protocol: SandboxContract<TreasuryContract>) {
+    async function oracleRegsiter(deployer: SandboxContract<TreasuryContract>, sourceAddress: Address) {
         // Register the protocol
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
@@ -27,7 +27,26 @@ describe('CopyTrading', () => {
             template: beginCell().endCell(),
         };
 
-        await universalRouter.send(
+        await oracle.send(
+            deployer.getSender(),
+            {
+                value: toNano('10'),
+            },
+            protocolRegister
+        );
+    }
+
+    async function copyTradingRegsiter(protocol: SandboxContract<TreasuryContract>, sourceAddress: Address) {
+        // Register the protocol
+        const protocolRegister: ProtcolRegister = {
+            $$type: 'ProtcolRegister',
+            maxUserStakeAmount: toNano('100'),
+            subscribeFeePerTick: toNano('0.5'),
+            sourceAddress: sourceAddress, // oracle event
+            template: beginCell().endCell(),
+        };
+
+        await copyTrading.send(
             protocol.getSender(),
             {
                 value: toNano('10'),
@@ -103,7 +122,7 @@ describe('CopyTrading', () => {
             deploy: true,
             success: true,
         });
-        await protocolRegsiter(oracle.address, trader);
+        await oracleRegsiter(trader, oracle.address);
     });
 
     it('should deploy', async () => {
@@ -148,7 +167,7 @@ describe('CopyTrading', () => {
 
         // Register trader contract as Protocol -> send the order action to the follower contract
         // 1. Register the copyTrading contract as Protocol
-        await protocolRegsiter(copyTrading.address, trader);
+        await copyTradingRegsiter(trader, copyTrading.address);
         // 2. Deploy the follower contract
         let bob = await blockchain.treasury('bob'); // bob is the user who follows the trader contract
         follower = blockchain.openContract(await Follower.fromInit(bob.address, dex.address));
