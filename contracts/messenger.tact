@@ -35,21 +35,14 @@ contract Messenger with Deployable, Ownable {
         let i: Int = 0;
         let collected_fee: Int = 0;
         while(i < self.subscriberId) {
-            dump("WTF0");
             let subscriber: Address? = self.idToSubscriber.get(i);
-            dump("WTF1");
             if(subscriber != null)
             {
-                dump("WTF2");
                 let hashResult: Int = beginCell().storeAddress(subscriber!!).storeInt(msg.eventId,8).endCell().asSlice().hash();
                 let value: Int = ton("0.1");
                 let fee: Int? = self.hashToSubscribeFee.get(hashResult);
-                if(fee == null) {
-                    dump("Fee is NULL");
-                }
                 //  check if subscriber is still subscribed (there is enough fee for this subscriber)
                 if (fee != null && fee!! > self.subscribeFeePerTick && self.subscribeFeePerTick >= value) {
-                    dump("WTF...");
                     send(SendParameters{
                         to: subscriber!!,
                         value: value, 
@@ -60,16 +53,13 @@ contract Messenger with Deployable, Ownable {
                             payload: msg.payload
                         }.toCell()
                     });
-                    dump("WTF...");
                     // collect fee from subscriber
                     collected_fee = collected_fee + self.subscribeFeePerTick - value;
                 }
 
             }
-            dump("WTF4");
             i = i + 1;
         }
-        dump("WTF5");
         //Send collected fee to child router
         send(SendParameters{
             to: self.owner,
@@ -88,11 +78,7 @@ contract Messenger with Deployable, Ownable {
         self.idToSubscriber.set(self.subscriberId, msg.callbackAddress);
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         self.hashToSubscriber.set(hashResult, 1);
-        if(ctx.value == null) {
-            dump("Value is NULL");
-        }
         self.hashToSubscribeFee.set(hashResult, ctx.value);
-        dump("SET");
         self.subscriberId = self.subscriberId + 1;
         self.subscriberCount = self.subscriberCount + 1;
     }

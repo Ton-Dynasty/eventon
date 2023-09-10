@@ -81,6 +81,10 @@ contract ChildRouter with Deployable, Ownable {
 
     receive(msg: SubscribeBody) {
         self.requireOwner();
+        if(msg.eventId != self.eventId)
+        {
+            throw(011); // This child router is not for this event
+        }
         // Save the callback contract address(writen by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
@@ -98,6 +102,10 @@ contract ChildRouter with Deployable, Ownable {
 
     receive(msg: DeleteSubscriber) {
         self.requireOwner();
+        if(msg.eventId != self.eventId)
+        {
+            throw(011); // This child router is not for this event
+        }
         // Save the callback contract address(writen by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
