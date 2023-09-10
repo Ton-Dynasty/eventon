@@ -25,6 +25,7 @@ contract Messenger with Deployable, Ownable {
     receive() {}
 
     receive (msg: BuildMessenger) {
+        self.requireOwner();
         if (msg.sourceAddress != self.sourceAddress) {
             throw(007);
         }
@@ -32,6 +33,7 @@ contract Messenger with Deployable, Ownable {
     }
 
     receive (msg: EventSignal) {
+        self.requireOwner();
         let i: Int = 0;
         let collected_fee: Int = 0;
         while(i < self.subscriberId) {

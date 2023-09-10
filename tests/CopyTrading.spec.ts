@@ -60,7 +60,6 @@ describe('CopyTrading', () => {
         dex = blockchain.openContract(await Dex.fromInit(trader.address));
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(trader.address));
         oracle = blockchain.openContract(await Event.fromInit(trader.address, universalRouter.address));
-
         copyTrading = blockchain.openContract(
             await CopyTrading.fromInit(trader.address, universalRouter.address, dex.address)
         );
