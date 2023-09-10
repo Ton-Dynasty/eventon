@@ -105,3 +105,9 @@ message BlacklistWarning {
     address: Address;
     info: Cell;
 }
+
+// Transfer
+message Transfer {
+    to: Address;
+    value: Int as coins;
+}
