@@ -22,36 +22,36 @@ contract Follower with Deployable, Ownable {
     receive() {}
     
     receive(msg: EventSignal) {
-        // let cxt: Context = context();
-        // if(cxt.sender != self.messenger) {
-        //     throw(009); // Only messenger can send signal;
-        // }
-        // let payload: Cell = msg.payload;
-        // let parser: Slice = payload.beginParse();
-        // let price: Int = parser.loadUint(32);
-        // if(price < 1600) {
-        //     let value: Int = ton("0.1");
-        //     send(SendParameters{
-        //         to: self.dex,
-        //         value: value, 
-        //         mode: SendPayGasSeparately, 
-        //         bounce: true,
-        //         body: Trade {
-        //             orderAction: self.orderAction,
-        //             positionSize: self.positionSize
-        //         }.toCell()
-        //     });
+        let cxt: Context = context();
+        if(cxt.sender != self.messenger) {
+            throw(009); // Only messenger can send signal;
+        }
+        let payload: Cell = msg.payload;
+        let parser: Slice = payload.beginParse();
+        let price: Int = parser.loadUint(32);
+        if(price < 1600) {
+            let value: Int = ton("0.1");
+            send(SendParameters{
+                to: self.dex,
+                value: value, 
+                mode: SendPayGasSeparately, 
+                bounce: true,
+                body: Trade {
+                    orderAction: self.orderAction,
+                    positionSize: self.positionSize
+                }.toCell()
+            });
 
-        //     payload = beginCell()
-        //             .storeUint(8, self.orderAction)
-        //             .storeUint(8, self.positionSize)
-        //             .endCell();
+            payload = beginCell()
+                    .storeUint(8, self.orderAction)
+                    .storeUint(8, self.positionSize)
+                    .endCell();
 
-        //     let eventSignal: EventSignal = EventSignal{
-        //         eventId: self.eventId,
-        //         payload: payload
-        //     };
-        // }
+            let eventSignal: EventSignal = EventSignal{
+                eventId: self.eventId,
+                payload: payload
+            };
+        }
     }
 
     receive(msg: SetMessenger) {
