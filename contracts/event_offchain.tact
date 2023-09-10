@@ -30,8 +30,6 @@ contract OffchainEvent with Deployable, Alertable {
         self.seqno = 0;
     }
 
-    receive() {}
-
     get fun getPublicKey(): Int {
         return self.publicKey;
     }
