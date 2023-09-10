@@ -16,7 +16,7 @@ contract Follower with Deployable, Ownable {
         self.messenger = owner; // Use setMessenger to change messenger
         self.orderAction = 1;
         self.positionSize = 100;
-        self.eventId = 0;
+        self.eventId = -1;
     }
 
     receive() {}
