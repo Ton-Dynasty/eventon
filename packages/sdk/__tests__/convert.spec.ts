@@ -1,7 +1,7 @@
 import { Spec, Field } from '../lib/utils/types'; // Replace with the actual path to your code
 import { Address, Builder, beginCell } from 'ton-core';
 import { Maybe } from 'ton-core/dist/utils/maybe';
-import { ABEyeBuilder } from '../lib/utils/convert';
+import { ABEyeCellBuilder } from '../lib/utils/convert';
 
 const specs: Spec[] = [
     {
@@ -96,7 +96,7 @@ describe('ABEyeBuilder', () => {
                 },
             },
         };
-        const builder = ABEyeBuilder(specs, valueToEncode);
+        const builder = ABEyeCellBuilder(specs, valueToEncode);
 
         const innerBuilder = beginCell()
             .storeAddress(Address.parse('kQC8zFHM8LCMp9Xs--w3g9wmf7RwuDgJcQtV-oHZRSCqQSR1'))

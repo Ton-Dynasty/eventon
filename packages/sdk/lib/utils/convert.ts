@@ -1,4 +1,4 @@
-import { Address, Builder, Cell, beginCell } from 'ton-core';
+import { Address, Builder, Cell, beginCell, ContractABI } from 'ton-core';
 import { Spec, Field, ABEyeValue } from './types';
 
 const simpleCellBuilder = (field: Field, payload: any, specs: Spec[]): Builder => {
@@ -51,7 +51,31 @@ const recursiveBuilder = (specs: Spec[], name: string, payload: { [key: string]:
     return builder;
 };
 
-export const ABEyeBuilder = (specs: Spec[], value: ABEyeValue): Cell => {
+export const ABEyeCellBuilder = (specs: Spec[], value: ABEyeValue): Cell => {
     const builder = recursiveBuilder(specs, value.name, value.payload);
     return builder.endCell();
+};
+
+export const ABIToSpecs = (abi: ContractABI): Spec[] => {
+    const specs: Spec[] = [];
+    const types = abi.types || [];
+    for (const type of types) {
+        const spec: Spec = {
+            name: type.name,
+            fields: [],
+        };
+        for (const field of type.fields as Field[]) {
+            spec.fields.push({
+                name: field.name,
+                type: {
+                    kind: field.type.kind,
+                    type: field.type.type,
+                    optional: field.type.optional,
+                    format: field.type.format,
+                },
+            });
+        }
+        specs.push(spec);
+    }
+    return specs;
 };
