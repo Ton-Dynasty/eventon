@@ -150,8 +150,6 @@ describe('CopyTrading', () => {
         // Register trader contract as Protocol -> send the order action to the follower contract
         // 1. Register the copyTrading contract as Protocol
         await protocolRegsiter(copyTrading.address, trader);
-        console.log('child2', await universalRouter.getChildRouterAddress(copyTrading.address));
-        console.log('1 protocol address ', await universalRouter.getGetProtocolAddress(1n));
         // 2. Deploy the follower contract
         let bob = await blockchain.treasury('bob'); // bob is the user who follows the trader contract
         follower = blockchain.openContract(await Follower.fromInit(bob.address, dex.address));
@@ -228,9 +226,6 @@ describe('CopyTrading', () => {
             to: messagerAddress2,
             success: true,
         });
-        console.log('child2', childRouter2.address);
-        console.log('messager2', messagerAddress2);
-        console.log('getIdToSubscriber ', await messenger2.getIdToSubscriber(0n));
         // Test whther the messager send the trading event to the follower
         expect(priceResult.transactions).toHaveTransaction({
             from: messagerAddress2,
