@@ -21,6 +21,8 @@ contract Messenger with Deployable, Ownable {
         self.subscriberCount = 0;
         self.subscribeFeePerTick = 0;
     }
+    
+    receive() {}
 
     receive (msg: BuildMessenger) {
         if (msg.sourceAddress != self.sourceAddress) {
@@ -46,9 +48,11 @@ contract Messenger with Deployable, Ownable {
                         value: value, 
                         mode: SendPayGasSeparately, 
                         bounce: true,
-                        body: msg.toCell()
+                        body: EventSignal {
+                            eventId: msg.eventId,
+                            payload: msg.payload
+                        }.toCell()
                     });
-
                     // collect fee from subscriber
                     collected_fee = collected_fee + self.subscribeFeePerTick - value;
                 }
@@ -56,7 +60,7 @@ contract Messenger with Deployable, Ownable {
             }
             i = i + 1;
         }
-        // Send collected fee to child router
+        //Send collected fee to child router
         send(SendParameters{
             to: self.owner,
             value: collected_fee,
@@ -72,10 +76,10 @@ contract Messenger with Deployable, Ownable {
         self.requireOwner();
         let ctx: Context = context();
         self.idToSubscriber.set(self.subscriberId, msg.callbackAddress);
-        self.subscriberId = self.subscriberId + 1;
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         self.hashToSubscriber.set(hashResult, 1);
         self.hashToSubscribeFee.set(hashResult, ctx.value);
+        self.subscriberId = self.subscriberId + 1;
         self.subscriberCount = self.subscriberCount + 1;
     }
 
@@ -115,4 +119,5 @@ contract Messenger with Deployable, Ownable {
     get fun getSubCount(): Int {
         return self.subscriberCount;
     }
+    
 }

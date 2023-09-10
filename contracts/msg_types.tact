@@ -4,7 +4,7 @@ message EventTrigger {
     info: EventSignal;
 }
 message EventSignal {
-    eventId: Int as uint8; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
+    eventId: Int; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
     payload: Cell; // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
 }
 message BuildMessenger {
@@ -13,6 +13,7 @@ message BuildMessenger {
 }
 message BuildChildRouter {
     sourceAddress: Address; // Protocol's address
+    eventId: Int; // The even id which user want to subscribe
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
     subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
     template: Cell; // Callback contract for subscribers
@@ -76,6 +77,16 @@ message ExtMessage {
 }
 
 message OffchainEventSignal {
-    eventId: Int as uint8; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
+    eventId: Int; // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
     payload: Cell; // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
+}
+
+message SetMessenger {
+    messenger: Address; // Messenger address
+    eventId: Int; // Event id
+}
+
+message Trade {
+    orderAction: Int;
+    positionSize: Int;
 }

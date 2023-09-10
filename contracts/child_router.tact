@@ -16,6 +16,7 @@ contract ChildRouter with Deployable, Ownable {
     maxUserStakeAmount: Int as coins; // The max total users' stake amount
     totalShares: Int as uint256;
     messengerState: map<Int, Int>; 
+    eventId: Int;
 
     init(owner: Address, sourceAddress: Address, minimumStake: Int) {
         self.owner = owner;
@@ -25,8 +26,9 @@ contract ChildRouter with Deployable, Ownable {
         self.totalShares = 0;
         self.totalStakeAmount = 0;
         self.maxUserStakeAmount = 0;
+        self.eventId = -1;
     }
-
+    receive() {}
     receive(msg: BuildChildRouter) {
         self.requireOwner();
         let ctx: Context = context();
@@ -39,7 +41,7 @@ contract ChildRouter with Deployable, Ownable {
 
         // Update the total shares and the protocol's shares
         self.stakes.set(self.sourceAddress, ctx.value);
-        
+        self.eventId = msg.eventId;
         // Build Messenger
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         let init: StateInit = self.messengerInit(self.sourceAddress, self.messengerId);
@@ -79,6 +81,10 @@ contract ChildRouter with Deployable, Ownable {
 
     receive(msg: SubscribeBody) {
         self.requireOwner();
+        if(msg.eventId != self.eventId)
+        {
+            throw(011); // This child router is not for this event
+        }
         // Save the callback contract address(writen by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
@@ -89,13 +95,17 @@ contract ChildRouter with Deployable, Ownable {
             body: CreateMsgSubscriber {
                 walletAddress: msg.walletAddress, 
                 callbackAddress: msg.callbackAddress,
-                eventId: msg.eventId
+                eventId: self.eventId
             }.toCell()
         });
     }
 
     receive(msg: DeleteSubscriber) {
         self.requireOwner();
+        if(msg.eventId != self.eventId)
+        {
+            throw(011); // This child router is not for this event
+        }
         // Save the callback contract address(writen by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
         send(SendParameters{
@@ -106,7 +116,7 @@ contract ChildRouter with Deployable, Ownable {
             body: DeleteSubscriber {
                 walletAddress: msg.walletAddress, 
                 callbackAddress: msg.callbackAddress,
-                eventId: msg.eventId
+                eventId: self.eventId
             }.toCell()
         });
     }
@@ -122,13 +132,16 @@ contract ChildRouter with Deployable, Ownable {
             if(self.messengerState.get(i) == 1)
             {
                 let messengerAddress: Address = self.messengerAddress(self.sourceAddress, i);
-                let value: Int = ton("0.1");
+                let value: Int = ton("0.018"); // problem
                 send(SendParameters{
                     to: messengerAddress,
                     value: value, 
                     mode: SendPayGasSeparately, 
                     bounce: true,
-                    body: msg.toCell()
+                    body: EventSignal {
+                        eventId: self.eventId,
+                        payload: msg.payload
+                    }.toCell()
                 });
             }
             i = i + 1;
@@ -247,5 +260,9 @@ contract ChildRouter with Deployable, Ownable {
     }
     get fun getMessengerState(messengerId: Int): Int? {
         return self.messengerState.get(messengerId);
+    }
+
+    get fun getBalace(): Int {
+        return myBalance();
     }
 }

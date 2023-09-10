@@ -15,7 +15,9 @@ contract UniversalRouter with Deployable, Ownable {
         self.minimumStake = 0;
     }
 
-    receive(msg: ProtcolRegister){
+    receive() {}
+
+    receive(msg: ProtcolRegister) {
         // Check if protocol is already registered
         if (self.protocolToRouter.get(msg.sourceAddress) != null) {
             throw(001);
@@ -33,7 +35,8 @@ contract UniversalRouter with Deployable, Ownable {
                 body: BuildChildRouter{sourceAddress: msg.sourceAddress,
                     template: msg.template,
                     maxUserStakeAmount: msg.maxUserStakeAmount,
-                    subscribeFeePerTick: msg.subscribeFeePerTick
+                    subscribeFeePerTick: msg.subscribeFeePerTick,
+                    eventId: self.eventCount
                 }.toCell(),
                 code: init.code, // attaching the state init will cause the message to deploy
                 data: init.data
@@ -161,5 +164,9 @@ contract UniversalRouter with Deployable, Ownable {
 
     get fun getProtocolAddress(eventId: Int): Address {
         return self.eventIdToProtocol.get(eventId)!!;
+    }
+
+    get fun getBalace(): Int {
+        return myBalance();
     }
 }
