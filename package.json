@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "scripts": {
         "start": "blueprint run",
-        "build": "rm -rf ./build/* && blueprint build --all",
+        "build": "rm -rf ./build/* && blueprint build --all && cp ./build/UniversalRouter/*.ts packages/sdk/compiled/",
         "test": "jest"
     },
     "devDependencies": {
