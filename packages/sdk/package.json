@@ -1,0 +1,26 @@
+{
+  "name": "sdk",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "alan890104 <alan890104@gmail.com>",
+  "homepage": "https://github.com/Ideal-TON/TonPromiseEye#readme",
+  "license": "ISC",
+  "main": "lib/index.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ideal-TON/TonPromiseEye.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/sdk.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/Ideal-TON/TonPromiseEye/issues"
+  }
+}
