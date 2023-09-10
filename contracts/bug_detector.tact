@@ -53,6 +53,8 @@ contract BugDetector with Deployable, Alertable {
         self.eventId = -1;
     }
 
+    receive() {}
+    
     receive(msg: BugWarning) {
         let sendPayload: Cell = beginCell()
                                     .storeAddress(msg.targetAdress)

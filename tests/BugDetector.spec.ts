@@ -15,12 +15,12 @@ describe('BugDetector', () => {
     let universalRouter: SandboxContract<UniversalRouter>;
     let owner: SandboxContract<TreasuryContract>;
     let userDefaultCallback: SandboxContract<UserDefaultCallback>;
-    async function protocolRegsiter() {
+    async function protocolRegsiter(owner: SandboxContract<TreasuryContract>, sourceAddress: Address) {
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
             maxUserStakeAmount: toNano('100'),
             subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: bugDetector.address, // oracle event
+            sourceAddress: sourceAddress, 
             template: beginCell().endCell(),
         };
         const registerResult = await bugDetector.send(
@@ -132,7 +132,7 @@ describe('BugDetector', () => {
     });
 
     it('should bug detectoer should send event signal to universal router', async () => {
-        await protocolRegsiter();
+        await protocolRegsiter(owner, bugDetector.address);
         const childRouterAddress = await universalRouter.getChildRouterAddress(bugDetector.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(bugDetector.address, 0n);

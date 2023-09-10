@@ -20,42 +20,20 @@ describe('UniversalRouter', () => {
     let event: SandboxContract<Event>;
     let deployer: SandboxContract<TreasuryContract>;
     let advancedContract: SandboxContract<UserDefaultCallback>;
-    async function protocolRegsiter() {
-        // Trigger the event
-        const eventSignal: EventSignal = {
-            $$type: 'EventSignal',
-            eventId: 0n, // Setting the eventId to 0 as per your request
-            payload: beginCell().endCell(),
-        };
-
-        const event1: EventTrigger = {
-            $$type: 'EventTrigger',
-            value: toNano('0'),
-            address: event.address,
-            info: eventSignal,
-        };
-
-        await event.send(
-            deployer.getSender(),
-            {
-                value: toNano('10'),
-            },
-            event1
-        );
-
+    async function eventRegsiter(deployer: SandboxContract<TreasuryContract>, sourceAddress: Address) {
         // Register the protocol
         const protocolRegister: ProtcolRegister = {
             $$type: 'ProtcolRegister',
             maxUserStakeAmount: toNano('100'),
             subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: event.address,
+            sourceAddress: sourceAddress,
             template: beginCell().endCell(),
         };
 
-        await universalRouter.send(
+        await event.send(
             deployer.getSender(),
             {
-                value: toNano('0.2'),
+                value: toNano('0.5'),
             },
             protocolRegister
         );
@@ -68,6 +46,16 @@ describe('UniversalRouter', () => {
         event = blockchain.openContract(await Event.fromInit(deployer.address, universalRouter.address));
 
         const deployResult = await universalRouter.send(
+            deployer.getSender(),
+            {
+                value: toNano('1'),
+            },
+            {
+                $$type: 'Deploy',
+                queryId: 0n,
+            }
+        );
+        const deployResultEvent = await event.send(
             deployer.getSender(),
             {
                 value: toNano('1'),
@@ -94,7 +82,7 @@ describe('UniversalRouter', () => {
     it('should protocol register successfully', async () => {
         // The rest of your test assertions remain unchanged...
         const eventIdBefore = await universalRouter.getEventId();
-        await protocolRegsiter(); // Simply call the function to handle the registration
+        await eventRegsiter(deployer, event.address); // Simply call the function to handle the registration
         const eventIdAfter = await universalRouter.getEventId();
         expect(eventIdBefore).toEqual(eventIdAfter - 1n);
     });
@@ -119,6 +107,7 @@ describe('UniversalRouter', () => {
             },
             event1
         );
+        
         // exit code 3 because of the protocol doesn't register before
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
@@ -135,17 +124,17 @@ describe('UniversalRouter', () => {
         };
         const eventIdBefore = await universalRouter.getEventId();
         // Ptotocol send regiter msg to universal router
-        const protocolRegisterResult = await universalRouter.send(
+        const protocolRegisterResult = await event.send(
             deployer.getSender(),
             {
-                value: toNano('0.2'),
+                value: toNano('0.5'),
             },
             protocolRegister
         );
         const eventIdAfter = await universalRouter.getEventId();
         // Test whether prorocol send register msg to universal router successfully
         expect(protocolRegisterResult.transactions).toHaveTransaction({
-            from: deployer.address,
+            from: event.address,
             to: universalRouter.address,
             success: true,
         });
@@ -168,7 +157,7 @@ describe('UniversalRouter', () => {
     });
 
     it('should user register successfully (advanced)', async () => {
-        await protocolRegsiter(); // Simply call the function to handle the registration
+        await eventRegsiter(deployer, event.address); // Simply call the function to handle the registration
 
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
@@ -231,7 +220,7 @@ describe('UniversalRouter', () => {
 
     it('should user register successfully (default callback contract)', async () => {
         // 1. Protocol register
-        await protocolRegsiter();
+        await eventRegsiter(deployer, event.address);
 
         // 2. User create UDC contract
         const createBody: CreateBody = {
@@ -319,7 +308,7 @@ describe('UniversalRouter', () => {
 
     it('should trigger event and subscriber get the event', async () => {
         // 1. Protocol register
-        await protocolRegsiter(); // Simply call the function to handle the registration
+        await eventRegsiter(deployer, event.address); // Simply call the function to handle the registration
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
         const childRouter = blockchain.openContract(await ChildRouter.fromAddress(childRouterAddress));
         const messengerAddress = await childRouter.getMessengerAddress(event.address, 0n);
@@ -422,7 +411,7 @@ describe('UniversalRouter', () => {
     });
 
     it('should user register successfully (advanced)', async () => {
-        await protocolRegsiter(); // Simply call the function to handle the registration
+        await eventRegsiter(deployer, event.address); // Simply call the function to handle the registration
 
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
@@ -485,7 +474,7 @@ describe('UniversalRouter', () => {
 
     it('should user unsubcribe the event', async () => {
         // 1. Protocol register
-        await protocolRegsiter();
+        await eventRegsiter(deployer, event.address);
 
         // 2. User create UDC contract
         const createBody: CreateBody = {

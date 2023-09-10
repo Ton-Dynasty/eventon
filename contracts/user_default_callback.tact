@@ -15,6 +15,8 @@ contract UserDefaultCallback with Deployable, Ownable {
         self.eventCount = 0;
     }
     
+    receive() {}
+    
     receive(msg: BuildUDC) {
         
     }
