@@ -8,6 +8,7 @@ contract UniversalRouter with Deployable, Ownable {
     eventCount: Int; // Event ID count, ex: Orcle->0, Chainlink->1, etc
     protocolToRouter: map<Address, Address>; // Protocol address -> Child Router address
     eventIdToProtocol: map<Int, Address>; // Event ID -> Protocol address
+    protocolToEventId: map<Address, Int>; // Protocol address -> Event ID
     minimumStake: Int; // Minimum stake for each protocol
     init(owner: Address){
         self.owner = owner;
@@ -23,6 +24,7 @@ contract UniversalRouter with Deployable, Ownable {
             throw(001);
         }
         self.eventIdToProtocol.set(self.eventCount, msg.sourceAddress);
+        self.protocolToEventId.set(msg.sourceAddress, self.eventCount);
         // Build child router
         let childRouterAddress: Address = self.childRouterAddress(msg.sourceAddress);
         self.protocolToRouter.set(msg.sourceAddress, childRouterAddress);
@@ -143,6 +145,9 @@ contract UniversalRouter with Deployable, Ownable {
 
     // Get Methods
 
+    get fun protocolEventTd(protocolAddress: Address): Int? {
+        return self.protocolToEventId.get(protocolAddress);
+    }
     //get the child router address
     get fun childRouterAddress(sourceAddress: Address): Address {
         let childInit: StateInit = self.getChildRouterInit(sourceAddress);
