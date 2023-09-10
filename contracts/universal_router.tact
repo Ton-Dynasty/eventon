@@ -23,6 +23,8 @@ contract UniversalRouter with Deployable, Ownable {
         if (self.protocolToRouter.get(msg.sourceAddress) != null) {
             throw(001);
         }
+        let cxt: Context = context();
+        let walletAddress: Address = cxt.sender;
         self.eventIdToProtocol.set(self.eventCount, msg.sourceAddress);
         self.protocolToEventId.set(msg.sourceAddress, self.eventCount);
         // Build child router
@@ -53,13 +55,16 @@ contract UniversalRouter with Deployable, Ownable {
         if (self.eventIdToProtocol.get(msg.eventId) == null) {
             throw(002); // Event ID does not exist
         }
+        let cxt: Context = context();
+        let walletAddress: Address = cxt.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{to: childRouterAddress,
                 value: 0,
                 mode: SendRemainingValue,
                 bounce: true,
-                body: CreateBody{walletAddress: msg.walletAddress, // Owner address of callback contract
+                body: CreateBody{
+                    walletAddress: walletAddress, // Owner address of callback contract
                     deadline: msg.deadline, // The deadline of the msg can delay
                     eventId: msg.eventId, // The even id which user want to subscribe
                     parameter: msg.parameter // Callback contract parameter
@@ -73,6 +78,8 @@ contract UniversalRouter with Deployable, Ownable {
         {
             throw(002); // Event ID does not exist
         }
+        let cxt: Context = context();
+        let walletAddress: Address = cxt.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{
@@ -81,7 +88,7 @@ contract UniversalRouter with Deployable, Ownable {
             mode: SendRemainingValue, 
             bounce: true, 
             body: SubscribeBody {
-                walletAddress: msg.walletAddress, // Owner address of callback contract
+                walletAddress: walletAddress, // Owner address of callback contract
                 deadline: msg.deadline, // The deadline of the msg can delay
                 eventId: msg.eventId, // The even id which user want to subscribe
                 callbackAddress: msg.callbackAddress // The callback contract address writed by user
@@ -94,6 +101,8 @@ contract UniversalRouter with Deployable, Ownable {
         {
             throw(002); // Event ID does not exist
         }
+        let cxt: Context = context();
+        let walletAddress: Address = cxt.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{
@@ -102,7 +111,7 @@ contract UniversalRouter with Deployable, Ownable {
             mode: SendRemainingValue, 
             bounce: true, 
             body: DeleteSubscriber {
-                walletAddress: msg.walletAddress, // Owner address of callback contract
+                walletAddress: walletAddress, // Owner address of callback contract
                 eventId: msg.eventId, // The even id which user want to subscribe
                 callbackAddress: msg.callbackAddress // The callback contract address writed by user
             }.toCell()
