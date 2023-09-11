@@ -158,15 +158,8 @@ describe('UniversalRouter', () => {
                 queryId: 0n,
             }
         );
-        const subscribeBody: SubscribeBody = {
-            $$type: 'SubscribeBody',
-            walletAddress: advancedUser.address, // Owner address of callback contract
-            deadline: 100n, // The deadline of the msg can delay
-            eventId: 0n, // The even id which user want to subscribe
-            callbackAddress: advancedContract.address, // Callback contract address written by user
-        };
 
-        const subscribeResult = await utils.userRegister(universalRouter, 1n, advancedUser, advancedContract.address);
+        const subscribeResult = await utils.userSubscribe(universalRouter, 0n, advancedUser, advancedContract.address);
 
         // Test whether the advanced register msg has been sent to the universal router
         expect(subscribeResult.transactions).toHaveTransaction({
