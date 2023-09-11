@@ -38,24 +38,6 @@ describe('CopyTrading', () => {
         );
     }
 
-    async function userRegsiter(eventId: bigint, user: SandboxContract<TreasuryContract>, callbackAddress: Address) {
-        //await protocolRegsiter(oracle.address, trader); // Simply call the function to handle the registration
-        const subscribeBody: SubscribeBody = {
-            $$type: 'SubscribeBody',
-            walletAddress: user.address, // Owner address of callback contract
-            deadline: 100n, // The deadline of the msg can delay
-            eventId: eventId, // The even id which user want to subscribe
-            callbackAddress: callbackAddress, // Callback contract address written by user
-        };
-
-        await universalRouter.send(
-            user.getSender(),
-            {
-                value: toNano('10'),
-            },
-            subscribeBody
-        );
-    }
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         trader = await blockchain.treasury('deployer');
@@ -114,7 +96,7 @@ describe('CopyTrading', () => {
     });
 
     it('should user get the price msg from the event', async () => {
-        await userRegsiter(0n, trader, copyTrading.address); // trader registers for the oracle event
+        await utils.userRegister(universalRouter, 0n, trader, copyTrading.address); // trader registers for the oracle event
         const childRouterAddress = await universalRouter.getChildRouterAddress(oracle.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(oracle.address, 0n);
@@ -165,7 +147,7 @@ describe('CopyTrading', () => {
             }
         );
 
-        await userRegsiter(1n, bob, follower.address);
+        await utils.userRegister(universalRouter, 1n, bob, follower.address);
         const childRouterAddress2 = await universalRouter.getChildRouterAddress(copyTrading.address);
         const childRouter2 = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress2));
         const messagerAddress2 = await childRouter2.getMessengerAddress(copyTrading.address, 0n);

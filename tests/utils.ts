@@ -1,6 +1,6 @@
 import { SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { ProtocolContract } from './types';
-import { ProtcolRegister } from '../wrappers/UniversalRouter';
+import { ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
 import { Address, beginCell, toNano } from 'ton-core';
 
 export async function protocolRegister(
@@ -23,5 +23,29 @@ export async function protocolRegister(
             value: toNano('10'),
         },
         protocolRegister
+    );
+}
+
+export async function userRegister(
+    universalRouter: SandboxContract<UniversalRouter>,
+    eventId: bigint,
+    user: SandboxContract<TreasuryContract>,
+    callbackAddress: Address
+) {
+    //await protocolRegsiter(oracle.address, trader); // Simply call the function to handle the registration
+    const subscribeBody: SubscribeBody = {
+        $$type: 'SubscribeBody',
+        walletAddress: user.address, // Owner address of callback contract
+        deadline: 100n, // The deadline of the msg can delay
+        eventId: eventId, // The even id which user want to subscribe
+        callbackAddress: callbackAddress, // Callback contract address written by user
+    };
+
+    await universalRouter.send(
+        user.getSender(),
+        {
+            value: toNano('10'),
+        },
+        subscribeBody
     );
 }
