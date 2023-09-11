@@ -1,25 +1,30 @@
 # Eventon
 
+[![Static Badge](https://img.shields.io/badge/Resource-Docs-black?logo=github)]()
+[![Static Badge](https://img.shields.io/badge/Community-Telegram-blue?logo=telegram)]()
+[![Static Badge](https://img.shields.io/badge/Website-Eventon-3425cc?logo=react)]()
+
 <p align="center">
 <img src="./utils/eventon.png" alt="Eventon" width="200" height="158.95522">
 </p>
 
 ## Overview
+
 > [Docs](https://ton-dynasty.github.io/eventon-doc/)
 
 ### What is Eventon?
 
-- **Ton-Dynasty** has designed a protocol that can achieve the following two functionalities:
-    - **On-Chain Functionality**: Users can subscribe to events occurring on-chain, including:
-        - DeFi protocols
-        - Oracles
-        - Airdrop events
-        - Other smart contracts
-    - **Off-Chain Functionality**: Through off-chain computations, signals are transmitted to on-chain contracts to execute related programs, including:
-        - Smart contract vulnerability detection
-        - Machine learning-based intelligent position signals
-        - Blacklist monitoring
-        - Whale account transfer notifications
+-   **Ton-Dynasty** has designed a protocol that can achieve the following two functionalities:
+    -   **On-Chain Functionality**: Users can subscribe to events occurring on-chain, including:
+        -   DeFi protocols
+        -   Oracles
+        -   Airdrop events
+        -   Other smart contracts
+    -   **Off-Chain Functionality**: Through off-chain computations, signals are transmitted to on-chain contracts to execute related programs, including:
+        -   Smart contract vulnerability detection
+        -   Machine learning-based intelligent position signals
+        -   Blacklist monitoring
+        -   Whale account transfer notifications
 
 Users can customize their own code or utilize built-in smart contracts to automatically execute program operations when specific signals are received.
 
