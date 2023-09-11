@@ -12,7 +12,7 @@ import '@ton-community/test-utils';
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
 import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 import { Messenger } from '../wrappers/Messenger';
-
+import * as utils from './utils';
 describe('UniversalRouter', () => {
     let blockchain: Blockchain;
     let universalRouter: SandboxContract<UniversalRouter>;
@@ -222,20 +222,7 @@ describe('UniversalRouter', () => {
         await eventRegsiter(deployer, event.address);
 
         // 2. User create UDC contract
-        const createBody: CreateBody = {
-            $$type: 'CreateBody',
-            walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
-            deadline: 100n, // 60 seconds from now, adjust as required.
-            eventId: 0n,
-            parameter: beginCell().endCell(), // Assuming a simple cell, adjust as required.
-        };
-        const createUdcMsgResult = await universalRouter.send(
-            deployer.getSender(),
-            {
-                value: toNano('100'), // Adjust as required.
-            },
-            createBody
-        );
+        const createUdcMsgResult = await utils.userCreateCallback(universalRouter, deployer);
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
 
@@ -252,7 +239,7 @@ describe('UniversalRouter', () => {
             success: true,
         });
         // [V] UDC contract has been deployed.
-        const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
+        const udcAddress = await childRouter.getUdcAddress(deployer.address, beginCell().endCell());
         expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: udcAddress,

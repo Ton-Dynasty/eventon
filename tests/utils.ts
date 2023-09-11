@@ -1,6 +1,6 @@
 import { SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { ProtocolContract } from './types';
-import { ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
+import { CreateBody, ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
 import { Address, beginCell, toNano } from 'ton-core';
 
 export async function protocolRegister(
@@ -47,6 +47,27 @@ export async function userSubscribe(
             value: toNano('10'),
         },
         subscribeBody
+    );
+    return res;
+}
+
+export async function userCreateCallback(
+    universalRouter: SandboxContract<UniversalRouter>,
+    deployer: SandboxContract<TreasuryContract>
+) {
+    const createBody: CreateBody = {
+        $$type: 'CreateBody',
+        walletAddress: deployer.address, // Assuming deployer is the user for simplicity.
+        deadline: 100n, // 60 seconds from now, adjust as required.
+        eventId: 0n,
+        parameter: beginCell().endCell(), // Assuming a simple cell, adjust as required.
+    };
+    const res = await universalRouter.send(
+        deployer.getSender(),
+        {
+            value: toNano('100'), // Adjust as required.
+        },
+        createBody
     );
     return res;
 }
