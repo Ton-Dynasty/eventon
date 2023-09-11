@@ -8,13 +8,11 @@ contract BlacklistSubscriber with Deployable, Ownable {
     messenger: Address;
     eventId: Int;
 
-    blacklist: map<Int, Address>;
-    blacklistLength: Int;
+    blacklist: map<Address, Int>;
 
     init(owner: Address) {
         self.owner = owner;
         self.messenger = owner; // Use setMessenger to change messenger
-        self.blacklistLength = 0;
         self.eventId = -1;
     }
     
@@ -25,12 +23,11 @@ contract BlacklistSubscriber with Deployable, Ownable {
     
     fun requireNotInBlacklist() {
         let ctx: Context = context();
-        let i: Int = 0;
-        while (i < self.blacklistLength) {
-            let blackAddress: Address = self.blacklist.get(i)!!;
-            require(blackAddress != ctx.sender, "Address is in blacklist");
-            i = i + 1;
+        if (self.blacklist.get(ctx.sender)!=null){
+            let isExist: Int = self.blacklist.get(ctx.sender)!!;
+            require(isExist != 1, "Address is in blacklist");
         }
+
     }
     receive(){
         // Check if the sender is not in blacklist
@@ -50,9 +47,7 @@ contract BlacklistSubscriber with Deployable, Ownable {
         let blackAddress: Address = parser.loadAddress();
         // let blackInfo: String = parser.loadRef().asSlice().asString();
         // TODO may emit event
-        self.blacklist.set(self.blacklistLength, blackAddress);
-        self.blacklistLength = self.blacklistLength + 1;
-
+        self.blacklist.set(blackAddress, 1);
     }
     
     receive(msg: Transfer){
@@ -67,11 +62,7 @@ contract BlacklistSubscriber with Deployable, Ownable {
             bounce: false
         });
     }
-
-    get fun getBlacklistLength(): Int {
-        return self.blacklistLength;
-    }
-
+    
     get fun getMessenger(): Address {
         return self.messenger;
     }
