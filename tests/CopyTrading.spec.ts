@@ -21,7 +21,7 @@ describe('CopyTrading', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        trader = await blockchain.treasury('deployer');
+        trader = await blockchain.treasury('trader');
         dex = blockchain.openContract(await Dex.fromInit(trader.address));
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(trader.address));
         oracle = blockchain.openContract(await Event.fromInit(trader.address, universalRouter.address));
@@ -72,8 +72,11 @@ describe('CopyTrading', () => {
     });
 
     it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and copyTrading are ready to use
+        expect(trader.address).toBeTruthy();
+        expect(copyTrading.address).toBeTruthy();
+        expect(universalRouter.address).toBeTruthy();
+        expect(oracle.address).toBeTruthy();
+        expect(dex.address).toBeTruthy();
     });
 
     it('should user get the price msg from the event', async () => {

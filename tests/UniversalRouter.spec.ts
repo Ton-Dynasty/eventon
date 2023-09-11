@@ -56,8 +56,9 @@ describe('UniversalRouter', () => {
     });
 
     it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and universalRouter are ready to use
+        expect(deployer.address).toBeTruthy();
+        expect(universalRouter.address).toBeTruthy();
+        expect(event.address).toBeTruthy();
     });
 
     it('should protocol register successfully', async () => {
