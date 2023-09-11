@@ -21,7 +21,7 @@ describe('CopyTrading', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        trader = await blockchain.treasury('deployer');
+        trader = await blockchain.treasury('trader');
         dex = blockchain.openContract(await Dex.fromInit(trader.address));
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(trader.address));
         oracle = blockchain.openContract(await Event.fromInit(trader.address, universalRouter.address));
