@@ -1,8 +1,8 @@
 # Eventon
 
-[![Static Badge](https://img.shields.io/badge/Resource-Docs-black?logo=github)]()
-[![Static Badge](https://img.shields.io/badge/Community-Telegram-blue?logo=telegram)]()
-[![Static Badge](https://img.shields.io/badge/Website-Eventon-3425cc?logo=react)]()
+[![Static Badge](https://img.shields.io/badge/Resource-Docs-black?logo=github)](https://ton-dynasty.github.io/eventon-doc/)
+[![Static Badge](https://img.shields.io/badge/Community-Telegram-blue?logo=telegram)](https://t.me/+5affnJVZV4I4MTI1)
+[![Static Badge](https://img.shields.io/badge/Website-Eventon-3425cc?logo=react)](https://google.com)
 
 <p align="center">
 <img src="./utils/eventon.png" alt="Eventon" width="200" height="158.95522">
