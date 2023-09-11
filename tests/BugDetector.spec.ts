@@ -99,7 +99,7 @@ describe('BugDetector', () => {
     });
 
     it('should bug detectoer should send event signal to universal router', async () => {
-        await utils.protocolRegister(bugDetector, owner, bugDetector.address);
+        await utils.protocolRegister(bugDetector, owner);
         const childRouterAddress = await universalRouter.getChildRouterAddress(bugDetector.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(bugDetector.address, 0n);
