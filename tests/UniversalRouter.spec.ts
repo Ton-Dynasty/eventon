@@ -61,7 +61,6 @@ describe('UniversalRouter', () => {
     });
 
     it('should protocol register successfully', async () => {
-        // The rest of your test assertions remain unchanged...
         const eventIdBefore = await universalRouter.getEventId();
         await utils.protocolRegister(event, deployer);
         const eventIdAfter = await universalRouter.getEventId();
@@ -208,19 +207,19 @@ describe('UniversalRouter', () => {
         const childRouterAddress = await universalRouter.getChildRouterAddress(event.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
 
-        // [V] user -> universal router
+        // Test whether the user send the create udc msg to the universal router
         expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,
             success: true,
         });
-        // [V] universal router -> child router.
+        // Test whether the universal router send the create udc msg to the child router
         expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
-        // [V] UDC contract has been deployed.
+        // Test whether the child router send the create udc msg to the udc contract
         const udcAddress = await childRouter.getUdcAddress(deployer.address, createBody.parameter);
         expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: childRouterAddress,
@@ -245,21 +244,21 @@ describe('UniversalRouter', () => {
             subscribeBody
         );
 
-        // [V] user -> universal router
+        // Test whether the user send the subscribe msg to the universal router
         expect(subscribeMsgResult.transactions).toHaveTransaction({
             from: deployer.address,
             to: universalRouter.address,
             success: true,
         });
 
-        // [V] universal router -> child router
+        // Test whether the universal router send the subscribe msg to the child router
         expect(subscribeMsgResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
 
-        // [V] child router -> messenger
+        // Test whether the child router send the subscribe msg to the messenger contract
         const messengerAddress = await childRouter.getMessengerAddress(event.address, 0n); // Adjust messengerId as required.
 
         expect(subscribeMsgResult.transactions).toHaveTransaction({
@@ -268,7 +267,7 @@ describe('UniversalRouter', () => {
             success: true,
         });
 
-        // [V] Check if messenger has set the subscriber's callback address correctly.
+        // Check if messenger has set the subscriber's callback address correctly.
         const messenger = blockchain.openContract(Messenger.fromAddress(messengerAddress));
         const subscriberAddress = await messenger.getIdToSubscriber(0n); // Assuming subscriberId starts from 1 and increments.
         expect(subscriberAddress?.toString()).toEqual(udcAddress.toString());
@@ -349,32 +348,32 @@ describe('UniversalRouter', () => {
             },
             event1
         );
-        // [V] event -> universal router
+        // Test whether the event msg has been sent to the universal router
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
             to: universalRouter.address,
             success: true,
         });
-        // [V] universal router -> child router
+        // Test whether universal router sent the event msg to the child router
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: universalRouter.address,
             to: childRouterAddress,
             success: true,
         });
-        // [V] child router -> messenger
+        // Test whether the child router sent the event msg to the messanger contract
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: childRouterAddress,
             to: messengerAddress,
             success: true,
         });
-        // [V] messenger -> udc
+        // Test whether the messenger contract sent the event msg to the subscriber
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: messengerAddress,
             to: udcAddress,
             success: true,
         });
         let postEventCount = await subscriber.getEventCount();
-        // [V] Check if the event count has been increased
+        // Check if the event count has been increased
         expect(postEventCount).toEqual(preEventCount + 1n);
     });
 
@@ -519,8 +518,5 @@ describe('UniversalRouter', () => {
         const messengerState = await childRouter.getGetMessengerState(0n);
         // Test the messenger state is 0, so that child router can't send event msg to the messenger
         expect(messengerState).toEqual(null);
-        // const subCountAfter = await messager.getGetSubCount();
-        // console.log(subCountBefore, subCountAfter);
-        //expect(subCountBefore).toEqual(subCountAfter - 1n);
     });
 });
