@@ -20,7 +20,7 @@ describe('BugDetector', () => {
             $$type: 'ProtcolRegister',
             maxUserStakeAmount: toNano('100'),
             subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: sourceAddress, 
+            sourceAddress: sourceAddress,
             template: beginCell().endCell(),
         };
         const registerResult = await bugDetector.send(
@@ -111,7 +111,7 @@ describe('BugDetector', () => {
             protocolRegister
         );
         const eventIdAfter = await universalRouter.getEventId();
-        
+
         // Test whether the register msg is sent by owner
         expect(registerResult.transactions).toHaveTransaction({
             from: owner.address,
@@ -128,7 +128,7 @@ describe('BugDetector', () => {
 
         // Test whether the event id is increased by 1
         expect(eventIdAfter).toBe(eventIdBefore + 1n);
-        printTransactionFees(registerResult.transactions);
+        //printTransactionFees(registerResult.transactions);
     });
 
     it('should bug detectoer should send event signal to universal router', async () => {
@@ -138,7 +138,9 @@ describe('BugDetector', () => {
         const messagerAddress = await childRouter.getMessengerAddress(bugDetector.address, 0n);
         const messenger = blockchain.openContract(await Messenger.fromAddress(messagerAddress));
         let user = await blockchain.treasury('user');
-        userDefaultCallback = blockchain.openContract(await UserDefaultCallback.fromInit(childRouterAddress, user.address, beginCell().endCell()));
+        userDefaultCallback = blockchain.openContract(
+            await UserDefaultCallback.fromInit(childRouterAddress, user.address, beginCell().endCell())
+        );
         const deployResultUdc = await userDefaultCallback.send(
             owner.getSender(),
             {
@@ -193,5 +195,3 @@ describe('BugDetector', () => {
         });
     });
 });
-
-
