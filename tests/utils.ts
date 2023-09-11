@@ -1,5 +1,5 @@
 import { SandboxContract, TreasuryContract } from '@ton-community/sandbox';
-import { ProtocolContract } from './types';
+import { BaseContract, ProtocolContract } from './types';
 import { CreateBody, ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
 import { Address, beginCell, toNano } from 'ton-core';
 
@@ -70,4 +70,22 @@ export async function userCreateCallback(
         createBody
     );
     return res;
+}
+
+export async function deployProtocol(
+    protocol: SandboxContract<BaseContract>,
+    deployer: SandboxContract<TreasuryContract>,
+    value: bigint
+) {
+    const deployResult = await protocol.send(
+        deployer.getSender(),
+        {
+            value: value,
+        },
+        {
+            $$type: 'Deploy',
+            queryId: 0n,
+        }
+    );
+    return deployResult;
 }

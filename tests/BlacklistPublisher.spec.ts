@@ -7,6 +7,7 @@ import { Address, Cell, address, beginCell, toNano } from 'ton-core';
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
 import { Messenger } from '../wrappers/Messenger';
 import * as utils from './utils';
+
 describe('BlacklistPublisher', () => {
     let blockchain: Blockchain;
     let blacklistPublisher: SandboxContract<BlacklistPublisher>;
@@ -17,41 +18,13 @@ describe('BlacklistPublisher', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         owner = await blockchain.treasury('owner');
-
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(owner.address));
         blacklistPublisher = blockchain.openContract(
             await BlacklistPublisher.fromInit(owner.address, universalRouter.address)
         );
 
-        const deployer = await blockchain.treasury('deployer');
-
-        const deployResult = await blacklistPublisher.send(
-            deployer.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        await universalRouter.send(
-            deployer.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-        expect(deployResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: blacklistPublisher.address,
-            deploy: true,
-            success: true,
-        });
+        await utils.deployProtocol(blacklistPublisher, owner, toNano('1'));
+        await utils.deployProtocol(universalRouter, owner, toNano('1'));
     });
 
     it('should deploy', async () => {
@@ -65,14 +38,14 @@ describe('BlacklistPublisher', () => {
         const registerResult = await utils.protocolRegister(blacklistPublisher, owner);
         const eventIdAfter = await universalRouter.getEventId();
 
-        // [V] Deployer -> blacklistPublisher
+        // Test whether owner send event signal to universal router
         expect(registerResult.transactions).toHaveTransaction({
             from: owner.address,
             to: blacklistPublisher.address,
             success: true,
         });
 
-        // [V] blacklistPublisher -> universalRouter
+        // Test whether the event signal is sent to universal router
         expect(registerResult.transactions).toHaveTransaction({
             from: blacklistPublisher.address,
             to: universalRouter.address,
@@ -85,7 +58,6 @@ describe('BlacklistPublisher', () => {
     });
 
     it('should blacklist publisher send event signal to universal router', async () => {
-        const deployer = await blockchain.treasury('deployer');
         await utils.protocolRegister(blacklistPublisher, owner);
 
         const childRouterAddress = await universalRouter.getChildRouterAddress(blacklistPublisher.address);
