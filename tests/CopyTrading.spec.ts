@@ -96,7 +96,7 @@ describe('CopyTrading', () => {
     });
 
     it('should user get the price msg from the event', async () => {
-        await utils.userRegister(universalRouter, 0n, trader, copyTrading.address); // trader registers for the oracle event
+        await utils.userSubscribe(universalRouter, 0n, trader, copyTrading.address); // trader registers for the oracle event
         const childRouterAddress = await universalRouter.getChildRouterAddress(oracle.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(oracle.address, 0n);
@@ -147,7 +147,7 @@ describe('CopyTrading', () => {
             }
         );
 
-        await utils.userRegister(universalRouter, 1n, bob, follower.address);
+        await utils.userSubscribe(universalRouter, 1n, bob, follower.address);
         const childRouterAddress2 = await universalRouter.getChildRouterAddress(copyTrading.address);
         const childRouter2 = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress2));
         const messagerAddress2 = await childRouter2.getMessengerAddress(copyTrading.address, 0n);
