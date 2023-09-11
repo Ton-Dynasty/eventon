@@ -1,8 +1,8 @@
 # Eventon
 
-<div style="display: flex;justify-content: center;align-items: center;">
+<p align="center">
 <img src="./utils/eventon.png" alt="Eventon" width="200" height="158.95522">
-</div>
+</p>
 
 ## Overview
 
