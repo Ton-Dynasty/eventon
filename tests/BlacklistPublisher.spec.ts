@@ -14,25 +14,6 @@ describe('BlacklistPublisher', () => {
     let owner: SandboxContract<TreasuryContract>;
     let userDefaultCallback: SandboxContract<UserDefaultCallback>;
 
-    async function userRegsiter(eventId: bigint, user: SandboxContract<TreasuryContract>, callbackAddress: Address) {
-        //await protocolRegsiter(oracle.address, trader); // Simply call the function to handle the registration
-        const subscribeBody: SubscribeBody = {
-            $$type: 'SubscribeBody',
-            walletAddress: user.address, // Owner address of callback contract
-            deadline: 100n, // The deadline of the msg can delay
-            eventId: eventId, // The even id which user want to subscribe
-            callbackAddress: callbackAddress, // Callback contract address written by user
-        };
-
-        await universalRouter.send(
-            user.getSender(),
-            {
-                value: toNano('10'),
-            },
-            subscribeBody
-        );
-    }
-
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         owner = await blockchain.treasury('owner');
@@ -128,7 +109,7 @@ describe('BlacklistPublisher', () => {
             }
         );
         // User register the event
-        await userRegsiter(0n, user, userDefaultCallback.address);
+        await utils.userSubscribe(universalRouter, 0n, user, userDefaultCallback.address);
         let blackAddress = await blockchain.treasury('blackAddress');
         let blackInfo: Cell = beginCell().storeBuffer(Buffer.from('Phishing')).endCell();
         const blackEvent: BlacklistWarning = {

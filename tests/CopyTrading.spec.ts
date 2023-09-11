@@ -19,25 +19,6 @@ describe('CopyTrading', () => {
     let dex: SandboxContract<Dex>;
     let follower: SandboxContract<Follower>;
 
-    async function copyTradingRegsiter(protocol: SandboxContract<TreasuryContract>, sourceAddress: Address) {
-        // Register the protocol
-        const protocolRegister: ProtcolRegister = {
-            $$type: 'ProtcolRegister',
-            maxUserStakeAmount: toNano('100'),
-            subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: sourceAddress, // oracle event
-            template: beginCell().endCell(),
-        };
-
-        await copyTrading.send(
-            protocol.getSender(),
-            {
-                value: toNano('10'),
-            },
-            protocolRegister
-        );
-    }
-
     beforeEach(async () => {
         blockchain = await Blockchain.create();
         trader = await blockchain.treasury('deployer');
