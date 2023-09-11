@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract, TreasuryContract, printTransactionFees } from '@ton-community/sandbox';
-import { Address, beginCell, toNano } from 'ton-core';
+import { Address, Contract, beginCell, toNano } from 'ton-core';
 import { CopyTrading, SetMessenger } from '../wrappers/CopyTrading';
 import '@ton-community/test-utils';
 import { EventSignal, ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
@@ -8,6 +8,8 @@ import { Event, EventTrigger } from '../wrappers/Event';
 import { Messenger } from '../wrappers/Messenger';
 import { Follower } from '../wrappers/Follower';
 import { Dex } from '../wrappers/Dex';
+import { protocolRegister } from './utils';
+
 describe('CopyTrading', () => {
     let blockchain: Blockchain;
     let copyTrading: SandboxContract<CopyTrading>;
@@ -16,25 +18,6 @@ describe('CopyTrading', () => {
     let trader: SandboxContract<TreasuryContract>;
     let dex: SandboxContract<Dex>;
     let follower: SandboxContract<Follower>;
-
-    async function oracleRegsiter(deployer: SandboxContract<TreasuryContract>, sourceAddress: Address) {
-        // Register the protocol
-        const protocolRegister: ProtcolRegister = {
-            $$type: 'ProtcolRegister',
-            maxUserStakeAmount: toNano('100'),
-            subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: sourceAddress, // oracle event
-            template: beginCell().endCell(),
-        };
-
-        await oracle.send(
-            deployer.getSender(),
-            {
-                value: toNano('10'),
-            },
-            protocolRegister
-        );
-    }
 
     async function copyTradingRegsiter(protocol: SandboxContract<TreasuryContract>, sourceAddress: Address) {
         // Register the protocol
@@ -122,7 +105,7 @@ describe('CopyTrading', () => {
             deploy: true,
             success: true,
         });
-        await oracleRegsiter(trader, oracle.address);
+        await protocolRegister(oracle, trader, oracle.address);
     });
 
     it('should deploy', async () => {

@@ -12,7 +12,6 @@ import '@ton-community/test-utils';
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
 import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 import { Messenger } from '../wrappers/Messenger';
-import exp from 'constants';
 
 describe('UniversalRouter', () => {
     let blockchain: Blockchain;
@@ -107,7 +106,7 @@ describe('UniversalRouter', () => {
             },
             event1
         );
-        
+
         // exit code 3 because of the protocol doesn't register before
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
