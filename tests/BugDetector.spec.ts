@@ -19,39 +19,15 @@ describe('BugDetector', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-        owner = await blockchain.treasury('owner');
 
+        // Init
+        owner = await blockchain.treasury('owner');
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(owner.address));
         bugDetector = blockchain.openContract(await BugDetector.fromInit(owner.address, universalRouter.address));
 
-        const deployResult = await bugDetector.send(
-            owner.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        const deployResultUniversal = await universalRouter.send(
-            owner.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        expect(deployResult.transactions).toHaveTransaction({
-            from: owner.address,
-            to: bugDetector.address,
-            deploy: true,
-            success: true,
-        });
+        // Deploy
+        await utils.deployProtocol(bugDetector, owner, toNano('1'));
+        await utils.deployProtocol(universalRouter, owner, toNano('1'));
     });
 
     it('should deploy', async () => {

@@ -22,37 +22,15 @@ describe('UniversalRouter', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
+
+        // Init
         deployer = await blockchain.treasury('deployer');
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(deployer.address));
         event = blockchain.openContract(await Event.fromInit(deployer.address, universalRouter.address));
 
-        const deployResult = await universalRouter.send(
-            deployer.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-        const deployResultEvent = await event.send(
-            deployer.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        expect(deployResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: universalRouter.address,
-            deploy: true,
-            success: true,
-        });
+        // Deploy
+        await utils.deployProtocol(universalRouter, deployer, toNano('1'));
+        await utils.deployProtocol(event, deployer, toNano('1'));
     });
 
     it('should deploy', async () => {

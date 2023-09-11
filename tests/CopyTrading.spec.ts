@@ -21,6 +21,8 @@ describe('CopyTrading', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
+
+        // Init
         trader = await blockchain.treasury('trader');
         dex = blockchain.openContract(await Dex.fromInit(trader.address));
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(trader.address));
@@ -29,45 +31,12 @@ describe('CopyTrading', () => {
             await CopyTrading.fromInit(trader.address, universalRouter.address, dex.address)
         );
 
-        const deployResult = await copyTrading.send(
-            trader.getSender(),
-            {
-                value: toNano('10'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
+        // Deploy
+        await utils.deployProtocol(copyTrading, trader, toNano('1'));
+        await utils.deployProtocol(universalRouter, trader, toNano('1'));
+        await utils.deployProtocol(dex, trader, toNano('1'));
 
-        const uniResult = await universalRouter.send(
-            trader.getSender(),
-            {
-                value: toNano('10'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        const dexResult = await dex.send(
-            trader.getSender(),
-            {
-                value: toNano('10'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-
-        expect(deployResult.transactions).toHaveTransaction({
-            from: trader.address,
-            to: copyTrading.address,
-            deploy: true,
-            success: true,
-        });
+        // Register the oracle event in the universal router
         await utils.protocolRegister(oracle, trader);
     });
 
