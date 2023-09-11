@@ -17,12 +17,15 @@ describe('BlacklistPublisher', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
+
+        // Init
         owner = await blockchain.treasury('owner');
         universalRouter = blockchain.openContract(await UniversalRouter.fromInit(owner.address));
         blacklistPublisher = blockchain.openContract(
             await BlacklistPublisher.fromInit(owner.address, universalRouter.address)
         );
 
+        // Deploy
         await utils.deployProtocol(blacklistPublisher, owner, toNano('1'));
         await utils.deployProtocol(universalRouter, owner, toNano('1'));
     });
@@ -70,18 +73,12 @@ describe('BlacklistPublisher', () => {
         userDefaultCallback = blockchain.openContract(
             await UserDefaultCallback.fromInit(childRouterAddress, user.address, beginCell().endCell())
         );
-        const deployResultUdc = await userDefaultCallback.send(
-            owner.getSender(),
-            {
-                value: toNano('1'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
-        // User register the event
+        utils.deployProtocol(userDefaultCallback, owner, toNano('1'));
+
+        // User subscribe the event
         await utils.userSubscribe(universalRouter, 0n, user, userDefaultCallback.address);
+
+        // Trigger blacklist event
         let blackAddress = await blockchain.treasury('blackAddress');
         let blackInfo: Cell = beginCell().storeBuffer(Buffer.from('Phishing')).endCell();
         const blackEvent: BlacklistWarning = {
@@ -96,12 +93,14 @@ describe('BlacklistPublisher', () => {
             },
             blackEvent
         );
+
         // Test whether the event signal is sent by blacklist publisher
         expect(res.transactions).toHaveTransaction({
             from: blacklistPublisher.address,
             to: universalRouter.address,
             success: true,
         });
+
         // Test whether the event signal is sent to universal router
         expect(res.transactions).toHaveTransaction({
             from: blacklistPublisher.address,
