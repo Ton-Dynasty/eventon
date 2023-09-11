@@ -206,7 +206,7 @@ describe('UniversalRouter', () => {
             to: childRouterAddress,
             success: true,
         });
-        // [V] UDC contract has been deployed.
+        // Test whether the child router send the create udc msg to the udc contract
         const udcAddress = await childRouter.getUdcAddress(deployer.address, beginCell().endCell());
         expect(createUdcMsgResult.transactions).toHaveTransaction({
             from: childRouterAddress,
