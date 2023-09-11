@@ -8,7 +8,7 @@ import { Event, EventTrigger } from '../wrappers/Event';
 import { Messenger } from '../wrappers/Messenger';
 import { Follower } from '../wrappers/Follower';
 import { Dex } from '../wrappers/Dex';
-import { protocolRegister } from './utils';
+import * as utils from './utils';
 
 describe('CopyTrading', () => {
     let blockchain: Blockchain;
@@ -105,7 +105,7 @@ describe('CopyTrading', () => {
             deploy: true,
             success: true,
         });
-        await protocolRegister(oracle, trader, oracle.address);
+        await utils.protocolRegister(oracle, trader, oracle.address);
     });
 
     it('should deploy', async () => {
