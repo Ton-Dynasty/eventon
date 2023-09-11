@@ -9,6 +9,7 @@ import {
     storeSendParameters,
 } from '../wrappers/EventOffchain';
 import '@ton-community/test-utils';
+import * as utils from './utils';
 
 describe('OffchainEvent', () => {
     let blockchain: Blockchain;
@@ -19,6 +20,8 @@ describe('OffchainEvent', () => {
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
+
+        // Init
         deployer = await blockchain.treasury('deployer', { balance: toNano('100') });
         promiseEye = await blockchain.treasury('promiseEye');
         keyPair = await mnemonicToWalletKey(await mnemonicNew(24));
@@ -26,24 +29,10 @@ describe('OffchainEvent', () => {
             await OffchainEvent.fromInit(BigInt('0x' + keyPair.publicKey.toString('hex')), promiseEye.address)
         );
 
-        const deployResult = await offchainEventContract.send(
-            deployer.getSender(),
-            {
-                value: toNano('2'),
-            },
-            {
-                $$type: 'Deploy',
-                queryId: 0n,
-            }
-        );
+        // Deploy
+        await utils.deployProtocol(offchainEventContract, deployer, toNano('1'));
 
-        expect(deployResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: offchainEventContract.address,
-            deploy: true,
-            success: true,
-        });
-
+        // Set Balance
         const contract = await blockchain.getContract(offchainEventContract.address);
         contract.balance = toNano('10');
     });

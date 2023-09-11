@@ -81,21 +81,18 @@ message OffchainEventSignal {
     payload: Cell; // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
 }
 
-message SetMessenger {
-    messenger: Address; // Messenger address
-    eventId: Int; // Event id
+message Staked {
+    amount: Int as coins;
+    staker: Address;
+    beneficiary: Address;
 }
 
-message Trade {
-    orderAction: Int;
-    positionSize: Int;
+message Withdrawn {
+    amount: Int as coins;
+    receiver: Address;
 }
 
-message BugWarning {
-    targetAdress: Address; // The smart contract address that has a bug
-    bugInfo: Cell; // The bug information
-}
-
-message SetEventId {
-    eventId: Int; // Event id
+message ClaimReward{
+    amount: Int as coins;
+    receiver: Address;
 }
