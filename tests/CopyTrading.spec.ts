@@ -87,7 +87,7 @@ describe('CopyTrading', () => {
             deploy: true,
             success: true,
         });
-        await utils.protocolRegister(oracle, trader, oracle.address);
+        await utils.protocolRegister(oracle, trader);
     });
 
     it('should deploy', async () => {

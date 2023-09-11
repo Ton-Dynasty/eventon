@@ -5,15 +5,14 @@ import { Address, beginCell, toNano } from 'ton-core';
 
 export async function protocolRegister(
     protocol: SandboxContract<ProtocolContract>,
-    deployer: SandboxContract<TreasuryContract>,
-    sourceAddress: Address
+    deployer: SandboxContract<TreasuryContract>
 ) {
     // Register the protocol
     const protocolRegister: ProtcolRegister = {
         $$type: 'ProtcolRegister',
         maxUserStakeAmount: toNano('100'),
         subscribeFeePerTick: toNano('0.5'),
-        sourceAddress: sourceAddress, // oracle event
+        sourceAddress: protocol.address, // oracle event
         template: beginCell().endCell(),
     };
 
