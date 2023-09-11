@@ -1,7 +1,8 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
 import "./child_router";
+import "./example/msg_types";
 
 contract UniversalRouter with Deployable, Ownable {
     owner: Address;

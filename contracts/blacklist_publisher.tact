@@ -1,7 +1,8 @@
 
 import "./common/alertable";
 import "@stdlib/deploy";
-import "./msg_types";
+import "./common/msg_types";
+import "./example/msg_types";
 
 // Blacklist publisher
 // This contract is used to blacklist a publisher

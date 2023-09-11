@@ -1,6 +1,7 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
+import "./example/msg_types";
 
 contract UserDefaultCallback with Deployable, Ownable {
     master: Address; // Master Address(Child Router Address)

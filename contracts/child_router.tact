@@ -1,7 +1,7 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
-import "./event_types";
+import "./common/msg_types";
+import "./example/msg_types";
 import "./user_default_callback";
 import "./messenger";
 
