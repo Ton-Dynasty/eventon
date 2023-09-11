@@ -132,7 +132,7 @@ describe('CopyTrading', () => {
 
         // Register trader contract as Protocol -> send the order action to the follower contract
         // 1. Register the copyTrading contract as Protocol
-        await copyTradingRegsiter(trader, copyTrading.address);
+        await utils.protocolRegister(copyTrading, trader, copyTrading.address);
         // 2. Deploy the follower contract
         let bob = await blockchain.treasury('bob'); // bob is the user who follows the trader contract
         follower = blockchain.openContract(await Follower.fromInit(bob.address, dex.address));
