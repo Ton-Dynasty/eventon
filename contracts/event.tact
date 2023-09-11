@@ -1,29 +1,17 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
+import "./common/alertable";
+import "./example/msg_types";
 
-trait Alertable {
-    promiseEyeAddress: Address;
-    fun sendAlert(msg: EventSignal) {
-        send(SendParameters{
-            to: self.promiseEyeAddress, 
-            value: 0, 
-            bounce: false,
-            mode: SendRemainingValue,
-            body: EventSignal{ 
-                eventId: msg.eventId,
-                payload: msg.payload
-            }.toCell()
-        });
-    }
-}
-
-contract Event with Deployable, Ownable, Alertable {
+contract Event with Deployable, Alertable {
     owner: Address;
     promiseEyeAddress: Address;
+    eventId: Int;
     init(owner: Address, promiseEyeAddress: Address) {
         self.owner = owner;
         self.promiseEyeAddress = promiseEyeAddress;
+        self.eventId = -1;
     }
     receive() {}
     receive(msg: EventTrigger) {

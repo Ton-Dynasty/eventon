@@ -1,25 +1,10 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
+import "./example/msg_types";
+import "./common/alertable";
 
-trait Alertable {
-    promiseEyeAddress: Address;
-    fun sendAlert(msg: EventSignal) {
-        //dump("send to promise eye");
-        send(SendParameters{
-            to: self.promiseEyeAddress, 
-            value: 0, 
-            bounce: false,
-            mode: SendRemainingValue, // have think why use SendRemainingValue mode
-            body: EventSignal{ 
-                eventId: msg.eventId,
-                payload: msg.payload
-            }.toCell()
-        });
-    }
-}
-
-contract CopyTrading with Deployable, Ownable, Alertable {
+contract CopyTrading with Deployable, Alertable {
     owner: Address;
     promiseEyeAddress: Address;
     messenger: Address;

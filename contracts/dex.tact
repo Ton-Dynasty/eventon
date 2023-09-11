@@ -1,7 +1,7 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
-
+import "./common/msg_types";
+import "./example/msg_types";
 contract Dex with Deployable, Ownable {
     owner: Address;
     init(owner: Address) {

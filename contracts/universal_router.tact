@@ -1,7 +1,8 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
 import "./child_router";
+import "./example/msg_types";
 
 contract UniversalRouter with Deployable, Ownable {
     owner: Address;
@@ -24,19 +25,20 @@ contract UniversalRouter with Deployable, Ownable {
             throw(001);
         }
         let cxt: Context = context();
-        let walletAddress: Address = cxt.sender;
-        self.eventIdToProtocol.set(self.eventCount, msg.sourceAddress);
-        self.protocolToEventId.set(msg.sourceAddress, self.eventCount);
+        let sourceAddress: Address = cxt.sender;
+        self.eventIdToProtocol.set(self.eventCount, sourceAddress);
+        self.protocolToEventId.set(sourceAddress, self.eventCount);
         // Build child router
-        let childRouterAddress: Address = self.childRouterAddress(msg.sourceAddress);
-        self.protocolToRouter.set(msg.sourceAddress, childRouterAddress);
+        let childRouterAddress: Address = self.childRouterAddress(sourceAddress);
+        self.protocolToRouter.set(sourceAddress, childRouterAddress);
         let value: Int = ton("0.1");
-        let init: StateInit = self.getChildRouterInit(msg.sourceAddress);
+        let init: StateInit = self.getChildRouterInit(sourceAddress);
         send(SendParameters{to: childRouterAddress,
                 value: 0,
                 mode: SendRemainingValue,
                 bounce: false,
-                body: BuildChildRouter{sourceAddress: msg.sourceAddress,
+                body: BuildChildRouter{
+                    sourceAddress: sourceAddress,
                     template: msg.template,
                     maxUserStakeAmount: msg.maxUserStakeAmount,
                     subscribeFeePerTick: msg.subscribeFeePerTick,
@@ -129,7 +131,8 @@ contract UniversalRouter with Deployable, Ownable {
                 value: 0,
                 mode: SendRemainingValue,
                 bounce: false,
-                body: EventSignal{eventId: msg.eventId, // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
+                body: EventSignal{
+                    eventId: msg.eventId, // Protocol-defined event identifier to allow the callback contract to handle based on the ID.
                     payload: msg.payload // Optional information that the message sender can choose to send to the subscriber who subcribes to the event.
                 }.toCell()
             }
@@ -137,7 +140,9 @@ contract UniversalRouter with Deployable, Ownable {
     }
 
     receive(msg: AddMessenger){
-        let protocolAddress: Address = msg.protocolAddress;
+        let cxt: Context = context();
+
+        let protocolAddress: Address = cxt.sender;//msg.protocolAddress;
         if (self.protocolToRouter.get(protocolAddress) != null) {
             throw(004); // Protocol's Router does not exist
         }
@@ -146,7 +151,8 @@ contract UniversalRouter with Deployable, Ownable {
                 value: 0,
                 mode: SendPayGasSeparately,
                 bounce: true,
-                body: AddMessenger{protocolAddress: msg.protocolAddress // Protocol address
+                body: AddMessenger{
+                    protocolAddress: msg.protocolAddress // Protocol address
                 }.toCell()
             }
         );

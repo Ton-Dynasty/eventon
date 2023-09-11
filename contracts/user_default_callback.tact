@@ -1,6 +1,7 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
-import "./msg_types";
+import "./common/msg_types";
+import "./example/msg_types";
 
 contract UserDefaultCallback with Deployable, Ownable {
     master: Address; // Master Address(Child Router Address)
@@ -14,6 +15,8 @@ contract UserDefaultCallback with Deployable, Ownable {
         self.parameter = parameter;
         self.eventCount = 0;
     }
+    
+    receive() {}
     
     receive(msg: BuildUDC) {
         
