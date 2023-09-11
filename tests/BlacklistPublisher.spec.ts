@@ -6,29 +6,13 @@ import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 import { Address, Cell, address, beginCell, toNano } from 'ton-core';
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
 import { Messenger } from '../wrappers/Messenger';
+import * as utils from './utils';
 describe('BlacklistPublisher', () => {
     let blockchain: Blockchain;
     let blacklistPublisher: SandboxContract<BlacklistPublisher>;
     let universalRouter: SandboxContract<UniversalRouter>;
     let owner: SandboxContract<TreasuryContract>;
     let userDefaultCallback: SandboxContract<UserDefaultCallback>;
-    async function protcolRegister() {
-        const protocolRegister: ProtcolRegister = {
-            $$type: 'ProtcolRegister',
-            maxUserStakeAmount: toNano('100'),
-            subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: blacklistPublisher.address, // oracle event
-            template: beginCell().endCell(),
-        };
-        const registerResult = await blacklistPublisher.send(
-            owner.getSender(),
-            {
-                value: toNano('0.5'),
-            },
-            protocolRegister
-        );
-        return registerResult;
-    }
 
     async function userRegsiter(eventId: bigint, user: SandboxContract<TreasuryContract>, callbackAddress: Address) {
         //await protocolRegsiter(oracle.address, trader); // Simply call the function to handle the registration
@@ -97,10 +81,10 @@ describe('BlacklistPublisher', () => {
 
     it('should register blacklist in the universal router', async () => {
         const eventIdBefore = await universalRouter.getEventId();
-        const registerResult = await protcolRegister();
+        const registerResult = await utils.protocolRegister(blacklistPublisher, owner);
         const eventIdAfter = await universalRouter.getEventId();
 
-        // [V] Owner -> blacklistPublisher
+        // [V] Deployer -> blacklistPublisher
         expect(registerResult.transactions).toHaveTransaction({
             from: owner.address,
             to: blacklistPublisher.address,
@@ -120,7 +104,9 @@ describe('BlacklistPublisher', () => {
     });
 
     it('should blacklist publisher send event signal to universal router', async () => {
-        await protcolRegister();
+        const deployer = await blockchain.treasury('deployer');
+        await utils.protocolRegister(blacklistPublisher, owner);
+
         const childRouterAddress = await universalRouter.getChildRouterAddress(blacklistPublisher.address);
         const childRouter = blockchain.openContract(ChildRouter.fromAddress(childRouterAddress));
         const messagerAddress = await childRouter.getMessengerAddress(blacklistPublisher.address, 0n);

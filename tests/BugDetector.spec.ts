@@ -119,7 +119,7 @@ describe('BugDetector', () => {
             }
         );
         //await userRegsiter(0n, user, userDefaultCallback.address);
-        await utils.userRegister(universalRouter, 0n, user, userDefaultCallback.address);
+        await utils.userSubscribe(universalRouter, 0n, user, userDefaultCallback.address);
 
         // Bug Detector send event signal to the user default callback contract
         let badContract = await blockchain.treasury('badContract');

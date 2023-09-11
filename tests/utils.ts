@@ -26,7 +26,7 @@ export async function protocolRegister(
     return res;
 }
 
-export async function userRegister(
+export async function userSubscribe(
     universalRouter: SandboxContract<UniversalRouter>,
     eventId: bigint,
     user: SandboxContract<TreasuryContract>,
