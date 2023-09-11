@@ -81,7 +81,7 @@ describe('BlacklistPublisher', () => {
 
         // Test whether the event id is increased by 1
         expect(eventIdAfter).toBe(eventIdBefore + 1n);
-        printTransactionFees(registerResult.transactions);
+        //printTransactionFees(registerResult.transactions);
     });
 
     it('should blacklist publisher send event signal to universal router', async () => {

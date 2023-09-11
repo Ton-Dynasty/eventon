@@ -72,8 +72,11 @@ describe('CopyTrading', () => {
     });
 
     it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and copyTrading are ready to use
+        expect(trader.address).toBeTruthy();
+        expect(copyTrading.address).toBeTruthy();
+        expect(universalRouter.address).toBeTruthy();
+        expect(oracle.address).toBeTruthy();
+        expect(dex.address).toBeTruthy();
     });
 
     it('should user get the price msg from the event', async () => {

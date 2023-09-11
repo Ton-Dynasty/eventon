@@ -57,8 +57,9 @@ describe('BugDetector', () => {
     });
 
     it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and bugDetector are ready to use
+        expect(owner.address).toBeTruthy();
+        expect(bugDetector.address).toBeTruthy();
+        expect(universalRouter.address).toBeTruthy();
     });
 
     it('should register bug detectoer in  universal router', async () => {
@@ -95,7 +96,7 @@ describe('BugDetector', () => {
 
         // Test whether the event id is increased by 1
         expect(eventIdAfter).toBe(eventIdBefore + 1n);
-        printTransactionFees(registerResult.transactions);
+        //printTransactionFees(registerResult.transactions);
     });
 
     it('should bug detectoer should send event signal to universal router', async () => {
