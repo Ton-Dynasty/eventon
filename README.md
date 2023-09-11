@@ -12,7 +12,7 @@
 
 > [Docs](https://ton-dynasty.github.io/eventon-doc/)
 
-### What is Eventon?
+## What is Eventon?
 
 -   **Ton-Dynasty** has designed a protocol that can achieve the following two functionalities:
     -   **On-Chain Functionality**: Users can subscribe to events occurring on-chain, including:
@@ -32,15 +32,15 @@ Users can customize their own code or utilize built-in smart contracts to automa
 
 For example, a change in the status of a DeFi protocol, a price provided by an Oracle, a user's transaction, or an airdrop event can all be considered a **_SIGNAL_**.
 
-### What Can We Do with Eventon?
+## What Can We Do with Eventon?
 
 For example, users can use Eventon to subscribe to an Oracle and set it up so that when the Oracle emits the price of ETH at $1600 USD, Eventon will automatically execute the user's custom actions.
 
-### Add Stake for Earning
+## Add Stake for Earning
 
 Any user can add stake for earning by simply staking a certain amount of TON on Eventon, which allows them to receive a corresponding reward in TON.
 
-### Workflow
+## Workflow
 
 The workflow of Eventon is depicted in the following diagram:
 
