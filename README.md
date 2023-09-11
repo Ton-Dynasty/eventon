@@ -1,4 +1,4 @@
-# TonPromiseEye
+# Eventon
 
 ## Project structure
 
