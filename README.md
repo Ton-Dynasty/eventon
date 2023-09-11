@@ -38,7 +38,7 @@
 
 eventon 的工作流程如下圖所示：
 
-![eventon Workflow](./utils/eventon-workflow.svg)
+![eventon Workflow](./utils/eventon-workflow.png)
 
 ## Project structure
 
