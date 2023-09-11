@@ -1,32 +1,8 @@
 # Eventon
 
-## Project structure
-
--   `contracts` - source code of all the smart contracts of the project and their dependencies.
--   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
--   `tests` - tests for the contracts.
--   `scripts` - scripts used by the project, mainly the deployment scripts.
-
-## How to use
-
-### Build
-
-```bash
-npm install
-npm run build
-```
-
-### Test
-
-```bash
-npm run test
-```
-
-### Deploy or run another script
-
-```bash
-npx blueprint run
-```
+<div style="display: flex;justify-content: center;align-items: center;">
+<img src="./utils/eventon.png" alt="Eventon" width="200" height="158.95522">
+</div>
 
 ## Overview
 
@@ -46,7 +22,7 @@ npx blueprint run
 
 **用戶可以根據這些訊號來客製化自己的程式碼或者利用內建的智能合約，在接收到特定訊號時自動執行程式操作。**
 
-> **Every thing is a _SIGNAL_. **
+> **Every thing is a _SIGNAL_.**
 
 舉例來說，一個 DeFi protocol 的狀態變換、一個 Oracle 提供的價格、一個使用者的交易、一個空投事件，都可以是一個 **_SIGNAL_** 。
 
@@ -63,3 +39,31 @@ npx blueprint run
 eventon 的工作流程如下圖所示：
 
 ![eventon Workflow](./utils/eventon-workflow.svg)
+
+## Project structure
+
+-   `contracts` - source code of all the smart contracts of the project and their dependencies.
+-   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
+-   `tests` - tests for the contracts.
+-   `scripts` - scripts used by the project, mainly the deployment scripts.
+
+## Develop Guide
+
+### Build
+
+```bash
+npm install
+npm run build
+```
+
+### Test
+
+```bash
+npm run test
+```
+
+### Deploy or run another script
+
+```bash
+npx blueprint run
+```
