@@ -16,13 +16,14 @@ export async function protocolRegister(
         template: beginCell().endCell(),
     };
 
-    await protocol.send(
+    const res = await protocol.send(
         deployer.getSender(),
         {
             value: toNano('10'),
         },
         protocolRegister
     );
+    return res;
 }
 
 export async function userRegister(
@@ -40,11 +41,12 @@ export async function userRegister(
         callbackAddress: callbackAddress, // Callback contract address written by user
     };
 
-    await universalRouter.send(
+    const res = await universalRouter.send(
         user.getSender(),
         {
             value: toNano('10'),
         },
         subscribeBody
     );
+    return res;
 }
