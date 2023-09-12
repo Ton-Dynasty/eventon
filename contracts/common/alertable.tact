@@ -39,4 +39,8 @@ trait Alertable with Ownable {
         self.requireOwner();
         self.eventId = msg.eventId;
     }
+
+    get fun getEventId(): Int {
+        return self.eventId;
+    }
 }

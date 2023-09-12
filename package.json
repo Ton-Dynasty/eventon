@@ -6,7 +6,7 @@
         "start": "blueprint run",
         "build": "rm -rf ./build/* && blueprint build --all && cp ./build/UniversalRouter/*.ts packages/sdk/compiled/",
         "test": "DOTENV_CONFIG_PATH=.env.test jest",
-        "generate": "tsc gen/generateMnemonic.ts && node gen/generateMnemonic.js"
+        "generate": "tsx gen/generateMnemonic.ts && node gen/generateMnemonic.js"
     },
     "workspaces": [
         "packages/*"
@@ -24,10 +24,10 @@
         "ton-crypto": "^3.2.0",
         "ts-jest": "^29.0.5",
         "ts-node": "^10.9.1",
+        "tsx": "^3.12.9",
         "typescript": "^4.9.5"
     },
     "dependencies": {
-        "dotenv": "^16.3.1",
-        "ton-abi": "^0.0.2"
+        "dotenv": "^16.3.1"
     }
 }

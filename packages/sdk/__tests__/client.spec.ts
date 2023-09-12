@@ -2,15 +2,14 @@ import { UniversalRouterClient } from '../lib/UniversalRouter';
 import { Address, Sender, beginCell, contractAddress, toNano } from 'ton-core';
 import * as dotenv from 'dotenv';
 import { TonClient4 } from 'ton';
-import { EventSourceRegister, ProtcolRegister } from '../compiled/tact_UniversalRouter';
+import { BugWarning, EventSourceRegister, ProtcolRegister, SetEventId } from '../compiled/tact_UniversalRouter';
 import { BugDetector } from '../../../wrappers/BugDetector';
 
 dotenv.config();
 
-const Deployer = 'EQB_IbNTgL7I1pcVTOn_hpu90k2glmf9e1B17u55W4_eeKxe';
-const UniversalRouterAddress = 'EQABJ7PW-xIZT9pOEwxJI_QjraFK-MlxkxhhmUsuAItl6Ewe';
-const BugDetectorAddress = 'EQAHm1BCcGDPC2fgRzLHxEIUe0PheW03NcHhA1_YuWhm_qyJ';
-const UserDefaultCallbackAddress = 'EQCaI2cv9SrMJC8UyuNQrzIRtxm9VYegiomsCiUCOF3WlH';
+const UniversalRouterAddress = 'EQCuzDGZUvIkyQWviIplz_lSLkg69WeP4NqgwHese-Qi9xBB';
+const BugDetectorAddress = 'EQDoog68bootdz4nfENLrJuHvxepYyhHJRbHO9mtZkkHRPti';
+const UserDefaultCallbackAddress = 'EQAvl_1DoWeXAtk7UFBevxcEbuP8R95eYnf_NQCJuqCN-YI9';
 
 describe('UniversalRouterClient', () => {
     it('Should load mnemonic from .env.test file', async () => {
@@ -24,6 +23,7 @@ describe('UniversalRouterClient', () => {
                 mnemonic: process.env.WALLET_MNEMONIC!,
                 workchain: 0,
             },
+            timeout: 10000,
         });
 
         // Interact with the router
@@ -39,16 +39,20 @@ describe('UniversalRouterClient', () => {
             maxUserStakeAmount: toNano(10),
             subscribeFeePerTick: toNano(0.5),
         };
+        await contract.send(client.getSender(), { value: toNano(1) }, body).catch((err) => console.error(err));
 
-        const result = await contract.send(client.getSender(), { value: 1n }, body).catch((err) => console.error(err));
-        console.log(result);
+        // Set event id
+        let setEventId: SetEventId = {
+            $$type: 'SetEventId',
+            eventId: 0n,
+        };
+        await contract.send(client.getSender(), { value: toNano(1) }, setEventId);
 
-        // User Create `UserDefaultCallback`
-        const deployOutput = await client.deployUserDefaultCallbackContract({ value: toNano(1) });
-        console.log(deployOutput);
+        // Check event id
+        expect((await client.router.getEventId()).toString()).toEqual(BigInt(0).toString());
 
         // User subscribe protocol
-        const rtn = await client.subscribeEvent(
+        await client.subscribeEvent(
             {
                 deadline: 0n,
                 eventId: 0n,
@@ -57,9 +61,16 @@ describe('UniversalRouterClient', () => {
             {
                 value: toNano(1),
                 bounce: false,
-                simulate: true,
+                simulate: false,
             }
         );
-        console.log(rtn);
+
+        // Send signal
+        let buggy: BugWarning = {
+            $$type: 'BugWarning',
+            bugInfo: beginCell().endCell(),
+            targetAdress: Address.parse('kQC8zFHM8LCMp9Xs--w3g9wmf7RwuDgJcQtV-oHZRSCqQSR1'),
+        };
+        await contract.send(client.getSender(), { value: toNano(1) }, buggy);
     });
 });

@@ -8,7 +8,7 @@ dotenv.config({ path: '.env.test' });
 
 export async function run(provider: NetworkProvider) {
     const owner = provider.sender().address!;
-    const universalRouterAddress = Address.parse('EQABJ7PW-xIZT9pOEwxJI_QjraFK-MlxkxhhmUsuAItl6Ewe');
+    const universalRouterAddress = Address.parse('EQCuzDGZUvIkyQWviIplz_lSLkg69WeP4NqgwHese-Qi9xBB');
     const bugDetector = provider.open(await BugDetector.fromInit(owner, universalRouterAddress));
 
     await bugDetector.send(

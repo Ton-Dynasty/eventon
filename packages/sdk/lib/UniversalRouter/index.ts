@@ -25,11 +25,7 @@ export interface ClientConfigFromAddress {
     routerAddress: Address;
     walletConfig: WalletConfig;
     mainnet?: boolean;
-}
-
-export interface ClientConfig {
-    walletConfig: WalletConfig;
-    mainnet?: boolean;
+    timeout?: number; // timeout in milliseconds
 }
 
 export interface MessageOpts {
@@ -68,7 +64,7 @@ export class UniversalRouterClient {
 
     static async fromAddress(config: ClientConfigFromAddress) {
         let endpoint = config.mainnet ? mainnetEndpoint : testnetEndpoint;
-        const client = new TonClient4({ endpoint: endpoint });
+        const client = new TonClient4({ endpoint: endpoint, timeout: config.timeout });
         const api = new HttpApi(endpoint);
         const { mnemonic, workchain, walletId } = config.walletConfig;
         const router = UniversalRouter.fromAddress(config.routerAddress);
