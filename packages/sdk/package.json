@@ -19,5 +19,11 @@
   "scripts": {},
   "bugs": {
     "url": "https://github.com/Ton-Dynasty/eventon/issues"
-  }
+  },
+  "licenses": [
+    {
+      "license": "MIT"
+    }
+  ],
+  "gitHead": "45c6c51f47b7183ddd4912977aedd77497d83b76"
 }
