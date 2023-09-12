@@ -53,23 +53,42 @@ The workflow of Eventon is depicted in the following diagram:
 -   `tests` - tests for the contracts.
 -   `scripts` - scripts used by the project, mainly the deployment scripts.
 
+## Deployment
+
+`Universal Router`: EQBi3p2U12bfG1QyNhbjHUuAF0e-f7VyMuBHnVXXWr9Cgp3d
+`Event Source (Bug Detector)`: EQBmpHx-LhQnOyjyYA2pf7bBK4DI4XMVm0b3MX4Nid2LGjZi
+
 ## Develop Guide
 
 ### Build
 
 ```bash
-npm install
-npm run build
+yarn
+yarn build
 ```
 
 ### Test
 
 ```bash
-npm run test
+yarn test
 ```
 
 ### Deploy or run another script
 
 ```bash
 npx blueprint run
+```
+
+### Add dependency
+
+> for contract
+
+```bash
+yarn add -W typescript
+```
+
+> for monorepop @eventon/sdk
+
+```bash
+yarn workspace @eventon/sdk add typescript -D
 ```
