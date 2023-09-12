@@ -14,6 +14,7 @@ export async function protocolRegister(
         subscribeFeePerTick: toNano('0.5'),
         sourceAddress: protocol.address, // oracle event
         template: beginCell().endCell(),
+        sourceName: 'test',
     };
 
     const res = await protocol.send(

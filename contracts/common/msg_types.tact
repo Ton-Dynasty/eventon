@@ -9,14 +9,20 @@ message EventSignal {
 }
 message BuildMessenger {
     sourceAddress: Address; // Protocol's address
+    eventId: Int; // The even id which user want to subscribe
+    maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
     subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
+    template: Cell; // Callback contract for subscribers
+    sourceName: String; // Protocol's name
 }
+
 message BuildChildRouter {
     sourceAddress: Address; // Protocol's address
     eventId: Int; // The even id which user want to subscribe
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
     subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
     template: Cell; // Callback contract for subscribers
+    sourceName: String; // Protocol's name
 }
 message CreateBody {
     walletAddress: Address; // Owner address of callback contract
@@ -35,12 +41,30 @@ message ProtcolRegister {
     template: Cell; // Callback contract for subscribers
     maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
     subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
+    sourceName: String; // Protocol's name
 }
+
+message ProtcolRegisterSuccess {
+    sourceAddress: Address; // Protocol's address
+    eventId: Int; // The even id which user want to subscribe
+    maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
+    subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
+    template: Cell; // Callback contract for subscribers
+    sourceName: String; // Protocol's name
+}
+
 message CreateMsgSubscriber {
     walletAddress: Address; // Owner address of callback contract
     callbackAddress: Address; // UDC address
     eventId: Int; // The even id which user want to subscribe
 }
+
+message CreateMsgSubscriberSuccess {
+    walletAddress: Address; // Owner address of callback contract
+    callbackAddress: Address; // UDC address
+    eventId: Int; // The even id which user want to subscribe
+}
+
 
 message DeleteSubscriber {
     walletAddress: Address; // Owner address of callback contract

@@ -43,6 +43,7 @@ describe('BugDetector', () => {
             subscribeFeePerTick: toNano('0.5'),
             sourceAddress: bugDetector.address, // oracle event
             template: beginCell().endCell(),
+            sourceName: 'test',
         };
         const eventIdBefore = await universalRouter.getEventId();
         const registerResult = await bugDetector.send(

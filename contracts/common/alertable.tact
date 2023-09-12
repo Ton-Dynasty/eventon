@@ -29,7 +29,8 @@ trait Alertable with Ownable {
                 sourceAddress: myAddress(), // Protocol's address
                 template: msg.template, // Callback contract for subscribers
                 maxUserStakeAmount: msg.maxUserStakeAmount, // Maximum amount of stake that a user can stake for the protocol
-                subscribeFeePerTick: msg.subscribeFeePerTick // Amount of fee that a subscriber has to pay for each tick
+                subscribeFeePerTick: msg.subscribeFeePerTick, // Amount of fee that a subscriber has to pay for each tick
+                sourceName: msg.sourceName // Protocol's name
             }.toCell()
         });
     }

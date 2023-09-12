@@ -53,11 +53,28 @@ contract ChildRouter with Deployable, Ownable {
             bounce: false,
             body: BuildMessenger {
                 sourceAddress: msg.sourceAddress, // Protocol's address
-                subscribeFeePerTick: msg.subscribeFeePerTick
+                eventId: msg.eventId, // The even id which user want to subscribe
+                maxUserStakeAmount: msg.maxUserStakeAmount, // Maximum amount of stake that a user can stake for the protocol
+                subscribeFeePerTick: msg.subscribeFeePerTick, // Amount of fee that a subscriber has to pay for each tick
+                template: msg.template, // Callback contract for subscribers
+                sourceName: msg.sourceName // Protocol's name;
             }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
+    }
+
+    receive(msg: ProtcolRegisterSuccess) {
+        //dump("Emit Event!!");
+        emit(ProtcolRegisterSuccess{
+            sourceAddress: msg.sourceAddress, // Protocol's address
+            eventId: msg.eventId, // The even id which user want to subscribe
+            maxUserStakeAmount: msg.maxUserStakeAmount, // Maximum amount of stake that a user can stake for the protocol
+            subscribeFeePerTick: msg.subscribeFeePerTick, // Amount of fee that a subscriber has to pay for each tick
+            template: msg.template, // Callback contract for subscribers
+            sourceName: msg.sourceName // Protocol's name
+        }.toCell());
+
     }
 
     receive(msg: CreateBody) {
@@ -98,6 +115,10 @@ contract ChildRouter with Deployable, Ownable {
                 eventId: self.eventId
             }.toCell()
         });
+    }
+
+    receive(msg: CreateMsgSubscriberSuccess) {
+        dump("Get it");
     }
 
     receive(msg: DeleteSubscriber) {
