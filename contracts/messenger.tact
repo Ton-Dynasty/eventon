@@ -93,10 +93,11 @@ contract Messenger with Deployable, Ownable {
         self.subscriberId = self.subscriberId + 1;
         self.subscriberCount = self.subscriberCount + 1;
         // self.reply(CreateMsgSubscriberSuccess {
-        //     walletAddress: msg.walletAddress, 
-        //     callbackAddress: msg.callbackAddress,
-        //     eventId: msg.eventId
+        //     walletAddress: msg.walletAddress
         // }.toCell());
+        emit(CreateMsgSubscriberSuccess {
+            callbackAddress: msg.callbackAddress
+        }.toCell());
     }
 
     receive(msg: DeleteSubscriber) {

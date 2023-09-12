@@ -60,11 +60,13 @@ message CreateMsgSubscriber {
 }
 
 message CreateMsgSubscriberSuccess {
-    walletAddress: Address; // Owner address of callback contract
-    callbackAddress: Address; // UDC address
-    eventId: Int; // The even id which user want to subscribe
+    callbackAddress: Address; // Owner address of callback contract
 }
 
+message CreateUdcSuccess {
+    walletAddress: Address; // Owner address of callback contract
+    callbackAddress: Address; // UDC address
+}
 
 message DeleteSubscriber {
     walletAddress: Address; // Owner address of callback contract
