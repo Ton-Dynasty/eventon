@@ -1,6 +1,6 @@
 import { Blockchain, SandboxContract, TreasuryContract, printTransactionFees } from '@ton-community/sandbox';
 import { Address, Cell, address, beginCell, toNano } from 'ton-core';
-import { BugDetector } from '../wrappers/BugDetector';
+import { BugDetector, EventSourceRegister } from '../wrappers/BugDetector';
 import '@ton-community/test-utils';
 import { BugWarning, EventSignal, ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
 import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRouter';
@@ -37,11 +37,10 @@ describe('BugDetector', () => {
     });
 
     it('should register bug detectoer in  universal router', async () => {
-        const protocolRegister: ProtcolRegister = {
-            $$type: 'ProtcolRegister',
-            maxUserStakeAmount: toNano('100'),
+        const eventSrcRegister: EventSourceRegister = {
+            $$type: 'EventSourceRegister',
+            maxUserStakeAmount: toNano('10'),
             subscribeFeePerTick: toNano('0.5'),
-            sourceAddress: bugDetector.address, // oracle event
             template: beginCell().endCell(),
             sourceName: 'test',
         };
@@ -51,7 +50,7 @@ describe('BugDetector', () => {
             {
                 value: toNano('0.5'),
             },
-            protocolRegister
+            eventSrcRegister
         );
         const eventIdAfter = await universalRouter.getEventId();
 

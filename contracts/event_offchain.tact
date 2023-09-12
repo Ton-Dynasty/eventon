@@ -4,10 +4,10 @@ import "./common/msg_types";
 import "./example/msg_types";
 
 trait Alertable {
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     fun sendAlert(msg: EventSignal) {
         send(SendParameters{
-            to: self.promiseEyeAddress, 
+            to: self.universalRouterAddress, 
             value: 0, 
             bounce: false,
             mode: SendPayGasSeparately, // Different from onchain version
@@ -21,12 +21,12 @@ trait Alertable {
 
 contract OffchainEvent with Deployable, Alertable {
     publicKey: Int as uint256;
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     seqno: Int as uint32;
 
-    init(publicKey: Int, promiseEyeAddress: Address) {
+    init(publicKey: Int, universalRouterAddress: Address) {
         self.publicKey = publicKey;
-        self.promiseEyeAddress = promiseEyeAddress;
+        self.universalRouterAddress = universalRouterAddress;
         self.seqno = 0;
     }
 

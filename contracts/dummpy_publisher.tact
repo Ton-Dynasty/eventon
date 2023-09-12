@@ -1,7 +1,6 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
 import "./common/msg_types";
-import "./example/msg_types";
 import "./common/alertable";
 
 
@@ -18,7 +17,7 @@ contract BugDetector with Deployable, Alertable {
 
     receive() {}
     
-    receive(msg: BugWarning) {
+    receive(msg: "") {
         let sendPayload: Cell = beginCell()
                                     .storeAddress(msg.targetAdress)
                                     .storeRef(msg.bugInfo)

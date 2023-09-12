@@ -1,9 +1,13 @@
 import { toNano } from 'ton-core';
 import { UniversalRouter } from '../wrappers/UniversalRouter';
 import { NetworkProvider } from '@ton-community/blueprint';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.test' });
 
 export async function run(provider: NetworkProvider) {
-    const universalRouter = provider.open(await UniversalRouter.fromInit());
+    const owner = provider.sender().address!;
+    const universalRouter = provider.open(await UniversalRouter.fromInit(owner));
 
     await universalRouter.send(
         provider.sender(),

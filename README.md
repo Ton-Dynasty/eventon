@@ -58,23 +58,44 @@ The complete system architecture diagram for Eventon is as follows:
 -   `tests` - tests for the contracts.
 -   `scripts` - scripts used by the project, mainly the deployment scripts.
 
+## Deployment
+
+`deployer`: EQCizWtlx_pydcxDH83X_EjirryPj0MqfFVqk9sz_3lpIRz3
+`Universal Router`: EQCuzDGZUvIkyQWviIplz_lSLkg69WeP4NqgwHese-Qi9xBB
+`Event Source (Bug Detector)`: EQDoog68bootdz4nfENLrJuHvxepYyhHJRbHO9mtZkkHRPti
+`UserDefaultCallback (Bug Detector)`: EQAvl_1DoWeXAtk7UFBevxcEbuP8R95eYnf_NQCJuqCN-YI9
+
 ## Develop Guide
 
 ### Build
 
 ```bash
-npm install
-npm run build
+yarn
+yarn build
 ```
 
 ### Test
 
 ```bash
-npm run test
+yarn test
 ```
 
 ### Deploy or run another script
 
 ```bash
 npx blueprint run
+```
+
+### Add dependency
+
+> for contract
+
+```bash
+yarn add -W typescript
+```
+
+> for monorepop @eventon/sdk
+
+```bash
+yarn workspace @eventon/sdk add typescript -D
 ```

@@ -221,6 +221,10 @@ contract UniversalRouter with Deployable, Ownable {
     }
 
     // Gets the protocol address associated with a given event ID.
+    get fun MapChildRouter(): map<Address, Address> {
+        return self.protocolToRouter;
+    }
+
     get fun getProtocolAddress(eventId: Int): Address {
         return self.eventIdToProtocol.get(eventId)!!;
     }

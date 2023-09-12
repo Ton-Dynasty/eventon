@@ -1,0 +1,14 @@
+# Node.js dependencies
+node_modules/
+
+# Output of the TypeScript compiler
+dist/
+
+# IDE-specific files (e.g., VS Code settings)
+.vscode/
+
+# Environment configuration
+.env
+
+# Log files
+*.log

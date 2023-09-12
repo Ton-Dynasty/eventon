@@ -1,0 +1,23 @@
+{
+  "name": "@eventon/sdk",
+  "version": "0.0.1",
+  "description": "> Eventon SDK for typescript",
+  "author": "alan890104 <alan890104@gmail.com>",
+  "homepage": "https://github.com/Ton-Dynasty/eventon.git#readme",
+  "license": "MIT",
+  "main": "lib/index.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ton-Dynasty/eventon.git"
+  },
+  "scripts": {},
+  "bugs": {
+    "url": "https://github.com/Ton-Dynasty/eventon/issues"
+  }
+}

@@ -6,6 +6,8 @@ const config: Config = {
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     cache: false,
     verbose: true,
+    testTimeout: 60000,
+    setupFiles: ['dotenv/config'],
 };
 
 export default config;

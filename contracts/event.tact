@@ -6,11 +6,11 @@ import "./example/msg_types";
 
 contract Event with Deployable, Alertable {
     owner: Address;
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     eventId: Int;
-    init(owner: Address, promiseEyeAddress: Address) {
+    init(owner: Address, universalRouterAddress: Address) {
         self.owner = owner;
-        self.promiseEyeAddress = promiseEyeAddress;
+        self.universalRouterAddress = universalRouterAddress;
         self.eventId = -1;
     }
     receive() {}
@@ -19,7 +19,7 @@ contract Event with Deployable, Alertable {
         self.sendAlert(msg.info);
     }
 
-    get fun getPromiseEyeAddress(): Address {
-        return self.promiseEyeAddress;
+    get fun getuniversalRouterAddress(): Address {
+        return self.universalRouterAddress;
     }
 }
