@@ -13,3 +13,5 @@ message ClaimReward{
     amount: Int as coins;
     receiver: Address;
 }
+
+
