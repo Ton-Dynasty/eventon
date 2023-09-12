@@ -8,12 +8,12 @@ import "./example/msg_types";
 // This contract is used to blacklist a publisher
 contract BlacklistPublisher with Deployable, Alertable {
     owner: Address;
-    promiseEyeAddress: Address; 
+    universalRouterAddress: Address; 
     eventId: Int;
 
-    init(owner : Address, promiseEyeAddress: Address) {
+    init(owner : Address, universalRouterAddress: Address) {
         self.owner = owner;
-        self.promiseEyeAddress = promiseEyeAddress;
+        self.universalRouterAddress = universalRouterAddress;
         self.eventId = -1;
     }
 

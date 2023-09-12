@@ -6,16 +6,16 @@ import "./common/alertable";
 
 contract CopyTrading with Deployable, Alertable {
     owner: Address;
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     messenger: Address;
     dex: Address;
     orderAction: Int;
     positionSize: Int;
     eventId: Int;
 
-    init(owner: Address, promiseEyeAddress: Address, dex: Address) {
+    init(owner: Address, universalRouterAddress: Address, dex: Address) {
         self.owner = owner;
-        self.promiseEyeAddress = promiseEyeAddress;
+        self.universalRouterAddress = universalRouterAddress;
         self.dex = dex;
         self.messenger = owner;
         self.orderAction = 1;

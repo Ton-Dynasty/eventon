@@ -183,6 +183,10 @@ contract UniversalRouter with Deployable, Ownable {
         return self.protocolToRouter.get(sourceAddress)!!;
     }
 
+    get fun MapChildRouter(): map<Address, Address> {
+        return self.protocolToRouter;
+    }
+
     get fun getProtocolAddress(eventId: Int): Address {
         return self.eventIdToProtocol.get(eventId)!!;
     }

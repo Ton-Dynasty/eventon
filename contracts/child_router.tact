@@ -88,7 +88,7 @@ contract ChildRouter with Deployable, Ownable {
             mode: SendRemainingValue,
             bounce: true,
             body: BuildUDC {
-                owner: msg.walletAddress // Protocol's address
+                owner: msg.walletAddress
             }.toCell(),
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data

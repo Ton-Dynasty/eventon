@@ -13,6 +13,7 @@ import { ChildRouter, CreateBody, DeleteSubscriber } from '../wrappers/ChildRout
 import { UserDefaultCallback } from '../wrappers/UserDefaultCallback';
 import { Messenger } from '../wrappers/Messenger';
 import * as utils from './utils';
+import { EventSourceRegister } from '../wrappers/BugDetector';
 describe('UniversalRouter', () => {
     let blockchain: Blockchain;
     let universalRouter: SandboxContract<UniversalRouter>;
@@ -74,9 +75,8 @@ describe('UniversalRouter', () => {
             exitCode: 3,
         });
 
-        const protocolRegister: ProtcolRegister = {
-            $$type: 'ProtcolRegister',
-            sourceAddress: event.address,
+        const eventSrcRegister: EventSourceRegister = {
+            $$type: 'EventSourceRegister',
             maxUserStakeAmount: toNano('100'),
             subscribeFeePerTick: toNano('0.5'),
             template: beginCell().endCell(),
@@ -89,7 +89,7 @@ describe('UniversalRouter', () => {
             {
                 value: toNano('0.5'),
             },
-            protocolRegister
+            eventSrcRegister
         );
         const eventIdAfter = await universalRouter.getEventId();
         // Test whether prorocol send register msg to universal router successfully
