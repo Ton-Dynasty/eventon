@@ -1,6 +1,6 @@
 {
   "name": "@eventon/sdk",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "> Eventon SDK for typescript",
   "author": "alan890104 <alan890104@gmail.com>",
   "homepage": "https://github.com/Ton-Dynasty/eventon.git#readme",
