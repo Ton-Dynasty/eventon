@@ -2,17 +2,17 @@ import { SandboxContract, TreasuryContract } from '@ton-community/sandbox';
 import { BaseContract, ProtocolContract } from './types';
 import { CreateBody, ProtcolRegister, SubscribeBody, UniversalRouter } from '../wrappers/UniversalRouter';
 import { Address, beginCell, toNano } from 'ton-core';
+import { EventSourceRegister } from '../wrappers/BugDetector';
 
 export async function protocolRegister(
     protocol: SandboxContract<ProtocolContract>,
     deployer: SandboxContract<TreasuryContract>
 ) {
     // Register the protocol
-    const protocolRegister: ProtcolRegister = {
-        $$type: 'ProtcolRegister',
+    const eventSourceRegister: EventSourceRegister = {
+        $$type: 'EventSourceRegister',
         maxUserStakeAmount: toNano('100'),
         subscribeFeePerTick: toNano('0.5'),
-        sourceAddress: protocol.address, // oracle event
         template: beginCell().endCell(),
         sourceName: 'test',
     };
@@ -22,7 +22,7 @@ export async function protocolRegister(
         {
             value: toNano('10'),
         },
-        protocolRegister
+        eventSourceRegister
     );
     return res;
 }
