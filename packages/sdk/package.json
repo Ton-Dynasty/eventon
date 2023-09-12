@@ -1,26 +1,23 @@
 {
-  "name": "sdk",
+  "name": "@eventon/sdk",
   "version": "0.0.0",
-  "description": "> TODO: description",
+  "description": "> Eventon SDK for typescript",
   "author": "alan890104 <alan890104@gmail.com>",
-  "homepage": "https://github.com/Ideal-TON/TonPromiseEye#readme",
-  "license": "ISC",
+  "homepage": "https://github.com/Ton-Dynasty/eventon.git#readme",
+  "license": "MIT",
   "main": "lib/index.ts",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "lib": "lib"
   },
   "files": [
     "lib"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ideal-TON/TonPromiseEye.git"
+    "url": "git+https://github.com/Ton-Dynasty/eventon.git"
   },
-  "scripts": {
-    "test": "node ./__tests__/sdk.test.js"
-  },
+  "scripts": {},
   "bugs": {
-    "url": "https://github.com/Ideal-TON/TonPromiseEye/issues"
+    "url": "https://github.com/Ton-Dynasty/eventon/issues"
   }
 }

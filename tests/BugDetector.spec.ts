@@ -39,7 +39,7 @@ describe('BugDetector', () => {
     it('should register bug detectoer in  universal router', async () => {
         const eventSrcRegister: EventSourceRegister = {
             $$type: 'EventSourceRegister',
-            maxUserStakeAmount: toNano('100'),
+            maxUserStakeAmount: toNano('10'),
             subscribeFeePerTick: toNano('0.5'),
             template: beginCell().endCell(),
             sourceName: 'test',

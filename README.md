@@ -55,8 +55,10 @@ The workflow of Eventon is depicted in the following diagram:
 
 ## Deployment
 
-`Universal Router`: EQBi3p2U12bfG1QyNhbjHUuAF0e-f7VyMuBHnVXXWr9Cgp3d
-`Event Source (Bug Detector)`: EQBmpHx-LhQnOyjyYA2pf7bBK4DI4XMVm0b3MX4Nid2LGjZi
+`deployer`: EQB_IbNTgL7I1pcVTOn_hpu90k2glmf9e1B17u55W4_eeKxe
+`Universal Router`: EQABJ7PW-xIZT9pOEwxJI_QjraFK-MlxkxhhmUsuAItl6Ewe
+`Event Source (Bug Detector)`: EQAHm1BCcGDPC2fgRzLHxEIUe0PheW03NcHhA1_YuWhm_qyJ
+`UserDefaultCallback (Bug Detector)`: EQCaI2cv9SrMJC8UyuNQrzIRtxm9VYegiomsCiUCOF3WlH-e
 
 ## Develop Guide
 

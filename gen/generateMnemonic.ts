@@ -1,4 +1,3 @@
-// import required libraries
 import * as fs from 'fs';
 import { WalletContractV4 } from 'ton';
 import { mnemonicNew, mnemonicToWalletKey } from 'ton-crypto';
@@ -9,7 +8,7 @@ const run = async () => {
         console.log('Generated Mnemonic:', mnemonic);
 
         // Save to .env file
-        const envData = `WALLET_MNEMONIC=${mnemonic}\nWALLET_VERSION=v4\n`;
+        const envData = `WALLET_MNEMONIC=${mnemonic.join(' ')}\nWALLET_VERSION=v4\n`;
         fs.writeFileSync('.env.test', envData);
         console.log('Mnemonic saved to .env.test file.');
         const keypair = await mnemonicToWalletKey(mnemonic);
