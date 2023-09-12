@@ -31,6 +31,14 @@ contract Messenger with Deployable, Ownable {
             throw(007);
         }
         self.subscribeFeePerTick = msg.subscribeFeePerTick;
+        self.reply(ProtcolRegisterSuccess {
+            sourceAddress: msg.sourceAddress, // Protocol's address
+            eventId: msg.eventId, // The even id which user want to subscribe
+            maxUserStakeAmount: msg.maxUserStakeAmount, // Maximum amount of stake that a user can stake for the protocol
+            subscribeFeePerTick: msg.subscribeFeePerTick, // Amount of fee that a subscriber has to pay for each tick
+            template: msg.template, // Callback contract for subscribers
+            sourceName: msg.sourceName // Protocol's name
+        }.toCell());
     }
 
     receive (msg: EventSignal) {
@@ -84,6 +92,11 @@ contract Messenger with Deployable, Ownable {
         self.hashToSubscribeFee.set(hashResult, ctx.value);
         self.subscriberId = self.subscriberId + 1;
         self.subscriberCount = self.subscriberCount + 1;
+        // self.reply(CreateMsgSubscriberSuccess {
+        //     walletAddress: msg.walletAddress, 
+        //     callbackAddress: msg.callbackAddress,
+        //     eventId: msg.eventId
+        // }.toCell());
     }
 
     receive(msg: DeleteSubscriber) {

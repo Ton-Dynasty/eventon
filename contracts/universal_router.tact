@@ -42,7 +42,8 @@ contract UniversalRouter with Deployable, Ownable {
                     template: msg.template,
                     maxUserStakeAmount: msg.maxUserStakeAmount,
                     subscribeFeePerTick: msg.subscribeFeePerTick,
-                    eventId: self.eventCount
+                    eventId: self.eventCount,
+                    sourceName: msg.sourceName
                 }.toCell(),
                 code: init.code, // attaching the state init will cause the message to deploy
                 data: init.data

@@ -80,6 +80,7 @@ describe('UniversalRouter', () => {
             maxUserStakeAmount: toNano('100'),
             subscribeFeePerTick: toNano('0.5'),
             template: beginCell().endCell(),
+            sourceName: 'test',
         };
         const eventIdBefore = await universalRouter.getEventId();
         // Ptotocol send regiter msg to universal router
