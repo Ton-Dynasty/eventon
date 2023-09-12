@@ -93,6 +93,10 @@ contract ChildRouter with Deployable, Ownable {
             code: init.code, // attaching the state init will cause the message to deploy
             data: init.data
         });
+        emit(CreateUdcSuccess {
+            walletAddress: msg.walletAddress,
+            callbackAddress: udcAddress
+        }.toCell());
     
     }
 
@@ -115,10 +119,6 @@ contract ChildRouter with Deployable, Ownable {
                 eventId: self.eventId
             }.toCell()
         });
-    }
-
-    receive(msg: CreateMsgSubscriberSuccess) {
-        dump("Get it");
     }
 
     receive(msg: DeleteSubscriber) {
