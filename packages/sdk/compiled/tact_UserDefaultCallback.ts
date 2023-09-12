@@ -517,36 +517,56 @@ function dictValueParserEventSignal(): DictionaryValue<EventSignal> {
 export type BuildMessenger = {
     $$type: 'BuildMessenger';
     sourceAddress: Address;
+    eventId: bigint;
+    maxUserStakeAmount: bigint;
     subscribeFeePerTick: bigint;
+    template: Cell;
+    sourceName: string;
 }
 
 export function storeBuildMessenger(src: BuildMessenger) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(4051015823, 32);
+        b_0.storeUint(2826761911, 32);
         b_0.storeAddress(src.sourceAddress);
+        b_0.storeInt(src.eventId, 257);
+        b_0.storeCoins(src.maxUserStakeAmount);
         b_0.storeCoins(src.subscribeFeePerTick);
+        b_0.storeRef(src.template);
+        b_0.storeStringRefTail(src.sourceName);
     };
 }
 
 export function loadBuildMessenger(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 4051015823) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 2826761911) { throw Error('Invalid prefix'); }
     let _sourceAddress = sc_0.loadAddress();
+    let _eventId = sc_0.loadIntBig(257);
+    let _maxUserStakeAmount = sc_0.loadCoins();
     let _subscribeFeePerTick = sc_0.loadCoins();
-    return { $$type: 'BuildMessenger' as const, sourceAddress: _sourceAddress, subscribeFeePerTick: _subscribeFeePerTick };
+    let _template = sc_0.loadRef();
+    let _sourceName = sc_0.loadStringRefTail();
+    return { $$type: 'BuildMessenger' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
 }
 
 function loadTupleBuildMessenger(source: TupleReader) {
     let _sourceAddress = source.readAddress();
+    let _eventId = source.readBigNumber();
+    let _maxUserStakeAmount = source.readBigNumber();
     let _subscribeFeePerTick = source.readBigNumber();
-    return { $$type: 'BuildMessenger' as const, sourceAddress: _sourceAddress, subscribeFeePerTick: _subscribeFeePerTick };
+    let _template = source.readCell();
+    let _sourceName = source.readString();
+    return { $$type: 'BuildMessenger' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
 }
 
 function storeTupleBuildMessenger(source: BuildMessenger) {
     let builder = new TupleBuilder();
     builder.writeAddress(source.sourceAddress);
+    builder.writeNumber(source.eventId);
+    builder.writeNumber(source.maxUserStakeAmount);
     builder.writeNumber(source.subscribeFeePerTick);
+    builder.writeCell(source.template);
+    builder.writeString(source.sourceName);
     return builder.build();
 }
 
@@ -568,29 +588,32 @@ export type BuildChildRouter = {
     maxUserStakeAmount: bigint;
     subscribeFeePerTick: bigint;
     template: Cell;
+    sourceName: string;
 }
 
 export function storeBuildChildRouter(src: BuildChildRouter) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(2454814892, 32);
+        b_0.storeUint(2831422442, 32);
         b_0.storeAddress(src.sourceAddress);
         b_0.storeInt(src.eventId, 257);
         b_0.storeCoins(src.maxUserStakeAmount);
         b_0.storeCoins(src.subscribeFeePerTick);
         b_0.storeRef(src.template);
+        b_0.storeStringRefTail(src.sourceName);
     };
 }
 
 export function loadBuildChildRouter(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 2454814892) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 2831422442) { throw Error('Invalid prefix'); }
     let _sourceAddress = sc_0.loadAddress();
     let _eventId = sc_0.loadIntBig(257);
     let _maxUserStakeAmount = sc_0.loadCoins();
     let _subscribeFeePerTick = sc_0.loadCoins();
     let _template = sc_0.loadRef();
-    return { $$type: 'BuildChildRouter' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template };
+    let _sourceName = sc_0.loadStringRefTail();
+    return { $$type: 'BuildChildRouter' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
 }
 
 function loadTupleBuildChildRouter(source: TupleReader) {
@@ -599,7 +622,8 @@ function loadTupleBuildChildRouter(source: TupleReader) {
     let _maxUserStakeAmount = source.readBigNumber();
     let _subscribeFeePerTick = source.readBigNumber();
     let _template = source.readCell();
-    return { $$type: 'BuildChildRouter' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template };
+    let _sourceName = source.readString();
+    return { $$type: 'BuildChildRouter' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
 }
 
 function storeTupleBuildChildRouter(source: BuildChildRouter) {
@@ -609,6 +633,7 @@ function storeTupleBuildChildRouter(source: BuildChildRouter) {
     builder.writeNumber(source.maxUserStakeAmount);
     builder.writeNumber(source.subscribeFeePerTick);
     builder.writeCell(source.template);
+    builder.writeString(source.sourceName);
     return builder.build();
 }
 
@@ -746,27 +771,30 @@ export type ProtcolRegister = {
     template: Cell;
     maxUserStakeAmount: bigint;
     subscribeFeePerTick: bigint;
+    sourceName: string;
 }
 
 export function storeProtcolRegister(src: ProtcolRegister) {
     return (builder: Builder) => {
         let b_0 = builder;
-        b_0.storeUint(3050370633, 32);
+        b_0.storeUint(882920319, 32);
         b_0.storeAddress(src.sourceAddress);
         b_0.storeRef(src.template);
         b_0.storeCoins(src.maxUserStakeAmount);
         b_0.storeCoins(src.subscribeFeePerTick);
+        b_0.storeStringRefTail(src.sourceName);
     };
 }
 
 export function loadProtcolRegister(slice: Slice) {
     let sc_0 = slice;
-    if (sc_0.loadUint(32) !== 3050370633) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 882920319) { throw Error('Invalid prefix'); }
     let _sourceAddress = sc_0.loadAddress();
     let _template = sc_0.loadRef();
     let _maxUserStakeAmount = sc_0.loadCoins();
     let _subscribeFeePerTick = sc_0.loadCoins();
-    return { $$type: 'ProtcolRegister' as const, sourceAddress: _sourceAddress, template: _template, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick };
+    let _sourceName = sc_0.loadStringRefTail();
+    return { $$type: 'ProtcolRegister' as const, sourceAddress: _sourceAddress, template: _template, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, sourceName: _sourceName };
 }
 
 function loadTupleProtcolRegister(source: TupleReader) {
@@ -774,7 +802,8 @@ function loadTupleProtcolRegister(source: TupleReader) {
     let _template = source.readCell();
     let _maxUserStakeAmount = source.readBigNumber();
     let _subscribeFeePerTick = source.readBigNumber();
-    return { $$type: 'ProtcolRegister' as const, sourceAddress: _sourceAddress, template: _template, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick };
+    let _sourceName = source.readString();
+    return { $$type: 'ProtcolRegister' as const, sourceAddress: _sourceAddress, template: _template, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, sourceName: _sourceName };
 }
 
 function storeTupleProtcolRegister(source: ProtcolRegister) {
@@ -783,6 +812,7 @@ function storeTupleProtcolRegister(source: ProtcolRegister) {
     builder.writeCell(source.template);
     builder.writeNumber(source.maxUserStakeAmount);
     builder.writeNumber(source.subscribeFeePerTick);
+    builder.writeString(source.sourceName);
     return builder.build();
 }
 
@@ -793,6 +823,73 @@ function dictValueParserProtcolRegister(): DictionaryValue<ProtcolRegister> {
         },
         parse: (src) => {
             return loadProtcolRegister(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type ProtcolRegisterSuccess = {
+    $$type: 'ProtcolRegisterSuccess';
+    sourceAddress: Address;
+    eventId: bigint;
+    maxUserStakeAmount: bigint;
+    subscribeFeePerTick: bigint;
+    template: Cell;
+    sourceName: string;
+}
+
+export function storeProtcolRegisterSuccess(src: ProtcolRegisterSuccess) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(2543656262, 32);
+        b_0.storeAddress(src.sourceAddress);
+        b_0.storeInt(src.eventId, 257);
+        b_0.storeCoins(src.maxUserStakeAmount);
+        b_0.storeCoins(src.subscribeFeePerTick);
+        b_0.storeRef(src.template);
+        b_0.storeStringRefTail(src.sourceName);
+    };
+}
+
+export function loadProtcolRegisterSuccess(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 2543656262) { throw Error('Invalid prefix'); }
+    let _sourceAddress = sc_0.loadAddress();
+    let _eventId = sc_0.loadIntBig(257);
+    let _maxUserStakeAmount = sc_0.loadCoins();
+    let _subscribeFeePerTick = sc_0.loadCoins();
+    let _template = sc_0.loadRef();
+    let _sourceName = sc_0.loadStringRefTail();
+    return { $$type: 'ProtcolRegisterSuccess' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
+}
+
+function loadTupleProtcolRegisterSuccess(source: TupleReader) {
+    let _sourceAddress = source.readAddress();
+    let _eventId = source.readBigNumber();
+    let _maxUserStakeAmount = source.readBigNumber();
+    let _subscribeFeePerTick = source.readBigNumber();
+    let _template = source.readCell();
+    let _sourceName = source.readString();
+    return { $$type: 'ProtcolRegisterSuccess' as const, sourceAddress: _sourceAddress, eventId: _eventId, maxUserStakeAmount: _maxUserStakeAmount, subscribeFeePerTick: _subscribeFeePerTick, template: _template, sourceName: _sourceName };
+}
+
+function storeTupleProtcolRegisterSuccess(source: ProtcolRegisterSuccess) {
+    let builder = new TupleBuilder();
+    builder.writeAddress(source.sourceAddress);
+    builder.writeNumber(source.eventId);
+    builder.writeNumber(source.maxUserStakeAmount);
+    builder.writeNumber(source.subscribeFeePerTick);
+    builder.writeCell(source.template);
+    builder.writeString(source.sourceName);
+    return builder.build();
+}
+
+function dictValueParserProtcolRegisterSuccess(): DictionaryValue<ProtcolRegisterSuccess> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeRef(beginCell().store(storeProtcolRegisterSuccess(src)).endCell());
+        },
+        parse: (src) => {
+            return loadProtcolRegisterSuccess(src.loadRef().beginParse());
         }
     }
 }
@@ -845,6 +942,58 @@ function dictValueParserCreateMsgSubscriber(): DictionaryValue<CreateMsgSubscrib
         },
         parse: (src) => {
             return loadCreateMsgSubscriber(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type CreateMsgSubscriberSuccess = {
+    $$type: 'CreateMsgSubscriberSuccess';
+    walletAddress: Address;
+    callbackAddress: Address;
+    eventId: bigint;
+}
+
+export function storeCreateMsgSubscriberSuccess(src: CreateMsgSubscriberSuccess) {
+    return (builder: Builder) => {
+        let b_0 = builder;
+        b_0.storeUint(2873128833, 32);
+        b_0.storeAddress(src.walletAddress);
+        b_0.storeAddress(src.callbackAddress);
+        b_0.storeInt(src.eventId, 257);
+    };
+}
+
+export function loadCreateMsgSubscriberSuccess(slice: Slice) {
+    let sc_0 = slice;
+    if (sc_0.loadUint(32) !== 2873128833) { throw Error('Invalid prefix'); }
+    let _walletAddress = sc_0.loadAddress();
+    let _callbackAddress = sc_0.loadAddress();
+    let _eventId = sc_0.loadIntBig(257);
+    return { $$type: 'CreateMsgSubscriberSuccess' as const, walletAddress: _walletAddress, callbackAddress: _callbackAddress, eventId: _eventId };
+}
+
+function loadTupleCreateMsgSubscriberSuccess(source: TupleReader) {
+    let _walletAddress = source.readAddress();
+    let _callbackAddress = source.readAddress();
+    let _eventId = source.readBigNumber();
+    return { $$type: 'CreateMsgSubscriberSuccess' as const, walletAddress: _walletAddress, callbackAddress: _callbackAddress, eventId: _eventId };
+}
+
+function storeTupleCreateMsgSubscriberSuccess(source: CreateMsgSubscriberSuccess) {
+    let builder = new TupleBuilder();
+    builder.writeAddress(source.walletAddress);
+    builder.writeAddress(source.callbackAddress);
+    builder.writeNumber(source.eventId);
+    return builder.build();
+}
+
+function dictValueParserCreateMsgSubscriberSuccess(): DictionaryValue<CreateMsgSubscriberSuccess> {
+    return {
+        serialize: (src, buidler) => {
+            buidler.storeRef(beginCell().store(storeCreateMsgSubscriberSuccess(src)).endCell());
+        },
+        parse: (src) => {
+            return loadCreateMsgSubscriberSuccess(src.loadRef().beginParse());
         }
     }
 }
@@ -1710,8 +1859,8 @@ function initUserDefaultCallback_init_args(src: UserDefaultCallback_init_args) {
 }
 
 async function UserDefaultCallback_init(master: Address, owner: Address, parameter: Cell) {
-    const __code = Cell.fromBase64('te6ccgECGAEAA9kAART/APSkE/S88sgLAQIBYgIDA3rQAdDTAwFxsKMB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiFRQUwNvBPhhAvhi2zxVE9s88uCCEAQFAgEgCwwC3gGSMH/gcCHXScIflTAg1wsf3iDAACLXScEhsJJbf+AgghB9a5mKuo4wMNMfAYIQfWuZirry4IH6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIMTB/4CCCEBJG67S64wKCEJRqmLa64wIwcAYHAKjI+EMBzH8BygBVMFBDINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFhLMgQEBzwDJ7VQANDDTHwGCEBJG67S68uCBgQEB1wDUWWwSW6R/AU7THwGCEJRqmLa68uCB0z8BMcgBghCv+Q9XWMsfyz/J+EIBcG3bPH8IATptbSJus5lbIG7y0IBvIgGRMuIQJHADBIBCUCPbPAkByshxAcoBUAcBygBwAcoCUAUg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxZQA/oCcAHKaCNus5F/kyRus+KXMzMBcAHKAOMNIW6znH8BygABIG7y0IABzJUxcAHKAOLJAfsACgCYfwHKAMhwAcoAcAHKACRus51/AcoABCBu8tCAUATMljQDcAHKAOIkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDicAHKAAJ/AcoAAslYzAIBIA0OAgEgFBUCEbqNXbPNs8bEGBAPAhG4Ud2zzbPGxBgQEQACIAHE7UTQ1AH4Y9IAAY5K+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiAH6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdSBAQHXAFUwbBTg+CjXCwqDCbry4IkSAAIiAZD6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB1FUgA9FY2zwTAAJwAN27vRgnBc7D1dLK57HoTsOdZKhRtmgnCd1jUtK2R8syLTry398WI5gnAgVcAbgGdjlM5YOq5HJbLDgnAb1J3vlUWW8cdT094FWcMmgnCdl05as07LczoOlm2UZuikgnBAznVp5xX50lCwHWFuJkeygCAUgWFwARsK+7UTQ0gABgAHWybuNDVpcGZzOi8vUW1hNWdEd2hpdjV4amljU1VKdXNzUmN1UjNjMUs1UEZ4QlpjaXFZUWJVVXc3a4IA==');
-    const __system = Cell.fromBase64('te6cckECGgEAA+MAAQHAAQEFoFuxAgEU/wD0pBP0vPLICwMCAWIPBAIBIAoFAgEgCQYCAUgIBwB1sm7jQ1aXBmczovL1FtYTVnRHdoaXY1eGppY1NVSnVzc1JjdVIzYzFLNVBGeEJaY2lxWVFiVVV3N2uCAAEbCvu1E0NIAAYADdu70YJwXOw9XSyuex6E7DnWSoUbZoJwndY1LStkfLMi068t/fFiOYJwIFXAG4BnY5TOWDquRyWyw4JwG9Sd75VFlvHHU9PeBVnDJoJwnZdOWrNOy3M6DpZtlGbopIJwQM51aecV+dJQsB1hbiZHsoAgEgDQsCEbhR3bPNs8bEGBcMAAIiAhG6jV2zzbPGxBgXDgACIAN60AHQ0wMBcbCjAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IhUUFMDbwT4YQL4Yts8VRPbPPLgghcREACoyPhDAcx/AcoAVTBQQyDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFgEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxYSzIEBAc8Aye1UAt4BkjB/4HAh10nCH5UwINcLH94gwAAi10nBIbCSW3/gIIIQfWuZirqOMDDTHwGCEH1rmYq68uCB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiDEwf+AgghASRuu0uuMCghCUapi2uuMCMHAWEgFO0x8BghCUapi2uvLggdM/ATHIAYIQr/kPV1jLH8s/yfhCAXBt2zx/EwE6bW0ibrOZWyBu8tCAbyIBkTLiECRwAwSAQlAj2zwUAcrIcQHKAVAHAcoAcAHKAlAFINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WUAP6AnABymgjbrORf5MkbrPilzMzAXABygDjDSFus5x/AcoAASBu8tCAAcyVMXABygDiyQH7ABUAmH8BygDIcAHKAHABygAkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDiJG6znX8BygAEIG7y0IBQBMyWNANwAcoA4nABygACfwHKAALJWMwANDDTHwGCEBJG67S68uCBgQEB1wDUWWwSW6R/AcTtRNDUAfhj0gABjkr6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB1IEBAdcAVTBsFOD4KNcLCoMJuvLgiRgBkPpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiAHUVSAD0VjbPBkAAnB+jRgH');
+    const __code = Cell.fromBase64('te6ccgECGAEAA9kAART/APSkE/S88sgLAQIBYgIDA3rQAdDTAwFxsKMB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiFRQUwNvBPhhAvhi2zxVE9s88uCCEAQFAgEgCwwC3gGSMH/gcCHXScIflTAg1wsf3iDAACLXScEhsJJbf+AgghB9a5mKuo4wMNMfAYIQfWuZirry4IH6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIMTB/4CCCEBJG67S64wKCEJRqmLa64wIwcAYHAKjI+EMBzH8BygBVMFBDINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFhLMgQEBzwDJ7VQANDDTHwGCEBJG67S68uCBgQEB1wDUWWwSW6R/AU7THwGCEJRqmLa68uCB0z8BMcgBghCv+Q9XWMsfyz/J+EIBcG3bPH8IATptbSJus5lbIG7y0IBvIgGRMuIQJHADBIBCUCPbPAkByshxAcoBUAcBygBwAcoCUAUg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxZQA/oCcAHKaCNus5F/kyRus+KXMzMBcAHKAOMNIW6znH8BygABIG7y0IABzJUxcAHKAOLJAfsACgCYfwHKAMhwAcoAcAHKACRus51/AcoABCBu8tCAUATMljQDcAHKAOIkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDicAHKAAJ/AcoAAslYzAIBIA0OAgEgFBUCEbqNXbPNs8bEGBAPAhG4Ud2zzbPGxBgQEQACIAHE7UTQ1AH4Y9IAAY5K+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiAH6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAdSBAQHXAFUwbBTg+CjXCwqDCbry4IkSAAIiAZD6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB1FUgA9FY2zwTAAJwAN27vRgnBc7D1dLK57HoTsOdZKhRtmgnCd1jUtK2R8syLTry398WI5gnAgVcAbgGdjlM5YOq5HJbLDgnAb1J3vlUWW8cdT094FWcMmgnCdl05as07LczoOlm2UZuikgnBAznVp5xX50lCwHWFuJkeygCAUgWFwARsK+7UTQ0gABgAHWybuNDVpcGZzOi8vUW1TVnNodVRQNTlzRlprczQ3M3lqQ1BpSzUxVEQ4RFJxa1ZkSzJ0YTZqTGlNUYIA==');
+    const __system = Cell.fromBase64('te6cckECGgEAA+MAAQHAAQEFoFuxAgEU/wD0pBP0vPLICwMCAWIPBAIBIAoFAgEgCQYCAUgIBwB1sm7jQ1aXBmczovL1FtU1ZzaHVUUDU5c0Zaa3M0NzN5akNQaUs1MVREOERScWtWZEsydGE2akxpTVGCAAEbCvu1E0NIAAYADdu70YJwXOw9XSyuex6E7DnWSoUbZoJwndY1LStkfLMi068t/fFiOYJwIFXAG4BnY5TOWDquRyWyw4JwG9Sd75VFlvHHU9PeBVnDJoJwnZdOWrNOy3M6DpZtlGbopIJwQM51aecV+dJQsB1hbiZHsoAgEgDQsCEbhR3bPNs8bEGBcMAAIiAhG6jV2zzbPGxBgXDgACIAN60AHQ0wMBcbCjAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IhUUFMDbwT4YQL4Yts8VRPbPPLgghcREACoyPhDAcx/AcoAVTBQQyDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IjPFgEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIzxYSzIEBAc8Aye1UAt4BkjB/4HAh10nCH5UwINcLH94gwAAi10nBIbCSW3/gIIIQfWuZirqOMDDTHwGCEH1rmYq68uCB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiDEwf+AgghASRuu0uuMCghCUapi2uuMCMHAWEgFO0x8BghCUapi2uvLggdM/ATHIAYIQr/kPV1jLH8s/yfhCAXBt2zx/EwE6bW0ibrOZWyBu8tCAbyIBkTLiECRwAwSAQlAj2zwUAcrIcQHKAVAHAcoAcAHKAlAFINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiM8WUAP6AnABymgjbrORf5MkbrPilzMzAXABygDjDSFus5x/AcoAASBu8tCAAcyVMXABygDiyQH7ABUAmH8BygDIcAHKAHABygAkbrOdfwHKAAQgbvLQgFAEzJY0A3ABygDiJG6znX8BygAEIG7y0IBQBMyWNANwAcoA4nABygACfwHKAALJWMwANDDTHwGCEBJG67S68uCBgQEB1wDUWWwSW6R/AcTtRNDUAfhj0gABjkr6QAEg10mBAQu68uCIINcLCiCBBP+68tCJgwm68uCIAfpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB1IEBAdcAVTBsFOD4KNcLCoMJuvLgiRgBkPpAASDXSYEBC7ry4Igg1wsKIIEE/7ry0ImDCbry4IgB+kABINdJgQELuvLgiCDXCwoggQT/uvLQiYMJuvLgiAHUVSAD0VjbPBkAAnBIMaJQ');
     let builder = beginCell();
     builder.storeRef(__system);
     builder.storeUint(0, 1);
@@ -1762,12 +1911,14 @@ const UserDefaultCallback_types: ABIType[] = [
     {"name":"ChangeOwnerOk","header":846932810,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"newOwner","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"EventTrigger","header":1365159228,"fields":[{"name":"value","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"address","type":{"kind":"simple","type":"address","optional":false}},{"name":"info","type":{"kind":"simple","type":"EventSignal","optional":false}}]},
     {"name":"EventSignal","header":306637748,"fields":[{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"payload","type":{"kind":"simple","type":"cell","optional":false}}]},
-    {"name":"BuildMessenger","header":4051015823,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
-    {"name":"BuildChildRouter","header":2454814892,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}}]},
+    {"name":"BuildMessenger","header":2826761911,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}},{"name":"sourceName","type":{"kind":"simple","type":"string","optional":false}}]},
+    {"name":"BuildChildRouter","header":2831422442,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}},{"name":"sourceName","type":{"kind":"simple","type":"string","optional":false}}]},
     {"name":"CreateBody","header":2617235749,"fields":[{"name":"walletAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"deadline","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"parameter","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"SubscribeBody","header":1953340414,"fields":[{"name":"walletAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"deadline","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"callbackAddress","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"ProtcolRegister","header":3050370633,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
+    {"name":"ProtcolRegister","header":882920319,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sourceName","type":{"kind":"simple","type":"string","optional":false}}]},
+    {"name":"ProtcolRegisterSuccess","header":2543656262,"fields":[{"name":"sourceAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}},{"name":"maxUserStakeAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"subscribeFeePerTick","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"template","type":{"kind":"simple","type":"cell","optional":false}},{"name":"sourceName","type":{"kind":"simple","type":"string","optional":false}}]},
     {"name":"CreateMsgSubscriber","header":2100856841,"fields":[{"name":"walletAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"callbackAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
+    {"name":"CreateMsgSubscriberSuccess","header":2873128833,"fields":[{"name":"walletAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"callbackAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"DeleteSubscriber","header":380345681,"fields":[{"name":"walletAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"callbackAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"eventId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"DestroyMessenger","header":2952350305,"fields":[{"name":"messengerId","type":{"kind":"simple","type":"int","optional":false,"format":257}}]},
     {"name":"AddMessenger","header":2557114565,"fields":[{"name":"protocolAddress","type":{"kind":"simple","type":"address","optional":false}}]},
