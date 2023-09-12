@@ -7,12 +7,12 @@ import "./common/alertable";
 
 contract BugDetector with Deployable, Alertable {
     owner: Address;
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     eventId: Int;
 
-    init(owner : Address, promiseEyeAddress: Address) {
+    init(owner : Address, universalRouterAddress: Address) {
         self.owner = owner;
-        self.promiseEyeAddress = promiseEyeAddress;
+        self.universalRouterAddress = universalRouterAddress;
         self.eventId = -1;
     }
 

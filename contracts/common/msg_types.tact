@@ -36,6 +36,14 @@ message SubscribeBody {
     eventId: Int; // The even id which user want to subscribe
     callbackAddress: Address; // Callback contract address written by user
 }
+
+message EventSourceRegister {
+    template: Cell; // Callback contract for subscribers
+    maxUserStakeAmount: Int as coins; // Maximum amount of stake that a user can stake for the protocol
+    subscribeFeePerTick: Int as coins; // Amount of fee that a subscriber has to pay for each tick
+    sourceName: String; // Protocol's name
+}
+
 message ProtcolRegister {
     sourceAddress: Address; // Protocol's address
     template: Cell; // Callback contract for subscribers

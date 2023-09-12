@@ -2,12 +2,12 @@ import "@stdlib/ownable";
 
 trait Alertable with Ownable {
     owner: Address;
-    promiseEyeAddress: Address;
+    universalRouterAddress: Address;
     eventId: Int;
     fun sendAlert(msg: EventSignal) {
         //dump("send to promise eye");
         send(SendParameters{
-            to: self.promiseEyeAddress, 
+            to: self.universalRouterAddress, 
             value: 0,
             bounce: false,
             mode: SendRemainingValue, // have think why use SendRemainingValue mode
@@ -18,10 +18,10 @@ trait Alertable with Ownable {
         });
     }
 
-    receive(msg : ProtcolRegister) {
+    receive(msg : EventSourceRegister) {
         self.requireOwner();
         send(SendParameters{
-            to: self.promiseEyeAddress, 
+            to: self.universalRouterAddress, 
             value: 0, 
             bounce: false,
             mode: SendRemainingValue, // have think why use SendRemainingValue mode
