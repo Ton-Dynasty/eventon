@@ -42,9 +42,14 @@ Any user can add stake for earning by simply staking a certain amount of TON on 
 
 ## Workflow
 
-The workflow of Eventon is depicted in the following diagram:
+The workflow of Eventon is presented as follows:
 
 ![Eventon Workflow](./utils/eventon-workflow.png)
+
+## Architecture
+
+The complete system architecture diagram for Eventon is as follows:
+![Architecture](./utils/architecture.png)
 
 ## Project structure
 
