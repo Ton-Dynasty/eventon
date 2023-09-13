@@ -17,7 +17,9 @@ contract BlacklistPublisher with Deployable, Alertable {
         self.eventId = -1;
     }
 
+    // Function to receive funds
     receive() {}
+    
     // Publish a blacklist warning
     receive(msg: BlacklistWarning) {
         let payload: Cell = beginCell()

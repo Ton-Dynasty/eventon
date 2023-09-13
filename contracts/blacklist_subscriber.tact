@@ -29,6 +29,8 @@ contract BlacklistSubscriber with Deployable, Ownable {
         }
 
     }
+    
+    //Function to receive funds
     receive(){
         // Check if the sender is not in blacklist
         self.requireNotInBlacklist();

@@ -1,6 +1,6 @@
 message EventTrigger {
-    value: Int;
-    address: Address;
+    value: Int; 
+    address: Address; 
     info: EventSignal;
 }
 message EventSignal {

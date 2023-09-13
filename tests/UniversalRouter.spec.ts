@@ -68,11 +68,11 @@ describe('UniversalRouter', () => {
             event1
         );
 
-        // exit code 3 because of the protocol doesn't register before
+        // exit code 1002 because of the protocol doesn't register before
         expect(eventTrigggerResult.transactions).toHaveTransaction({
             from: event.address,
             to: universalRouter.address,
-            exitCode: 3,
+            exitCode: 1002,
         });
 
         const eventSrcRegister: EventSourceRegister = {
@@ -445,7 +445,6 @@ describe('UniversalRouter', () => {
             },
             subscribeBody
         );
-        const subCountBefore = await messager.getGetSubCount();
 
         // 4. User unsubscribe
         const deleteBody: DeleteSubscriber = {

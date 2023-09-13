@@ -17,7 +17,7 @@ contract Messenger with Deployable, Ownable {
     idToSubscriber: map<Int, Address>;  // Mapping of Subscriber ID to its address
     hashToSubscriber: map<Int, Int>;    // Mapping of Hash (address & event ID) to subscription status
     hashToSubscribeFee: map<Int, Int>;  // Mapping of Hash (address & event ID) to subscription fee
-    subscriberCount: Int;               // Total number of subscribers
+    totalSubscriberNumber: Int;               // Total number of subscribers
     subscribeFeePerTick: Int;           // Fee per tick for subscription
     
     /*
@@ -32,7 +32,7 @@ contract Messenger with Deployable, Ownable {
         self.sourceAddress = sourceAddress;
         self.messengerId = messengerId;
         self.nextSubscriberId = 0; 
-        self.subscriberCount = 0;
+        self.totalSubscriberNumber = 0;
         self.subscribeFeePerTick = 0;
     }
 
@@ -46,7 +46,7 @@ contract Messenger with Deployable, Ownable {
     receive (msg: BuildMessenger) {
         self.requireOwner();
         if (msg.sourceAddress != self.sourceAddress) {
-            throw(007); // Error: Source address mismatch
+            throw(1004); // This Source address doesn't match this messenger
         }
         self.subscribeFeePerTick = msg.subscribeFeePerTick;
         // Respond with a success message
@@ -120,7 +120,7 @@ contract Messenger with Deployable, Ownable {
         self.hashToSubscriber.set(hashResult, 1);
         self.hashToSubscribeFee.set(hashResult, ctx.value);
         self.nextSubscriberId = self.nextSubscriberId + 1;
-        self.subscriberCount = self.subscriberCount + 1;
+        self.totalSubscriberNumber = self.totalSubscriberNumber + 1;
         
         // Emit an event for successful subscriber creation
         emit(CreateMsgSubscriberSuccess {
@@ -138,17 +138,17 @@ contract Messenger with Deployable, Ownable {
         // Check if the subscriber exists
         let hashResult: Int = beginCell().storeAddress(msg.callbackAddress).storeInt(msg.eventId,8).endCell().asSlice().hash();
         if (self.hashToSubscriber.get(hashResult) == null) {
-            throw(008); // Error: Subscriber not found
+            throw(1005); // Error: Subscriber not found
         }
 
         // Update mappings to remove the subscriber
         self.idToSubscriber.set(self.nextSubscriberId, null);
         self.hashToSubscriber.set(hashResult, 0);
         self.hashToSubscribeFee.set(hashResult, 0);
-        self.subscriberCount = self.subscriberCount - 1;
+        self.totalSubscriberNumber = self.totalSubscriberNumber - 1;
 
         // Destroy the messenger if no subscribers remain
-        if(self.subscriberCount == 0 ) {
+        if(self.totalSubscriberNumber == 0 ) {
             send(SendParameters{
                 to: self.owner,
                 value: 0, 
@@ -175,7 +175,7 @@ contract Messenger with Deployable, Ownable {
     }
 
     // Getter function to fetch the total subscriber count
-    get fun getSubCount(): Int {
-        return self.subscriberCount;
+    get fun totalSubscriberNumber(): Int {
+        return self.totalSubscriberNumber;
     }   
 }
