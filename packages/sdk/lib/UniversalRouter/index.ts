@@ -1,7 +1,7 @@
 import { HttpApi, OpenedContract, TonClient4, WalletContractV4 } from 'ton';
 import { Address, Cell, beginCell } from 'ton-core';
 import { Maybe } from 'ton/dist/utils/maybe';
-import { KeyPair, mnemonicToHDSeed, mnemonicToWalletKey } from 'ton-crypto';
+import { KeyPair, mnemonicToWalletKey } from 'ton-crypto';
 import {
     DeleteSubscriber,
     SubscribeBody,
