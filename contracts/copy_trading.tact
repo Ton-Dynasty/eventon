@@ -56,7 +56,7 @@ contract CopyTrading with Deployable, Alertable {
                 eventId: self.eventId,
                 payload: sendPayload
             };
-            self.sendAlert(eventSignal); // Send this trading message to his followers
+            self.sendAlert(eventSignal); // Send the trading operation signal to ones followers
         }
     }
 

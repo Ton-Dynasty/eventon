@@ -13,7 +13,7 @@ trait Alertable with Ownable {
             bounce: false,
             mode: SendRemainingValue,
             body: EventSignal{ 
-                eventId: msg.eventId, // Thid protocol's event id
+                eventId: msg.eventId, // Thid protocol's event signal id, it can let one protocol to have multiple event signals(not implemented yet)
                 payload: msg.payload // Information about the event signal
             }.toCell()
         });
