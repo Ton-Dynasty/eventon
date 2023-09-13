@@ -3,28 +3,30 @@ import "@stdlib/ownable";
 trait Alertable with Ownable {
     owner: Address;
     universalRouterAddress: Address;
-    eventId: Int;
+    eventId: Int; // Event id of this protocol
+
+    // Send event signal to Universal Router so that it can be broadcasted to subscribers
     fun sendAlert(msg: EventSignal) {
-        //dump("send to promise eye");
         send(SendParameters{
             to: self.universalRouterAddress, 
             value: 0,
             bounce: false,
-            mode: SendRemainingValue, // have think why use SendRemainingValue mode
+            mode: SendRemainingValue,
             body: EventSignal{ 
-                eventId: msg.eventId,
-                payload: msg.payload
+                eventId: msg.eventId, // This is protocol's event signal id, it can let one protocol to have multiple event signals(not implemented yet)
+                payload: msg.payload // Information about the event signal
             }.toCell()
         });
     }
 
+    // Register protocol to Universal Router
     receive(msg : EventSourceRegister) {
         self.requireOwner();
         send(SendParameters{
             to: self.universalRouterAddress, 
             value: 0, 
             bounce: false,
-            mode: SendRemainingValue, // have think why use SendRemainingValue mode
+            mode: SendRemainingValue, 
             body: ProtcolRegister{ 
                 sourceAddress: myAddress(), // Protocol's address
                 template: msg.template, // Callback contract for subscribers
@@ -35,11 +37,13 @@ trait Alertable with Ownable {
         });
     }
 
+    // Set this protocol's event id
     receive(msg: SetEventId) {
         self.requireOwner();
         self.eventId = msg.eventId;
     }
 
+    // Get this protocol's event id
     get fun getEventId(): Int {
         return self.eventId;
     }

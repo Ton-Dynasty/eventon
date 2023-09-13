@@ -10,13 +10,13 @@ contract ChildRouter with Deployable, Ownable {
     // State Variables
     owner: Address;                             // Universal Address
     sourceAddress: Address;                     // Protocol's address
-    messengerId: Int;                           // Messenger's ID
+    messengerId: Int;                           // Messenger's ID (default: 0)
     minimumStake: Int as uint256;               // Minimum stake amount
     stakes: map<Address, Int>;                  // The total stake amount of each user
     stakeShares: map<Address,Int as uint256>;   // The total stake shares of each user
-    totalStakeAmount: Int as coins;             // The total stake amount
-    maxUserStakeAmount: Int as coins;           // The max total users' stake amount
-    totalShares: Int as uint256;                // The total shares
+    totalStakeAmount: Int as coins;             // The total stake amount (default: 0)
+    maxUserStakeAmount: Int as coins;           // The max total users' stake amount (default: 0)
+    totalShares: Int as uint256;                // The total shares (default: 0)
     messengerState: map<Int, Int>;              // The state of the messenger
     eventId: Int;                               // The event id (default: -1)
 
@@ -54,6 +54,8 @@ contract ChildRouter with Deployable, Ownable {
 
         // Update the total shares and the protocol's shares
         self.stakes.set(self.sourceAddress, ctx.value);
+        
+        // Set event id to this child router
         self.eventId = msg.eventId;
 
         // Build Messenger
@@ -122,7 +124,7 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: SubscribeBody) {
         self.requireOwner();
         if (msg.eventId != self.eventId) {
-            throw(011); // This child router is not for this event
+            throw(1003); // This child router is not for this event
         }
         // Save the callback contract address (written by user) to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
@@ -143,7 +145,7 @@ contract ChildRouter with Deployable, Ownable {
     receive(msg: DeleteSubscriber) {
         self.requireOwner();
         if (msg.eventId != self.eventId) {
-            throw(011); // This child router is not for this event
+            throw(1003); // This child router is not for this event
         }
         // Remove the subscriber by sending a DeleteSubscriber message to the messenger contract
         let messengerAddress: Address = self.messengerAddress(self.sourceAddress, self.messengerId);
@@ -271,6 +273,7 @@ contract ChildRouter with Deployable, Ownable {
         self.totalStakeAmount = self.totalStakeAmount + msg.fee;
     }
 
+    // Get Methods
     // Calculate the reward for the user
     get fun calculateReward(addr: Address): Int {
         if (self.totalShares == 0 || self.stakes.get(addr) == null){

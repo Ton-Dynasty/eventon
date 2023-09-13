@@ -22,11 +22,14 @@ contract CopyTrading with Deployable, Alertable {
         self.positionSize = 50;
         self.eventId = 1;
     }
+    // Function to receive funds
     receive() {}
+
+    // Receive price from oracle and use its own strategy to trade
     receive(msg: EventSignal) {
         let cxt: Context = context();
         if(cxt.sender != self.messenger) {
-            throw(009); // Only messenger can send signal;
+            throw(1006); // Only messenger can send signal
         }
         let payload: Cell = msg.payload;
         let parser: Slice = payload.beginParse();
@@ -53,9 +56,8 @@ contract CopyTrading with Deployable, Alertable {
                 eventId: self.eventId,
                 payload: sendPayload
             };
-            self.sendAlert(eventSignal);
+            self.sendAlert(eventSignal); // Send the trading operation signal to ones followers
         }
-        //dump("recieved price");
     }
 
     receive(msg: SetMessenger) {

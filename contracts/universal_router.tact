@@ -1,9 +1,8 @@
-import "@stdlib/deploy";         // Import deployment library
-import "@stdlib/ownable";        // Import ownable library
+import "@stdlib/deploy";        // Import deployment library
+import "@stdlib/ownable";       // Import ownable library
 import "./common/msg_types";    // Import custom message types
 import "./example/msg_types";   // Import custom example message types
 import "./child_router";        // Import child router contract
-
 
 /*
 The UniversalRouter contract facilitates the registration of protocols. 
@@ -13,16 +12,16 @@ Additionally, protocols can send messages to add new messengers to the child rou
 */
 contract UniversalRouter with Deployable, Ownable {
     owner: Address;
-    eventCount: Int;  // Counter to track the number of events. e.g., Oracle has ID 0, Chainlink has ID 1, etc.
+    eventIdNumber: Int;  // Counter to track the number of events. e.g., Oracle has ID 0, Chainlink has ID 1, etc. (default: 0)
     protocolToRouter: map<Address, Address>; // Mapping of protocol addresses to their respective child router addresses.
     eventIdToProtocol: map<Int, Address>; // Mapping of event IDs to the corresponding protocol addresses.
     protocolToEventId: map<Address, Int>; // Mapping of protocol addresses to their event IDs.
-    minimumStake: Int;  // The minimum amount of stake required for each protocol.
+    minimumStake: Int;  // The minimum amount of stake required for each protocol. (default: 0)
 
     // Constructor for initializing the contract with the owner's address.
     init(owner: Address){
         self.owner = owner;
-        self.eventCount = 0;
+        self.eventIdNumber = 0;
         self.minimumStake = 0;
     }
 
@@ -36,18 +35,17 @@ contract UniversalRouter with Deployable, Ownable {
     receive(msg: ProtcolRegister) {
         /// Ensures the protocol hasn't been registered already.
         if (self.protocolToRouter.get(msg.sourceAddress) != null) {
-            throw(001);
+            throw(1000);
         }
 
-        let cxt: Context = context();
-        let sourceAddress: Address = cxt.sender;
-        self.eventIdToProtocol.set(self.eventCount, sourceAddress);
-        self.protocolToEventId.set(sourceAddress, self.eventCount);
+        let ctx: Context = context();
+        let sourceAddress: Address = ctx.sender;
+        self.eventIdToProtocol.set(self.eventIdNumber, sourceAddress);
+        self.protocolToEventId.set(sourceAddress, self.eventIdNumber);
 
         // Build child router
         let childRouterAddress: Address = self.childRouterAddress(sourceAddress);
         self.protocolToRouter.set(sourceAddress, childRouterAddress);
-        let value: Int = ton("0.1");
         let init: StateInit = self.getChildRouterInit(sourceAddress);
         send(SendParameters{
                 to: childRouterAddress,
@@ -59,14 +57,14 @@ contract UniversalRouter with Deployable, Ownable {
                     template: msg.template,
                     maxUserStakeAmount: msg.maxUserStakeAmount,
                     subscribeFeePerTick: msg.subscribeFeePerTick,
-                    eventId: self.eventCount,
+                    eventId: self.eventIdNumber,
                     sourceName: msg.sourceName
                 }.toCell(),
                 code: init.code, // attaching the state init will cause the message to deploy
                 data: init.data
             }
         );
-        self.eventCount = self.eventCount + 1;
+        self.eventIdNumber = self.eventIdNumber + 1; // After protocol register success, event id number increase 1
     }
 
     /*
@@ -75,10 +73,10 @@ contract UniversalRouter with Deployable, Ownable {
     receive(msg: CreateBody){
         // Ensures the given event ID is registered.
         if (self.eventIdToProtocol.get(msg.eventId) == null) {
-            throw(002); // Event ID does not exist
+            throw(1001); // Event ID does not exist
         }
-        let cxt: Context = context();
-        let walletAddress: Address = cxt.sender;
+        let ctx: Context = context();
+        let walletAddress: Address = ctx.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{to: childRouterAddress,
@@ -102,10 +100,10 @@ contract UniversalRouter with Deployable, Ownable {
         // Check if this event id is registered
         if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
-            throw(002); // Event ID does not exist
+            throw(1001); // Event ID does not exist
         }
-        let cxt: Context = context();
-        let walletAddress: Address = cxt.sender;
+        let ctx: Context = context();
+        let walletAddress: Address = ctx.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{
@@ -129,10 +127,10 @@ contract UniversalRouter with Deployable, Ownable {
         // Check if this event id is registered
         if(self.eventIdToProtocol.get(msg.eventId) == null)
         {
-            throw(002); // Event ID does not exist
+            throw(1001); // Event ID does not exist
         }
-        let cxt: Context = context();
-        let walletAddress: Address = cxt.sender;
+        let ctx: Context = context();
+        let walletAddress: Address = ctx.sender;
         let protocolAddress: Address = self.eventIdToProtocol.get(msg.eventId)!!; // Get the protocol address
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{
@@ -155,7 +153,7 @@ contract UniversalRouter with Deployable, Ownable {
         let cxt: Context = context();
         let protocolAddress: Address = cxt.sender;
         if (self.protocolToRouter.get(protocolAddress) == null) {
-            throw(003); // Protocol's Router does not exist
+            throw(1002); // Protocol's Router does not exist
         }
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{to: childRouterAddress,
@@ -174,11 +172,10 @@ contract UniversalRouter with Deployable, Ownable {
     Handles AddMessenger messages. Protocols use this to add a new messenger to its child router.
     */
     receive(msg: AddMessenger){
-        let cxt: Context = context();
-
-        let protocolAddress: Address = cxt.sender;//msg.protocolAddress;
-        if (self.protocolToRouter.get(protocolAddress) != null) {
-            throw(004); // Protocol's Router does not exist
+        let ctx: Context = context();
+        let protocolAddress: Address = ctx.sender;//msg.protocolAddress;
+        if (self.protocolToRouter.get(protocolAddress) == null) {
+            throw(1002); // Protocol's Router does not exist
         }
         let childRouterAddress: Address = self.protocolToRouter.get(protocolAddress)!!; // Get the child router address
         send(SendParameters{to: childRouterAddress,
@@ -210,9 +207,9 @@ contract UniversalRouter with Deployable, Ownable {
         return initOf ChildRouter(myAddress(), sourceAddress, self.minimumStake);
     }
 
-    // Gets the current event ID count.
+    // Gets the current event ID number.
     get fun eventId(): Int {
-        return self.eventCount;
+        return self.eventIdNumber;
     }
 
     // Gets the child router's address for a given protocol.
@@ -220,17 +217,18 @@ contract UniversalRouter with Deployable, Ownable {
         return self.protocolToRouter.get(sourceAddress)!!;
     }
 
-    // Gets the protocol address associated with a given event ID.
+    // Gets the map of protocol address -> child router address.
     get fun MapChildRouter(): map<Address, Address> {
         return self.protocolToRouter;
     }
 
+    // Gets the protocol address for a given event ID.
     get fun getProtocolAddress(eventId: Int): Address {
         return self.eventIdToProtocol.get(eventId)!!;
     }
 
     // Gets the current balance of the contract.
-    get fun getBalace(): Int {
+    get fun getBalance(): Int {
         return myBalance();
     }
 }
