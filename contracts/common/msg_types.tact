@@ -66,6 +66,9 @@ message CreateMsgSubscriber {
     callbackAddress: Address; // UDC address
     eventId: Int; // The even id which user want to subscribe
 }
+message BuildCallback {
+    parameter: Cell; // Callback contract parameter
+}
 
 message CreateMsgSubscriberSuccess {
     callbackAddress: Address; // Owner address of callback contract
