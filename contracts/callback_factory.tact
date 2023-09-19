@@ -17,17 +17,25 @@ trait Producible with Ownable {
         let callbackInit: StateInit = self.callbackInit(parameter);
         return contractAddress(callbackInit);
     }
+
 }
 contract CallbackFactory with Deployable, Producible {
     owner: Address;
+    numberOfCallback: Int;
     init(owner : Address) {
-        self.owner = owner;        
+        self.owner = owner;      
+        self.numberOfCallback = 0;  
     }
 
+    /*
+    User call this callback factory to create a default callback contract.
+    */
     receive(msg: BuildCallback) {
         let ctx: Context = context();
         let udcAddress: Address = self.callbackAddress(msg.parameter);
         let init: StateInit = self.callbackInit(msg.parameter);
+
+        // Deploy the callback contract for msg.sender (User)
         send(SendParameters{
             to: udcAddress,
             value: 0,
@@ -36,7 +44,7 @@ contract CallbackFactory with Deployable, Producible {
             body: BuildUDC {
                 owner: ctx.sender
             }.toCell(),
-            code: init.code, // Attaching the state init to deploy the message
+            code: init.code, 
             data: init.data
         });
 
@@ -44,5 +52,10 @@ contract CallbackFactory with Deployable, Producible {
             walletAddress: ctx.sender,
             callbackAddress: udcAddress
         }.toCell());
+        self.numberOfCallback = self.numberOfCallback + 1;
+    }
+
+    get fun numberOfCallback(): Int {
+        return self.numberOfCallback;
     }
 }
